@@ -115,6 +115,12 @@ public class UiAutomationTest extends UiAutomatorTestCase {
             // Wait for things to settle.
             getUiDevice().waitForIdle();
 
+            // Wait for Activity draw finish
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+
             // Find the application window.
             final int windowId = findAppWindowId(uiAutomation.getWindows());
             assertTrue(windowId >= 0);
