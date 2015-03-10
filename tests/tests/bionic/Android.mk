@@ -47,7 +47,7 @@ LOCAL_SRC_FILES := \
     main.cpp \
 
 LOCAL_LDLIBS += \
-    -lrt -ldl -lutil \
+    -lrt \
 
 LOCAL_WHOLE_STATIC_LIBRARIES += \
     libBionicTests \
