@@ -111,6 +111,7 @@ public class CtsXmlResultReporter
 
     public void setReportDir(File reportDir) {
         mReportDir = reportDir;
+        Log.e(LOG_TAG, String.format("JENKINS: setReportDir:mReportDir is  %s ", reportDir));
     }
 
     /** Set whether to include TestLog tags in the XML reports. */
@@ -150,7 +151,7 @@ public class CtsXmlResultReporter
             mReportDir = createUniqueReportDir(mReportDir);
 
             mStartTime = getTimestamp();
-            logResult("Created result dir %s", mReportDir.getName());
+            Log.e(LOG_TAG, String.format("JENKINS: invocation Started Created Report dir %s", mReportDir.getAbsolutePath()));
         }
         mSuiteName = ctsBuildHelper.getSuiteName();
         mReporter = new ResultReporter(mResultServer, mSuiteName);
@@ -160,6 +161,7 @@ public class CtsXmlResultReporter
         File rootLogDir = getBuildHelper(ctsBuild).getLogsDir();
         mLogDir = new File(rootLogDir, mReportDir.getName());
         mLogDir.mkdirs();
+        Log.e(LOG_TAG, String.format("JENKINS: invocationStarted Leaving Report Dir is %s", mReportDir.getAbsolutePath()));
     }
 
     /**
@@ -334,6 +336,13 @@ public class CtsXmlResultReporter
         }
 
         File reportFile = getResultFile(mReportDir);
+        if (reportFile != null && reportFile.exists()) {
+            Log.e(LOG_TAG,String.format("JENKINS: Report file %s does not exist",reportFile.getName()));
+        }
+        else {
+            Log.e(LOG_TAG,String.format("JENKINS: Report file %s exists at %s ",reportFile.getName(),reportFile.getAbsolutePath()));
+        }
+
         createXmlResult(reportFile, mStartTime, elapsedTime);
         copyFormattingFiles(mReportDir);
         zipResults(mReportDir);
@@ -378,7 +387,8 @@ public class CtsXmlResultReporter
             logResult(msg);
             logResult("Time: %s", TimeUtil.formatElapsedTime(elapsedTime));
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Failed to generate report data");
+            Log.e(LOG_TAG, "Failed to generate report data " + e.getMessage());
+            e.printStackTrace();
         } finally {
             StreamUtil.close(stream);
         }
@@ -406,6 +416,13 @@ public class CtsXmlResultReporter
     }
 
     private File getResultFile(File reportDir) {
+        if (reportDir.isDirectory() == true) {
+            Log.e(LOG_TAG, String.format("JENKINS: getResultFile: %s is a direcotry", reportDir));
+        }
+        else { 
+            Log.e(LOG_TAG, String.format("JENKINS: getResultFile: %s is NOT a direcotry", reportDir));
+        }
+
         return new File(reportDir, TEST_RESULT_FILE_NAME);
     }
 
@@ -413,7 +430,7 @@ public class CtsXmlResultReporter
      * Creates the output stream to use for test results. Exposed for mocking.
      */
     OutputStream createOutputResultStream(File reportFile) throws IOException {
-        logResult("Created xml report file at file://%s", reportFile.getAbsolutePath());
+        Log.e(LOG_TAG,String.format("JENKINS: Created xml report file at file://%s", reportFile.getAbsolutePath()));
         return new FileOutputStream(reportFile);
     }
 
