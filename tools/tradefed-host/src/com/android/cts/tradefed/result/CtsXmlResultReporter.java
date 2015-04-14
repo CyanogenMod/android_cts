@@ -378,7 +378,8 @@ public class CtsXmlResultReporter
             logResult(msg);
             logResult("Time: %s", TimeUtil.formatElapsedTime(elapsedTime));
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Failed to generate report data");
+            Log.e(LOG_TAG, "Failed to generate report data " + e.getMessage());
+            e.printStackTrace();
         } finally {
             StreamUtil.close(stream);
         }
