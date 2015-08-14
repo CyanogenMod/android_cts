@@ -19,6 +19,7 @@ package com.android.cts.verifier.managedprovisioning;
 import android.app.admin.DevicePolicyManager;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -78,6 +79,7 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
     private DialogTestListItem mCrossProfileAudioCaptureSupportTest;
     private TestListItem mKeyguardDisabledFeaturesTest;
     private DialogTestListItem mDisableNfcBeamTest;
+    private TestListItem mAuthenticationBoundKeyTest;
 
     public ByodFlowTestActivity() {
         super(R.layout.provisioning_byod,
@@ -278,6 +280,12 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
                 KeyguardDisabledFeaturesActivity.class.getName(),
                 new Intent(this, KeyguardDisabledFeaturesActivity.class), null);
 
+        mAuthenticationBoundKeyTest = TestListItem.newTest(this,
+                R.string.provisioning_byod_auth_bound_key,
+                AuthenticationBoundKeyTestActivity.class.getName(),
+                new Intent(AuthenticationBoundKeyTestActivity.ACTION_AUTH_BOUND_KEY_TEST),
+                null);
+
         // Test for checking if the required intent filters are set during managed provisioning.
         mIntentFiltersTest = new DialogTestListItem(this,
                 R.string.provisioning_byod_cross_profile_intent_filters,
@@ -287,7 +295,7 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
                 checkIntentFilters();
             }
         };
-        
+
         Intent permissionCheckIntent = new Intent(
                 PermissionLockdownTestActivity.ACTION_MANAGED_PROFILE_CHECK_PERMISSION_LOCKDOWN);
         mPermissionLockdownTest = new DialogTestListItem(this,
@@ -320,6 +328,7 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
         adapter.add(mIntentFiltersTest);
         adapter.add(mPermissionLockdownTest);
         adapter.add(mKeyguardDisabledFeaturesTest);
+        adapter.add(mAuthenticationBoundKeyTest);
 
         if (canResolveIntent(ByodHelperActivity.getCaptureImageIntent())) {
             // Capture image intent can be resolved in primary profile, so test.
@@ -495,7 +504,8 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
             ByodHelperActivity.class.getName(),
             WorkNotificationTestActivity.class.getName(),
             WorkStatusTestActivity.class.getName(),
-            PermissionLockdownTestActivity.ACTIVITY_ALIAS
+            PermissionLockdownTestActivity.ACTIVITY_ALIAS,
+            AuthenticationBoundKeyTestActivity.class.getName()
         };
         for (String component : components) {
             getPackageManager().setComponentEnabledSetting(new ComponentName(this, component),
@@ -503,4 +513,5 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
                     PackageManager.DONT_KILL_APP);
         }
     }
+
 }

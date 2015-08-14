@@ -1278,6 +1278,23 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="provisioning_byod_no_audio_capture_resolver">No audio capture app present. Skip test.</string>
     <string name="provisioning_byod_capture_media_error">Error while capturing media from managed profile.</string>
 
+    <string name="provisioning_byod_auth_bound_key">Autentication-boud keys</string>
+    <string name="provisioning_byod_auth_bound_key_info">
+        This test verifies keystore cryptographic keys can be bound to device credentials.
+        These keys should only be available if there was a recent enough authentication.
+    </string>
+    <string name="provisioning_byod_auth_bound_key_instruction">
+        This test verifies keystore cryptographic keys can be bound to device lockscreen challenge or fingerprints (if available).
+        These keys should only be available if there was a recent enough authentication. \n
+
+        1. Press "Set up" to open Security settings. Create a lockscreen password and if available, enroll a fingerprint.\n
+        2. Go through the list of tests.\n
+        3. Mark the overall test pass or fail.\n
+        4. Once the set of tests are completed, remove the lockscreen challenge.
+    </string>
+    <string name="provisioning_byod_auth_bound_key_set_up">Set up</string>
+    <string name="provisioning_byod_lockscreen_bound_key">Lockscreen-bound key test</string>
+    <string name="provisioning_byod_fingerprint_bound_key">Fingerprint-bound key test</string>
     <!-- Strings for DeskClock -->
     <string name="deskclock_tests">Alarms and Timers Tests</string>
     <string name="deskclock_tests_info">
@@ -1640,6 +1657,7 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="provisioning_byod_send_share_intent">Send share intent</string>
     <string name="provisioning_byod_cannot_resolve_beam_activity">Cannot find beam activity</string>
 
+    <string name="test_failed_cannot_start_intent">Cannot start the given intent.</string>
     <string name="provisioning_byod_no_activity">Cannot communicate with activity in the work profile.</string>
     <string name="provisioning_byod_delete_profile">Initiate deletion of work profile.</string>
     <string name="provisioning_byod_profile_deleted">Work profile deleted.</string>
