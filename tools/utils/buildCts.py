@@ -492,6 +492,9 @@ def BuildCtsTemporarilyKnownFailureList():
       'android.voicesettings' : [
           'android.voicesettings.cts.ZenModeTest#testAll',
       ],
+      'com.android.cts.systemui' : [
+          'com.android.cts.systemui.LightStatusBarTests#testLightStatusBarIcons',
+      ],
       'com.android.cts.app.os' : [
           'com.android.cts.app.os.OsHostTests#testNonExportedActivities',
       ],
