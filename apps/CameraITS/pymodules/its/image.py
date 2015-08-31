@@ -81,6 +81,25 @@ def convert_capture_to_rgb_image(cap,
     else:
         raise its.error.Error('Invalid format %s' % (cap["format"]))
 
+def unpack_rawstats_capture(cap):
+    """Unpack a rawStats capture to the mean and variance images.
+
+    Args:
+        cap: A capture object as returned by its.device.do_capture.
+
+    Returns:
+        Tuple (mean_image var_image) of float-4 images, with non-normalized
+        pixel values computed from the RAW16 images on the device
+    """
+    assert(cap["format"] == "rawStats")
+    w = cap["width"]
+    h = cap["height"]
+    img = numpy.ndarray(shape=(2*h*w*4,), dtype='<f', buffer=cap["data"])
+    analysis_image = img.reshape(2,h,w,4)
+    mean_image = analysis_image[0,:,:,:].reshape(h,w,4)
+    var_image = analysis_image[1,:,:,:].reshape(h,w,4)
+    return mean_image, var_image
+
 def unpack_raw10_capture(cap, props):
     """Unpack a raw-10 capture to a raw-16 capture.
 
