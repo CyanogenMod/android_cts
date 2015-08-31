@@ -36,11 +36,10 @@ def main():
     NAME = os.path.basename(__file__).split(".")[0]
 
     RELATIVE_ERROR_TOLERANCE = 0.1
-
-    # List of variances for Y,U,V.
+    # List of variances for R,G,B.
     variances = [[],[],[]]
 
-    # Reference (baseline) variance for each of Y,U,V.
+    # Reference (baseline) variance for each of R,G,B.
     ref_variance = []
 
     nr_modes_reported = []
@@ -56,16 +55,15 @@ def main():
         req = its.objects.manual_capture_request(s, e)
         req["android.noiseReduction.mode"] = 0
         cap = cam.do_capture(req)
+        rgb_image = its.image.convert_capture_to_rgb_image(cap)
         its.image.write_image(
-                its.image.convert_capture_to_rgb_image(cap),
+                rgb_image,
                 "%s_low_gain.jpg" % (NAME))
-        planes = its.image.convert_capture_to_planes(cap)
-        for j in range(3):
-            img = planes[j]
-            tile = its.image.get_image_patch(img, 0.45, 0.45, 0.1, 0.1)
-            ref_variance.append(its.image.compute_image_variances(tile)[0])
+        rgb_tile = its.image.get_image_patch(rgb_image, 0.45, 0.45, 0.1, 0.1)
+        ref_variance = its.image.compute_image_variances(rgb_tile)
         print "Ref variances:", ref_variance
 
+        e, s = its.target.get_target_exposure_combos(cam)["maxSensitivity"]
         # NR modes 0, 1, 2, 3, 4 with high gain
         for mode in range(5):
             # Skip unavailable modes
@@ -75,22 +73,22 @@ def main():
                     variances[channel].append(0)
                 continue;
 
-            e, s = its.target.get_target_exposure_combos(cam)["maxSensitivity"]
             req = its.objects.manual_capture_request(s, e)
             req["android.noiseReduction.mode"] = mode
             cap = cam.do_capture(req)
+            rgb_image = its.image.convert_capture_to_rgb_image(cap)
             nr_modes_reported.append(
                     cap["metadata"]["android.noiseReduction.mode"])
             its.image.write_image(
-                    its.image.convert_capture_to_rgb_image(cap),
+                    rgb_image,
                     "%s_high_gain_nr=%d.jpg" % (NAME, mode))
-            planes = its.image.convert_capture_to_planes(cap)
-            for j in range(3):
-                img = planes[j]
-                tile = its.image.get_image_patch(img, 0.45, 0.45, 0.1, 0.1)
-                variance = its.image.compute_image_variances(tile)[0]
-                variances[j].append(variance / ref_variance[j])
-        print "Variances with NR mode [0,1,2,3,4]:", variances
+            rgb_tile = its.image.get_image_patch(
+                    rgb_image, 0.45, 0.45, 0.1, 0.1)
+            rgb_vars = its.image.compute_image_variances(rgb_tile)
+            for chan in range(3):
+                variance = rgb_vars[chan]
+                variances[chan].append(variance / ref_variance[chan])
+        print "Variances with NR mode [0,1,2]:", variances
 
     # Draw a plot.
     for j in range(3):
