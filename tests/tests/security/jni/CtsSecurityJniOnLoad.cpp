@@ -28,6 +28,7 @@ extern int register_android_security_cts_AudioPolicyBinderTest(JNIEnv* env);
 extern int register_android_security_cts_AudioFlingerBinderTest(JNIEnv* env);
 extern int register_android_security_cts_EncryptionTest(JNIEnv* env);
 extern int register_android_security_cts_MediaPlayerInfoLeakTest(JNIEnv* env);
+extern int register_android_security_cts_AudioEffectBinderTest(JNIEnv* env);
 
 jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     JNIEnv *env = NULL;
