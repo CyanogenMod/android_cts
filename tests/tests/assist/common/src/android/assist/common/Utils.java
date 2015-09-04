@@ -21,7 +21,6 @@ import android.os.Bundle;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 
 public class Utils {
@@ -36,6 +35,8 @@ public class Utils {
     public static final String ACTION_INVALIDATE = "invalidate_action";
     public static final String GET_CONTENT_VIEW_HEIGHT = ACTION_PREFIX + "GET_CONTENT_VIEW_HEIGHT";
     public static final String BROADCAST_CONTENT_VIEW_HEIGHT = ACTION_PREFIX + "VIEW_HEIGHT";
+    public static final String SCROLL_TEXTVIEW_ACTION = ACTION_PREFIX + "TEXTVIEW_SCROLL";
+    public static final String SCROLL_SCROLLVIEW_ACTION = ACTION_PREFIX + "SCROLLVIEW_SCROLL";
     public static final String TEST_ERROR = "Error In Test:";
 
     public static final String ASSIST_STRUCTURE_KEY = "assist_structure";
@@ -46,6 +47,8 @@ public class Utils {
     public static final String COMPARE_SCREENSHOT_KEY = "compare_screenshot";
     public static final String DISPLAY_WIDTH_KEY = "display_width";
     public static final String DISPLAY_HEIGHT_KEY = "dislay_height";
+    public static final String SCROLL_X_POSITION = "scroll_x_position";
+    public static final String SCROLL_Y_POSITION = "scroll_y_position";
 
     /** Lifecycle Test intent constants */
     public static final String LIFECYCLE_PREFIX = ACTION_PREFIX + "lifecycle_";
@@ -60,9 +63,8 @@ public class Utils {
 
     /** Flag Secure Test intent constants */
     public static final String FLAG_SECURE_HASRESUMED = ACTION_PREFIX + "flag_secure_hasResumed";
-    public static final String APP_3P_HASRESUMED = ACTION_PREFIX + "screenshot_hasResumed";
-    public static final String ASSIST_STRUCTURE_HASRESUMED = ACTION_PREFIX
-            + "assist_structure_hasResumed";
+    public static final String APP_3P_HASRESUMED = ACTION_PREFIX + "app_3p_hasResumed";
+    public static final String TEST_ACTIVITY_LOADED = ACTION_PREFIX + "test_activity_hasResumed";
 
     /** Two second timeout for getting back assist context */
     public static final int TIMEOUT_MS = 2 * 1000;
@@ -84,10 +86,18 @@ public class Utils {
     public static final String SCREENSHOT = "SCREENSHOT";
     public static final String EXTRA_ASSIST = "EXTRA_ASSIST";
     public static final String VERIFY_CONTENT_VIEW = "VERIFY_CONTENT_VIEW";
+    public static final String TEXTVIEW = "TEXTVIEW";
+    public static final String LARGE_VIEW_HIERARCHY = "LARGE_VIEW_HIERARCHY";
+    public static final String WEBVIEW = "WEBVIEW";
     public static final String FOCUS_CHANGE = "FOCUS_CHANGE";
 
     /** Session intent constants */
     public static final String HIDE_SESSION = "android.intent.action.hide_session";
+
+    /** Stub html view to load into WebView */
+    public static final String WEBVIEW_HTML_GREETING = "Hello WebView!";
+    public static final String WEBVIEW_HTML = "<html><body><div><p>" + WEBVIEW_HTML_GREETING
+            + "</p></div></body></html>";
 
     /** Extra data to add to assist data and assist content */
     private static Bundle EXTRA_ASSIST_BUNDLE;
@@ -140,6 +150,9 @@ public class Utils {
             case SCREENSHOT:
             case EXTRA_ASSIST:
             case VERIFY_CONTENT_VIEW:
+            case TEXTVIEW:
+            case LARGE_VIEW_HIERARCHY:
+            case WEBVIEW:
             case FOCUS_CHANGE:
                 return "service.DelayedAssistantActivity";
             default:
@@ -153,6 +166,9 @@ public class Utils {
     public static final ComponentName getTestAppComponent(String testCaseType) {
         switch (testCaseType) {
             case ASSIST_STRUCTURE:
+            case LARGE_VIEW_HIERARCHY:
+                return new ComponentName(
+                        "android.assist.testapp", "android.assist.testapp.TestApp");
             case DISABLE_CONTEXT:
                 return new ComponentName(
                         "android.assist.testapp", "android.assist.testapp.TestApp");
@@ -168,6 +184,12 @@ public class Utils {
             case EXTRA_ASSIST:
                 return new ComponentName(
                         "android.assist.testapp", "android.assist.testapp.ExtraAssistDataActivity");
+            case TEXTVIEW:
+                return new ComponentName(
+                        "android.assist.testapp", "android.assist.testapp.TextViewActivity");
+            case WEBVIEW:
+                return new ComponentName(
+                        "android.assist.testapp", "android.assist.testapp.WebViewActivity");
             case FOCUS_CHANGE:
                 return new ComponentName(
                         "android.assist.testapp", "android.assist.testapp.FocusChangeActivity");

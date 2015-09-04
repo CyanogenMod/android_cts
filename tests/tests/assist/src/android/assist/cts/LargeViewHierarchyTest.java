@@ -28,20 +28,19 @@ import android.util.Log;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-
 /**
  *  Test that the AssistStructure returned is properly formatted.
  */
 
-public class AssistStructureTest extends AssistTestBase {
-    private static final String TAG = "AssistStructureTest";
-    private static final String TEST_CASE_TYPE = Utils.ASSIST_STRUCTURE;
+public class LargeViewHierarchyTest extends AssistTestBase {
+    private static final String TAG = "LargeViewHierarchyTest";
+    private static final String TEST_CASE_TYPE = Utils.LARGE_VIEW_HIERARCHY;
 
     private BroadcastReceiver mReceiver;
     private CountDownLatch mHasResumedLatch = new CountDownLatch(1);
     private CountDownLatch mReadyLatch = new CountDownLatch(1);
 
-    public AssistStructureTest() {
+    public LargeViewHierarchyTest() {
         super();
     }
 
@@ -65,7 +64,7 @@ public class AssistStructureTest extends AssistTestBase {
         if (mReceiver != null) {
             mContext.unregisterReceiver(mReceiver);
         }
-        mReceiver = new AssistStructureTestBroadcastReceiver();
+        mReceiver = new LargeViewTestBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(Utils.APP_3P_HASRESUMED);
         filter.addAction(Utils.ASSIST_RECEIVER_REGISTERED);
@@ -79,7 +78,7 @@ public class AssistStructureTest extends AssistTestBase {
         }
     }
 
-    public void testAssistStructure() throws Exception {
+    public void testTextView() throws Exception {
         mTestActivity.start3pApp(TEST_CASE_TYPE);
         mTestActivity.startTest(TEST_CASE_TYPE);
         waitForAssistantToBeReady(mReadyLatch);
@@ -92,18 +91,14 @@ public class AssistStructureTest extends AssistTestBase {
                 false /*FLAG_SECURE set*/);
     }
 
-    private class AssistStructureTestBroadcastReceiver extends BroadcastReceiver {
+    private class LargeViewTestBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(Utils.APP_3P_HASRESUMED)) {
-                if (mHasResumedLatch != null) {
-                    mHasResumedLatch.countDown();
-                }
-            } else if (action.equals(Utils.ASSIST_RECEIVER_REGISTERED)) {
-                if (mReadyLatch != null) {
-                    mReadyLatch.countDown();
-                }
+            if (action.equals(Utils.APP_3P_HASRESUMED) && mHasResumedLatch != null) {
+                mHasResumedLatch.countDown();
+            } else if (action.equals(Utils.ASSIST_RECEIVER_REGISTERED) && mReadyLatch != null) {
+                mReadyLatch.countDown();
             }
         }
     }
