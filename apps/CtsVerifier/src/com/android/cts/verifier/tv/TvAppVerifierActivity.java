@@ -35,8 +35,6 @@ import android.widget.TextView;
 public abstract class TvAppVerifierActivity extends PassFailButtons.Activity {
     private static final String TAG = "TvAppVerifierActivity";
 
-    private static final long TIMEOUT_MS = 5l * 60l * 1000l;  // 5 mins.
-
     private LayoutInflater mInflater;
     private ViewGroup mItemList;
     private View mPostTarget;
