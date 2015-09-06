@@ -1875,7 +1875,6 @@ You should be prompted to select credentials; choose the ones you just installed
     Do you see the programs named \"Dummy Program\" and their descriptions
     "Dummy Program Description" in the EPG?
     </string>
-    <string name="tv_input_discover_test_yes">Yes</string>
 
     <string name="tv_parental_control_test">TV app parental controls test</string>
     <string name="tv_parental_control_test_info">
@@ -1962,6 +1961,24 @@ You should be prompted to select credentials; choose the ones you just installed
     </string>
     <string name="tv_time_shift_test_verify_seek_to_next">
     The playback position should be moved to the next position.
+    </string>
+
+    <string name="tv_app_link_test">TV app app-link test</string>
+    <string name="tv_app_link_test_info">
+    Verify that the bundled TV app supports linking to channel apps. If TV input service provides
+    links for its specific channels, TV app should show the links in a proper format.
+    </string>
+    <string name="tv_app_link_test_select_app_link">
+    Select the \"Launch TV app\" button, then check if you can see a menu with \"Cts App-Link Text\"
+    text in red background. If you see the link, select it to follow the link.
+    </string>
+    <string name="tv_app_link_test_verify_link_clicked">
+    The app-link must have been clicked and the activity should be changed correctly.
+    </string>
+    <string name="tv_input_link_test_verify_link_interface">
+    Do you see the app-link card similar to the image on the left?\n
+    1) You should see the poster art image, but the color could be differ.\n
+    2) You should see the text \"Cts App-Link Text\".\n
     </string>
 
     <string name="overlay_view_text">Overlay View Dummy Text</string>
