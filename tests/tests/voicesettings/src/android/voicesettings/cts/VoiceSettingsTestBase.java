@@ -21,6 +21,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
@@ -55,6 +56,17 @@ public class VoiceSettingsTestBase extends ActivityInstrumentationTestCase2<Test
     protected void tearDown() throws Exception {
         mContext.unregisterReceiver(mActivityDoneReceiver);
         super.tearDown();
+    }
+
+    protected boolean isIntentSupported(String intentStr) {
+        Intent intent = new Intent(intentStr);
+        final PackageManager manager = mContext.getPackageManager();
+        assertNotNull(manager);
+        if (manager.resolveActivity(intent, 0) == null) {
+            Log.i(TAG, "No Voice Activity found for the intent: " + intentStr);
+            return false;
+        }
+        return true;
     }
 
     protected void startTestActivity(String intentSuffix) {

@@ -16,6 +16,7 @@
 
 package android.voicesettings.cts;
 
+import static android.provider.Settings.ACTION_VOICE_CONTROL_DO_NOT_DISTURB_MODE;
 import static android.provider.Settings.EXTRA_DO_NOT_DISTURB_MODE_ENABLED;
 import static android.provider.Settings.EXTRA_DO_NOT_DISTURB_MODE_MINUTES;
 
@@ -39,6 +40,9 @@ public class ZenModeTest extends VoiceSettingsTestBase {
     }
 
     public void testAll() throws Exception {
+        if (!isIntentSupported(ACTION_VOICE_CONTROL_DO_NOT_DISTURB_MODE)) {
+            return;
+        }
         int mode;
         try {
             mode = getMode();
