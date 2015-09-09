@@ -155,8 +155,7 @@ public class TestSensorEventListener implements SensorEventListener2 {
      */
     public List<TestSensorEvent> getCollectedEvents() {
         synchronized (mCollectedEvents){
-            List<TestSensorEvent> collectedEventsList = (List)mCollectedEvents.clone();
-            return Collections.unmodifiableList(collectedEventsList);
+            return Collections.unmodifiableList((List<TestSensorEvent>) mCollectedEvents.clone());
         }
     }
 
