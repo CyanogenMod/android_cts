@@ -16,6 +16,8 @@
 
 package android.voicesettings.cts;
 
+import static android.provider.Settings.ACTION_VOICE_CONTROL_BATTERY_SAVER_MODE;
+
 import android.content.Context;
 import android.os.PowerManager;
 import android.util.Log;
@@ -30,6 +32,9 @@ public class BatterySaverModeTest extends VoiceSettingsTestBase {
     }
 
     public void testAll() throws Exception {
+        if (!isIntentSupported(ACTION_VOICE_CONTROL_BATTERY_SAVER_MODE)) {
+            return;
+        }
         startTestActivity("BATTERYSAVER_MODE");
         boolean modeIsOn = isModeOn();
         Log.i(TAG, "Before testing, BATTERYSAVER_MODE is set to: " + modeIsOn);
