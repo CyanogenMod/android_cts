@@ -1574,6 +1574,18 @@
                     android:value="android.software.live_tv" />
         </activity>
 
+        <activity android:name=".tv.AppLinkTestActivity"
+            android:label="@string/tv_app_link_test"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.cts.intent.category.MANUAL_TEST" />
+            </intent-filter>
+            <meta-data android:name="test_category" android:value="@string/test_category_tv" />
+            <meta-data android:name="test_required_features"
+                android:value="android.software.live_tv" />
+        </activity>
+
         <activity android:name=".screenpinning.ScreenPinningTestActivity"
             android:label="@string/screen_pinning_test">
             <intent-filter>
