@@ -16,6 +16,8 @@
 
 package android.voicesettings.cts;
 
+import static android.provider.Settings.ACTION_VOICE_CONTROL_AIRPLANE_MODE;
+
 import android.provider.Settings;
 import android.provider.Settings.Global;
 import android.util.Log;
@@ -33,6 +35,9 @@ public class AirplaneModeTest extends VoiceSettingsTestBase {
     }
 
     public void testAll() throws Exception {
+        if (!isIntentSupported(ACTION_VOICE_CONTROL_AIRPLANE_MODE)) {
+            return;
+        }
         int mode;
         try {
             mode = getMode();
