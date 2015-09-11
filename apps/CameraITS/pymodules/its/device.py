@@ -448,8 +448,8 @@ class ItsSession(object):
 
         The out_surfaces field can specify the width(s), height(s), and
         format(s) of the captured image. The formats may be "yuv", "jpeg",
-        "dng", "raw", "raw10", or "raw12". The default is a YUV420 frame ("yuv")
-        corresponding to a full sensor frame.
+        "dng", "raw", "raw10", "raw12", or "rawStats". The default is a YUV420
+        frame ("yuv") corresponding to a full sensor frame.
 
         Note that one or more surfaces can be specified, allowing a capture to
         request images back in multiple formats (e.g.) raw+yuv, raw+jpeg,
@@ -536,6 +536,25 @@ class ItsSession(object):
             yuv_caps           = do_capture( [req1,req2], yuv_fmt           )
             yuv_caps, raw_caps = do_capture( [req1,req2], [yuv_fmt,raw_fmt] )
 
+        The "rawStats" format processes the raw image and returns a new image
+        of statistics from the raw image. The format takes additional keys,
+        "gridWidth" and "gridHeight" which are size of grid cells in a 2D grid
+        of the raw image. For each grid cell, the mean and variance of each raw
+        channel is computed, and the do_capture call returns two 4-element float
+        images of dimensions (rawWidth / gridWidth, rawHeight / gridHeight),
+        concatenated back-to-back, where the first iamge contains the 4-channel
+        means and the second contains the 4-channel variances.
+
+        For the rawStats format, if the gridWidth is not provided then the raw
+        image width is used as the default, and similarly for gridHeight. With
+        this, the following is an example of a output description that computes
+        the mean and variance across each image row:
+
+            {
+                "gridHeight": 1,
+                "format": "rawStats"
+            }
+
         Args:
             cap_request: The Python dict/list specifying the capture(s), which
                 will be converted to JSON and sent to the device.
@@ -550,7 +569,8 @@ class ItsSession(object):
             * data: the image data as a numpy array of bytes.
             * width: the width of the captured image.
             * height: the height of the captured image.
-            * format: image the format, in ["yuv","jpeg","raw","raw10","dng"].
+            * format: image the format, in [
+                        "yuv","jpeg","raw","raw10","raw12","rawStats","dng"].
             * metadata: the capture result object (Python dictionary).
         """
         cmd = {}
@@ -577,9 +597,13 @@ class ItsSession(object):
         nsurf = 1 if out_surfaces is None else len(cmd["outputSurfaces"])
         if len(formats) > len(set(formats)):
             raise its.error.Error('Duplicate format requested')
-        if "dng" in formats and "raw" in formats or \
-                "dng" in formats and "raw10" in formats or \
-                "raw" in formats and "raw10" in formats:
+        raw_formats = 0;
+        raw_formats += 1 if "dng" in formats else 0
+        raw_formats += 1 if "raw" in formats else 0
+        raw_formats += 1 if "raw10" in formats else 0
+        raw_formats += 1 if "raw12" in formats else 0
+        raw_formats += 1 if "rawStats" in formats else 0
+        if raw_formats > 1:
             raise its.error.Error('Different raw formats not supported')
 
         # Detect long exposure time and set timeout accordingly
@@ -603,14 +627,16 @@ class ItsSession(object):
         # the burst, however individual images of different formats can come
         # out in any order for that capture.
         nbufs = 0
-        bufs = {"yuv":[], "raw":[], "raw10":[], "dng":[], "jpeg":[]}
+        bufs = {"yuv":[], "raw":[], "raw10":[], "raw12":[],
+                "rawStats":[], "dng":[], "jpeg":[]}
         mds = []
         widths = None
         heights = None
         while nbufs < ncap*nsurf or len(mds) < ncap:
             jsonObj,buf = self.__read_response_from_socket()
             if jsonObj['tag'] in ['jpegImage', 'yuvImage', 'rawImage', \
-                    'raw10Image', 'dngImage'] and buf is not None:
+                    'raw10Image', 'raw12Image', 'rawStatsImage', 'dngImage'] \
+                    and buf is not None:
                 fmt = jsonObj['tag'][:-5]
                 bufs[fmt].append(buf)
                 nbufs += 1
