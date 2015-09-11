@@ -1398,6 +1398,13 @@
             </intent-filter>
         </activity-alias>
 
+        <activity android:name=".managedprovisioning.AuthenticationBoundKeyTestActivity">
+            <intent-filter>
+                <action android:name="com.android.cts.verifier.managedprovisioning.action.AUTH_BOUND_KEY_TEST" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".managedprovisioning.ByodFlowTestActivity"
                 android:launchMode="singleTask"
                 android:label="@string/provisioning_byod">
