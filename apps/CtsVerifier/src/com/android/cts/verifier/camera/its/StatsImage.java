@@ -14,26 +14,22 @@
  * limitations under the License.
  */
 
-#include <jni.h>
-#include <stdio.h>
+package com.android.cts.verifier.camera.its;
 
-extern int register_com_android_cts_verifier_os_FileUtils(JNIEnv*);
-extern int register_com_android_cts_verifier_camera_its_StatsImage(JNIEnv*);
+import android.util.Log;
 
-jint JNI_OnLoad(JavaVM *vm, void *reserved) {
-    JNIEnv *env = NULL;
+public class StatsImage {
 
-    if (vm->GetEnv((void **) &env, JNI_VERSION_1_4) != JNI_OK) {
-        return JNI_ERR;
+    static {
+        try {
+            System.loadLibrary("ctsverifier_jni");
+        } catch (UnsatisfiedLinkError e) {
+            Log.e("StatsImage", "Error loading cts verifier JNI library");
+            e.printStackTrace();
+        }
     }
 
-    if (register_com_android_cts_verifier_os_FileUtils(env)) {
-        return JNI_ERR;
-    }
+    public native static float[] computeStatsImage(
+            byte[] img, int width, int height, int gridW, int gridH);
 
-    if (register_com_android_cts_verifier_camera_its_StatsImage(env)) {
-        return JNI_ERR;
-    }
-
-    return JNI_VERSION_1_4;
 }
