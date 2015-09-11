@@ -252,6 +252,13 @@
   bug: 23008511
 },
 {
+  description: "Light status bar CTS coming in late",
+  names: [
+    "com.android.cts.systemui.LightStatusBarTests#testLightStatusBarIcons"
+  ],
+  bug: 23427621
+},
+{
   description: "known failures",
   names: [
     "android.hardware.cts.SensorBatchingTests#testAccelerometer_50hz_batching",
