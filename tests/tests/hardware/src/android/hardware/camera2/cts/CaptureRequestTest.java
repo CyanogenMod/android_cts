@@ -2248,8 +2248,7 @@ public class CaptureRequestTest extends Camera2SurfaceViewTestCase {
                     prevCaptureTime = captureTime;
                 }
                 mCollector.expectInRange(
-                        "Frame duration must be in the range of " +
-                                Arrays.toString(frameDurationRange),
+                        "Frame duration must be in the range of " + Arrays.toString(frameDurationRange),
                         frameDuration,
                         (long) (frameDurationRange[0] * (1 - frameDurationErrorMargin)),
                         (long) (frameDurationRange[1] * (1 + frameDurationErrorMargin)));
