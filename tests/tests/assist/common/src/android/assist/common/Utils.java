@@ -54,6 +54,10 @@ public class Utils {
     public static final String LIFECYCLE_ONSTOP = LIFECYCLE_PREFIX + "onstop";
     public static final String LIFECYCLE_ONDESTROY = LIFECYCLE_PREFIX + "ondestroy";
 
+    /** Focus Change Test intent constants */
+    public static final String GAINED_FOCUS = ACTION_PREFIX + "focus_changed";
+    public static final String LOST_FOCUS = ACTION_PREFIX + "lost_focus";
+
     /** Flag Secure Test intent constants */
     public static final String FLAG_SECURE_HASRESUMED = ACTION_PREFIX + "flag_secure_hasResumed";
     public static final String APP_3P_HASRESUMED = ACTION_PREFIX + "screenshot_hasResumed";
@@ -80,6 +84,7 @@ public class Utils {
     public static final String SCREENSHOT = "SCREENSHOT";
     public static final String EXTRA_ASSIST = "EXTRA_ASSIST";
     public static final String VERIFY_CONTENT_VIEW = "VERIFY_CONTENT_VIEW";
+    public static final String FOCUS_CHANGE = "FOCUS_CHANGE";
 
     /** Session intent constants */
     public static final String HIDE_SESSION = "android.intent.action.hide_session";
@@ -135,6 +140,7 @@ public class Utils {
             case SCREENSHOT:
             case EXTRA_ASSIST:
             case VERIFY_CONTENT_VIEW:
+            case FOCUS_CHANGE:
                 return "service.DelayedAssistantActivity";
             default:
                 return "";
@@ -162,6 +168,9 @@ public class Utils {
             case EXTRA_ASSIST:
                 return new ComponentName(
                         "android.assist.testapp", "android.assist.testapp.ExtraAssistDataActivity");
+            case FOCUS_CHANGE:
+                return new ComponentName(
+                        "android.assist.testapp", "android.assist.testapp.FocusChangeActivity");
             default:
                 return new ComponentName("","");
         }
