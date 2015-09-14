@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -58,6 +59,7 @@ public class BluetoothLeScanTest extends AndroidTestCase {
 
     private static final int SCAN_DURATION_MILLIS = 5000;
     private static final int BATCH_SCAN_REPORT_DELAY_MILLIS = 20000;
+    private CountDownLatch mFlushBatchScanLatch;
 
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothLeScanner mScanner;
@@ -215,8 +217,14 @@ public class BluetoothLeScanTest extends AndroidTestCase {
                 batchScanCallback);
         sleep(SCAN_DURATION_MILLIS);
         mScanner.flushPendingScanResults(batchScanCallback);
-        sleep(1000);
+        mFlushBatchScanLatch = new CountDownLatch(1);
         List<ScanResult> results = batchScanCallback.getBatchScanResults();
+        try {
+            mFlushBatchScanLatch.await(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            // Nothing to do.
+            Log.e(TAG, "interrupted!");
+        }
         assertTrue(!results.isEmpty());
         long scanEndMillis = SystemClock.elapsedRealtime();
         mScanner.stopScan(batchScanCallback);
@@ -252,6 +260,9 @@ public class BluetoothLeScanTest extends AndroidTestCase {
             // In case onBatchScanResults are called due to buffer full, we want to collect all
             // scan results.
             mBatchScanResults.addAll(results);
+            if (mFlushBatchScanLatch != null) {
+                mFlushBatchScanLatch.countDown();
+            }
         }
 
         // Clear regular and batch scan results.
