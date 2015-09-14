@@ -474,6 +474,7 @@ def BuildCtsTemporarilyKnownFailureList():
           'android.assist.cts.ExtraAssistDataTest',
           'android.assist.cts.AssistantContentViewTest',
           'android.assist.cts.ScreenshotTest',
+          'android.assist.cts.FocusChangeTest',
       ],
       'android.calllog' : [
           'android.calllog.cts.CallLogBackupTest#testSingleCallBackup',

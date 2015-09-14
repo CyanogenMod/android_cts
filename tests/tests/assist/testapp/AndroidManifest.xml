@@ -72,5 +72,13 @@
                 <category android:name="android.intent.category.VOICE" />
             </intent-filter>
         </activity>
+        <activity android:name="FocusChangeActivity"
+            android:label="Focus Change Test Activity">
+            <intent-filter>
+                <action android:name="android.intent.action.TEST_APP_FOCUS_CHANGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.VOICE" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>
