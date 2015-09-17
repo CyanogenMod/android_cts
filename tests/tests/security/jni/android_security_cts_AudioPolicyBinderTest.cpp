@@ -154,30 +154,36 @@ jboolean android_security_cts_AudioPolicy_test_isStreamActive(JNIEnv* env __unus
     return true;
 }
 
-jint android_security_cts_AudioPolicy_test_getStreamVolumeLeak(JNIEnv* env __unused,
-                                                           jobject thiz __unused)
+jboolean android_security_cts_AudioPolicy_test_startAudioSource(JNIEnv* env __unused,
+                                                                jobject thiz __unused)
 {
     sp<IAudioPolicyService> aps;
 
     if (!init(aps, NULL, NULL)) {
-        return -1;
+        return false;
     }
 
     // Keep synchronized with IAudioPolicyService.cpp!
     enum {
-        GET_STREAM_VOLUME = 17,
+        START_AUDIO_SOURCE = 41,
     };
 
-    Parcel data, reply;
-    status_t err;
-    data.writeInterfaceToken(aps->getInterfaceDescriptor());
-    data.writeInt32(-1); // stream type
-    data.writeInt32(-1); // device
-    aps->asBinder()->transact(GET_STREAM_VOLUME, data, &reply);
-    int index = reply.readInt32();
-    err = reply.readInt32();
+    for (int i = 0; i < 10; ++i) {
+        Parcel data, reply;
+        data.writeInterfaceToken(aps->getInterfaceDescriptor());
+        data.writeInt32(-i);
+        aps->asBinder()->transact(START_AUDIO_SOURCE, data, &reply);
+        status_t err = (status_t)reply.readInt32();
+        if (err == NO_ERROR) {
+            continue;
+        }
+        audio_io_handle_t handle = (audio_io_handle_t)reply.readInt32();
+        if (handle != 0) {
+            return false;
+        }
+    }
 
-    return index;
+    return true;
 }
 
 static JNINativeMethod gMethods[] = {
@@ -187,8 +193,8 @@ static JNINativeMethod gMethods[] = {
                 (void *) android_security_cts_AudioPolicy_test_stopOutput },
     {  "native_test_isStreamActive", "()Z",
                 (void *) android_security_cts_AudioPolicy_test_isStreamActive },
-    {  "native_test_getStreamVolumeLeak", "()I",
-                (void *) android_security_cts_AudioPolicy_test_getStreamVolumeLeak },
+    {  "native_test_startAudioSource", "()Z",
+                (void *) android_security_cts_AudioPolicy_test_startAudioSource },
 };
 
 int register_android_security_cts_AudioPolicyBinderTest(JNIEnv* env)
