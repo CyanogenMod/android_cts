@@ -162,11 +162,60 @@ jboolean android_security_cts_AudioFlinger_test_setMasterVolume(JNIEnv* env __un
 }
 
 
+jboolean android_security_cts_AudioFlinger_test_createEffect(JNIEnv* env __unused,
+                                                             jobject thiz __unused)
+{
+    sp<IAudioFlinger> af;
+    sp<MyDeathClient> dr;
+
+    if (!connectAudioFlinger(af, dr)) {
+        return false;
+    }
+
+    for (int j = 0; j < 10; ++j) {
+        Parcel data, reply;
+        data.writeInterfaceToken(af->getInterfaceDescriptor());
+        data.writeInt32((int32_t)j);
+        status_t status = af->asBinder()->transact(40, data, &reply); // 40 is CREATE_EFFECT
+        if (status != NO_ERROR) {
+            return false;
+        }
+
+        status = (status_t)reply.readInt32();
+        if (status == NO_ERROR) {
+            continue;
+        }
+
+        int id = reply.readInt32();
+        int enabled = reply.readInt32();
+        sp<IEffect> effect = interface_cast<IEffect>(reply.readStrongBinder());
+        effect_descriptor_t desc;
+        effect_descriptor_t descTarget;
+        memset(&desc, 0, sizeof(effect_descriptor_t));
+        memset(&descTarget, 0, sizeof(effect_descriptor_t));
+        reply.read(&desc, sizeof(effect_descriptor_t));
+        if (id != 0 || enabled != 0 || memcmp(&desc, &descTarget, sizeof(effect_descriptor_t))) {
+            return false;
+        }
+    }
+
+    sleep(1);
+
+    // Check that mediaserver did not crash
+    if (dr->afIsDead()) {
+        return false;
+    }
+
+    return true;
+}
+
 static JNINativeMethod gMethods[] = {
     {  "native_test_setMasterMute", "()Z",
             (void *) android_security_cts_AudioFlinger_test_setMasterMute },
     {  "native_test_setMasterVolume", "()Z",
             (void *) android_security_cts_AudioFlinger_test_setMasterVolume },
+    {  "native_test_createEffect", "()Z",
+            (void *) android_security_cts_AudioFlinger_test_createEffect },
 };
 
 int register_android_security_cts_AudioFlingerBinderTest(JNIEnv* env)
