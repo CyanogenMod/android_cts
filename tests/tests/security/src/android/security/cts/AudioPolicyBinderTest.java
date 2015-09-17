@@ -65,9 +65,18 @@ public class AudioPolicyBinderTest extends TestCase {
         assertTrue(String.format("Leaked volume 0x%08X", volume), volume == 0);
     }
 
+    /**
+     * Checks that IAudioPolicyService::startAudioSource() cannot leak information from
+     * server side.
+     */
+    public void test_startAudioSource() throws Exception {
+        assertTrue(native_test_startAudioSource());
+    }
+
     private static native boolean native_test_startOutput();
     private static native boolean native_test_stopOutput();
     private static native boolean native_test_isStreamActive();
     private static native boolean native_test_isStreamActiveRemotely();
     private static native int native_test_getStreamVolumeLeak();
+    private static native boolean native_test_startAudioSource();
 }
