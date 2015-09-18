@@ -1461,18 +1461,87 @@
 
         <activity android:name=".managedprovisioning.CrossProfileTestActivity">
             <intent-filter>
-                <!-- We need to have at least one activity listening to this intent in the parent
-                     to test if it is forwarded from the managed profile to the parent -->
-                <action android:name="android.provider.MediaStore.RECORD_SOUND" />
                 <action android:name="com.android.cts.verifier.managedprovisioning.CROSS_PROFILE_TO_PERSONAL" />
                 <action android:name="com.android.cts.verifier.managedprovisioning.CROSS_PROFILE_TO_WORK" />
-                <category android:name="android.intent.category.DEFAULT"></category>
+                <!-- We need to have at least one activity listening to these intents on the device
+                     to test if these are forwarded from the managed profile to the parent or
+                     the other way around. -->
+                <action android:name="android.provider.MediaStore.RECORD_SOUND" />
+                <action android:name="android.speech.action.RECOGNIZE_SPEECH" />
+                <action android:name="android.app.action.SET_NEW_PASSWORD" />
+                <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
+                <action android:name="android.intent.action.WEB_SEARCH" />
+                <action android:name="android.intent.action.VIEW_DOWNLOADS" />
+                <action android:name="android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL" />
+                <action android:name="android.settings.SHOW_INPUT_METHOD_PICKER" />
+                <action android:name="android.intent.action.MANAGE_NETWORK_USAGE" />
+                <action android:name="com.android.settings.TTS_SETTINGS" />
+                <action android:name="android.settings.ZEN_MODE_SETTINGS" />
+                <action android:name="android.settings.BATTERY_SAVER_SETTINGS" />
+                <action android:name="android.settings.INPUT_METHOD_SETTINGS" />
+                <action android:name="android.settings.INPUT_METHOD_SUBTYPE_SETTINGS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <data android:mimeType="*/*" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.GET_CONTENT" />
+                <action android:name="android.intent.action.OPEN_DOCUMENT" />
+                <data android:mimeType="*/*" />
+                <category android:name="android.intent.category.OPENABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.SENDTO" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+                <data android:scheme="mailto" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.CALL" />
+                <action android:name="android.intent.action.DIAL" />
+                <action android:name="android.intent.action.CALL_PRIVILEGED" />
+                <action android:name="android.intent.action.CALL_EMERGENCY" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="tel" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.INSERT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="content" />
+                <data android:mimeType="*/*" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT"></category>
+                <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="http" android:host="com.android.cts.verifier" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="http" />
+                <data android:mimeType="video/mp4" />
+                <data android:mimeType="audio/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="http" />
+                <data android:scheme="geo" />
+                <data android:scheme="market" />
             </intent-filter>
         </activity>
 
