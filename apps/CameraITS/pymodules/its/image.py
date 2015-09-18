@@ -623,6 +623,21 @@ def compute_image_variances(img):
         variances.append(numpy.var(img[:,:,i], dtype=numpy.float64))
     return variances
 
+def compute_image_snrs(img):
+    """Calculate the SNR (db) of each color channel in the image.
+
+    Args:
+        img: Numpy float image array, with pixel values in [0,1].
+
+    Returns:
+        A list of SNR value, one per color channel in the image.
+    """
+    means = compute_image_means(img)
+    variances = compute_image_variances(img)
+    std_devs = [math.sqrt(v) for v in variances]
+    snr = [20 * math.log10(m/s) for m,s in zip(means, std_devs)]
+    return snr
+
 def write_image(img, fname, apply_gamma=False):
     """Save a float-3 numpy array image to a file.
 
