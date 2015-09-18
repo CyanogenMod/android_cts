@@ -24,6 +24,7 @@ import static android.provider.Settings.EXTRA_AIRPLANE_MODE_ENABLED;
 import static android.provider.Settings.ACTION_VOICE_CONTROL_BATTERY_SAVER_MODE;
 import static android.provider.Settings.EXTRA_BATTERY_SAVER_MODE_ENABLED;
 
+import android.app.VoiceInteractor;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -138,9 +139,10 @@ public class MainInteractionSession extends VoiceInteractionSession {
 
     @Override
     public void onRequestCompleteVoice(CompleteVoiceRequest request) {
-        CharSequence prompt = request.getVoicePrompt().getVoicePromptAt(0);
+        VoiceInteractor.Prompt prompt = request.getVoicePrompt();
+        CharSequence message = (prompt != null ? prompt.getVoicePromptAt(0) : "(none)");
         Log.i(TAG, "in Session testcasetype = " + mTestType +
-                ", onRequestCompleteVoice recvd. message = " + prompt);
+                ", onRequestCompleteVoice recvd. message = " + message);
         AsyncTaskArg asyncTaskArg = new AsyncTaskArg().setRequest(request).setCompleteReq(true);
         newTask().execute(asyncTaskArg);
     }
