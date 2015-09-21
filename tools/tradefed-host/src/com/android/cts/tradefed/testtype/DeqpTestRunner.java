@@ -63,7 +63,7 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
     private static final BatchRunConfiguration DEFAULT_CONFIG =
         new BatchRunConfiguration("rgba8888d24s8", "unspecified", "window");
 
-    private static final int UNRESPOSIVE_CMD_TIMEOUT_MS = 60000; // one minute
+    private static final int UNRESPOSIVE_CMD_TIMEOUT_MS = 10*60*1000; // ten minutes
 
     private final String mPackageName;
     private final String mName;
@@ -427,6 +427,7 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
                 if (!mGotTestResult) {
                     result.allInstancesPassed = false;
                     result.errorMessages.put(mRunConfig, INCOMPLETE_LOG_MESSAGE);
+                    CLog.i("Test %s failed as it ended before receiving result.", mCurrentTestId);
                 }
 
                 if (mLogData && mCurrentTestLog != null && mCurrentTestLog.length() > 0) {
@@ -477,6 +478,7 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
                 mPendingResults.get(mCurrentTestId)
                         .errorMessages.put(mRunConfig, codeError + ": " + details);
                 mGotTestResult = true;
+                CLog.e("Got invalid result code '%s' for test %s", code, mCurrentTestId);
             }
         }
 
@@ -950,6 +952,7 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
         private void killDeqpProcess() throws DeviceNotAvailableException,
                 ProcessKillFailureException {
             for (Integer processId : getDeqpProcessPids()) {
+                CLog.i("Killing deqp device process with ID %d", processId);
                 mDevice.executeShellCommand(String.format("kill -9 %d", processId));
             }
 
@@ -958,6 +961,7 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
             // check that processes actually died
             if (getDeqpProcessPids().iterator().hasNext()) {
                 // a process is still alive, killing failed
+                CLog.w("Failed to kill all deqp processes on device");
                 throw new ProcessKillFailureException();
             }
         }
@@ -1336,15 +1340,19 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
                     UNRESPOSIVE_CMD_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         } catch (TimeoutException ex) {
             // Opening connection timed out
+            CLog.e("Opening connection timed out for command: '%s'", command);
             throw new AdbComLinkOpenError("opening connection timed out", ex);
         } catch (AdbCommandRejectedException ex) {
             // Command rejected
+            CLog.e("Device rejected command: '%s'", command);
             throw new AdbComLinkOpenError("command rejected", ex);
         } catch (IOException ex) {
             // shell command channel killed
+            CLog.e("Channel died for command: '%s'", command);
             throw new AdbComLinkKilledError("command link killed", ex);
         } catch (ShellCommandUnresponsiveException ex) {
             // shell command halted
+            CLog.e("No output from command in %d ms: '%s'", UNRESPOSIVE_CMD_TIMEOUT_MS, command);
             throw new AdbComLinkKilledError("command link hung", ex);
         }
     }
@@ -1460,11 +1468,14 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
         // interrupted, try to recover
         if (interruptingError != null) {
             if (interruptingError instanceof AdbComLinkOpenError) {
+                CLog.i("Recovering from comm link error");
                 mDeviceRecovery.recoverConnectionRefused();
             } else if (interruptingError instanceof AdbComLinkKilledError) {
+                CLog.i("Recovering from comm link killed");
                 mDeviceRecovery.recoverComLinkKilled();
             } else if (interruptingError instanceof RunInterruptedException) {
                 // external run interruption request. Terminate immediately.
+                CLog.i("Run termination requested. Throwing forward.");
                 throw (RunInterruptedException)interruptingError;
             } else {
                 CLog.e(interruptingError);
@@ -1473,6 +1484,7 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
 
             // recoverXXX did not throw => recovery succeeded
         } else if (!parser.wasSuccessful()) {
+            CLog.i("Parse not successful. Will attempt comm link recovery.");
             mDeviceRecovery.recoverComLinkKilled();
             // recoverXXX did not throw => recovery succeeded
         }
@@ -1495,8 +1507,10 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
                 // This is required so that a consistently crashing or non-existent tests will
                 // not cause futile (non-terminating) re-execution attempts.
                 if (mInstanceListerner.getCurrentTestId() != null) {
+                    CLog.w("Test '%s' started, but not completed", onlyTest);
                     mInstanceListerner.abortTest(onlyTest, INCOMPLETE_LOG_MESSAGE);
                 } else {
+                    CLog.w("Test '%s' could not start", onlyTest);
                     mInstanceListerner.abortTest(onlyTest, NOT_EXECUTABLE_LOG_MESSAGE);
                 }
             } else if (wasTestExecuted) {
@@ -1827,6 +1841,7 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
                 uninstallTestApk();
             } else {
                 // Pass all tests if OpenGL ES version is not supported
+                CLog.i("Package %s not supported by the device. Tests trivially pass.", mPackageName);
                 fakePassTests(listener);
             }
         } catch (CapabilityQueryFailureException ex) {
