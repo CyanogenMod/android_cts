@@ -33,6 +33,7 @@ public class BatterySaverModeTest extends VoiceSettingsTestBase {
 
     public void testAll() throws Exception {
         if (!isIntentSupported(ACTION_VOICE_CONTROL_BATTERY_SAVER_MODE)) {
+            Log.e(TAG, "Voice intent for Battery Saver Mode NOT supported. existing the test");
             return;
         }
         startTestActivity("BATTERYSAVER_MODE");

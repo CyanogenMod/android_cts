@@ -36,6 +36,7 @@ public class AirplaneModeTest extends VoiceSettingsTestBase {
 
     public void testAll() throws Exception {
         if (!isIntentSupported(ACTION_VOICE_CONTROL_AIRPLANE_MODE)) {
+            Log.e(TAG, "Voice intent for Airplane Mode NOT supported. existing the test");
             return;
         }
         int mode;
