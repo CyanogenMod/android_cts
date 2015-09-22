@@ -64,7 +64,7 @@ static bool isIEffectCommandSecure(IEffect *effect)
         data.writeInt32(sizeof(replyData));
 
         Parcel reply;
-        status_t status = effect->asBinder()->transact(3, data, &reply);  // 3 is COMMAND
+        status_t status = effect->asBinder(effect)->transact(3, data, &reply);  // 3 is COMMAND
         ALOGV("transact status: %d", status);
         if (status != NO_ERROR) {
             ALOGW("invalid transaction status %d", status);
@@ -132,7 +132,7 @@ static jboolean android_security_cts_AudioEffect_test_isCommandSecure()
     }
 
     sp<DeathRecipient> deathRecipient(new DeathRecipient());
-    effect->asBinder()->linkToDeath(deathRecipient);
+    effect->asBinder(effect)->linkToDeath(deathRecipient);
 
     // check exploit
     if (!isIEffectCommandSecure(effect.get())) {
