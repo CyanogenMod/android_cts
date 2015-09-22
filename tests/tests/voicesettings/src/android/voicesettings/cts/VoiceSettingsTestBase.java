@@ -54,7 +54,9 @@ public class VoiceSettingsTestBase extends ActivityInstrumentationTestCase2<Test
 
     @Override
     protected void tearDown() throws Exception {
-        mContext.unregisterReceiver(mActivityDoneReceiver);
+        if (mActivityDoneReceiver != null) {
+            mContext.unregisterReceiver(mActivityDoneReceiver);
+        }
         super.tearDown();
     }
 
