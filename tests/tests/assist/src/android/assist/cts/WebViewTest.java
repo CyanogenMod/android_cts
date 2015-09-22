@@ -28,20 +28,20 @@ import android.util.Log;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-
 /**
  *  Test that the AssistStructure returned is properly formatted.
  */
 
-public class AssistStructureTest extends AssistTestBase {
-    private static final String TAG = "AssistStructureTest";
-    private static final String TEST_CASE_TYPE = Utils.ASSIST_STRUCTURE;
+public class WebViewTest extends AssistTestBase {
+    private static final String TAG = "WebViewTest";
+    private static final String TEST_CASE_TYPE = Utils.WEBVIEW;
 
     private BroadcastReceiver mReceiver;
     private CountDownLatch mHasResumedLatch = new CountDownLatch(1);
+    private CountDownLatch mTestWebViewLatch = new CountDownLatch(1);
     private CountDownLatch mReadyLatch = new CountDownLatch(1);
 
-    public AssistStructureTest() {
+    public WebViewTest() {
         super();
     }
 
@@ -65,10 +65,11 @@ public class AssistStructureTest extends AssistTestBase {
         if (mReceiver != null) {
             mContext.unregisterReceiver(mReceiver);
         }
-        mReceiver = new AssistStructureTestBroadcastReceiver();
+        mReceiver = new WebViewTestBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(Utils.APP_3P_HASRESUMED);
         filter.addAction(Utils.ASSIST_RECEIVER_REGISTERED);
+        filter.addAction(Utils.TEST_ACTIVITY_LOADED);
         mContext.registerReceiver(mReceiver, filter);
     }
 
@@ -79,31 +80,36 @@ public class AssistStructureTest extends AssistTestBase {
         }
     }
 
-    public void testAssistStructure() throws Exception {
+    private void waitForTestActivity() throws Exception {
+        Log.i(TAG, "waiting for webview in test activity to load");
+        if (!mTestWebViewLatch.await(Utils.ACTIVITY_ONRESUME_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
+            // wait for webView to load completely.
+        }
+    }
+
+    public void testWebView() throws Exception {
         mTestActivity.start3pApp(TEST_CASE_TYPE);
         mTestActivity.startTest(TEST_CASE_TYPE);
         waitForAssistantToBeReady(mReadyLatch);
         waitForOnResume();
+        waitForTestActivity();
         startSession();
         waitForContext();
         verifyAssistDataNullness(false, false, false, false);
-
         verifyAssistStructure(Utils.getTestAppComponent(TEST_CASE_TYPE),
                 false /*FLAG_SECURE set*/);
     }
 
-    private class AssistStructureTestBroadcastReceiver extends BroadcastReceiver {
+    private class WebViewTestBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(Utils.APP_3P_HASRESUMED)) {
-                if (mHasResumedLatch != null) {
-                    mHasResumedLatch.countDown();
-                }
-            } else if (action.equals(Utils.ASSIST_RECEIVER_REGISTERED)) {
-                if (mReadyLatch != null) {
-                    mReadyLatch.countDown();
-                }
+            if (action.equals(Utils.APP_3P_HASRESUMED) && mHasResumedLatch != null) {
+                mHasResumedLatch.countDown();
+            } else if (action.equals(Utils.ASSIST_RECEIVER_REGISTERED) && mReadyLatch != null) {
+                mReadyLatch.countDown();
+            } else if (action.equals(Utils.TEST_ACTIVITY_LOADED) && mTestWebViewLatch != null) {
+                mTestWebViewLatch.countDown();
             }
         }
     }

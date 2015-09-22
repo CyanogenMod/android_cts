@@ -299,7 +299,10 @@
     "android.assist.cts.AssistantContentViewTest",
     "android.assist.cts.ExtraAssistDataTest",
     "android.assist.cts.FocusChangeTest",
-    "android.assist.cts.ScreenshotTest"
+    "android.assist.cts.LargeViewHierarchyTest",
+    "android.assist.cts.ScreenshotTest",
+    "android.assist.cts.TextViewTest",
+    "android.assist.cts.WebViewTest"
   ],
   bug: 21668302
 }
