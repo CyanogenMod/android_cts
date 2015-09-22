@@ -20,26 +20,16 @@ import android.assist.common.Utils;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.View.MeasureSpec;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-
-import java.io.ByteArrayOutputStream;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import java.lang.Override;
 
-public class TestApp extends Activity {
-    static final String TAG = "TestApp";
+public class WebViewActivity extends Activity {
+    static final String TAG = "WebViewActivity";
 
     private String mTestCaseName;
 
@@ -48,27 +38,16 @@ public class TestApp extends Activity {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "TestApp created");
         mTestCaseName = getIntent().getStringExtra(Utils.TESTCASE_TYPE);
-        switch (mTestCaseName) {
-            case Utils.LARGE_VIEW_HIERARCHY:
-                setContentView(R.layout.multiple_text_views);
-                return;
-            default:
-                setContentView(R.layout.test_app);
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.i(TAG, "TestApp has resumed");
-        final View layout = findViewById(android.R.id.content);
-        ViewTreeObserver vto = layout.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+        setContentView(R.layout.webview);
+        WebView webview = (WebView) findViewById(R.id.webview);
+        webview.setWebViewClient(new WebViewClient() {
             @Override
-            public void onGlobalLayout() {
-                layout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            public void onPageFinished(WebView view, String url){
                 sendBroadcast(new Intent(Utils.APP_3P_HASRESUMED));
             }
         });
+        webview.loadData(Utils.WEBVIEW_HTML, "text/html", "UTF-8");
+        //webview.loadUrl(
+        //        "https://android-developers.blogspot.com/2015/08/m-developer-preview-3-final-sdk.html");
     }
 }
