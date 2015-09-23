@@ -61,6 +61,7 @@ public class VideoDecoderPerfTest extends MediaPlayerTestBase {
     private MediaFormat mDecOutputFormat;
     private double[] mMeasuredFps;
     private String[] mResultRawData;
+    private boolean mVerifyResults;
 
     private Resources mResources;
     private DeviceReportLog mReportLog;
@@ -68,6 +69,7 @@ public class VideoDecoderPerfTest extends MediaPlayerTestBase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        mVerifyResults = true;
         mResources = mContext.getResources();
         mReportLog = new DeviceReportLog();
     }
@@ -296,6 +298,10 @@ public class VideoDecoderPerfTest extends MediaPlayerTestBase {
         if (surface != null) {
             mMeasuredFps[round] = fps;
             mResultRawData[round] = result;
+        }
+
+        if (!mVerifyResults) {
+            return true;
         }
 
         return MediaUtils.verifyResults(name, mime, w, h, fps);
@@ -539,6 +545,20 @@ public class VideoDecoderPerfTest extends MediaPlayerTestBase {
         decode(VIDEO_H263,
                R.raw.video_352x288_3gp_h263_300kbps_12fps_aac_stereo_128kbps_22050hz,
                352, 288, true /* isGoog */);
+    }
+
+    public void testMPEG40176x0144Other() throws Exception {
+        mVerifyResults = false;
+        decode(VIDEO_MPEG4,
+               R.raw.video_176x144_mp4_mpeg4_300kbps_25fps_aac_stereo_128kbps_44100hz,
+               176, 144, false /* isGoog */);
+    }
+
+    public void testMPEG40176x0144Goog() throws Exception {
+        mVerifyResults = false;
+        decode(VIDEO_MPEG4,
+               R.raw.video_176x144_mp4_mpeg4_300kbps_25fps_aac_stereo_128kbps_44100hz,
+               176, 144, true /* isGoog */);
     }
 
     public void testMPEG40480x0360Other() throws Exception {
