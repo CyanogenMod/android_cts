@@ -82,7 +82,7 @@ include $(BUILD_STATIC_JAVA_LIBRARY)
 include $(CLEAR_VARS)
 
 LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := \
-        ctsverifier-opencv:libs/opencv-android.jar
+        ctsverifier-opencv:libs/opencv3-android.jar
 
 include $(BUILD_MULTI_PREBUILT)
 

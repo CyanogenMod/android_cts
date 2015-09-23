@@ -766,7 +766,7 @@
             android:screenOrientation="locked" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.cts.intent.category.MANUAL_TEST_disabled"/>
+                <category android:name="android.cts.intent.category.MANUAL_TEST"/>
             </intent-filter>
 
             <meta-data
