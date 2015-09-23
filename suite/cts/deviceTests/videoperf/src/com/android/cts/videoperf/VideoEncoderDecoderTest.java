@@ -427,7 +427,6 @@ public class VideoEncoderDecoderTest extends CtsAndroidTestCase {
             return;
         }
 
-<<<<<<< HEAD
         for (String encoderName: encoderNames) {
             for (String decoderName: decoderNames) {
                 doTestByName(encoderName, decoderName, mimeType, w, h);
