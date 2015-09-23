@@ -22,6 +22,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -36,6 +37,7 @@ public class WebViewTest extends AssistTestBase {
     private static final String TAG = "WebViewTest";
     private static final String TEST_CASE_TYPE = Utils.WEBVIEW;
 
+    private boolean mWebViewSupported;
     private BroadcastReceiver mReceiver;
     private CountDownLatch mHasResumedLatch = new CountDownLatch(1);
     private CountDownLatch mTestWebViewLatch = new CountDownLatch(1);
@@ -88,6 +90,9 @@ public class WebViewTest extends AssistTestBase {
     }
 
     public void testWebView() throws Exception {
+        if (!mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WEBVIEW)) {
+            return;
+        }
         mTestActivity.start3pApp(TEST_CASE_TYPE);
         mTestActivity.startTest(TEST_CASE_TYPE);
         waitForAssistantToBeReady(mReadyLatch);

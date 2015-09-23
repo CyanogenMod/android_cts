@@ -23,6 +23,7 @@ import android.app.assist.AssistStructure;
 import android.app.assist.AssistStructure.ViewNode;
 import android.content.Intent;
 import android.content.ComponentName;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -63,17 +64,19 @@ public class TestStartActivity extends Activity {
                 setTitle(R.string.testAppTitle);
                 return;
             case Utils.WEBVIEW:
-                setContentView(R.layout.webview);
-                setTitle(R.string.webViewActivityTitle);
-                WebView webview = (WebView) findViewById(R.id.webview);
-                webview.setWebViewClient(new WebViewClient() {
-                    @Override
-                    public void onPageFinished(WebView view, String url) {
-                        sendBroadcast(new Intent(Utils.TEST_ACTIVITY_LOADED));
-                    }
-                });
-                webview.loadData(Utils.WEBVIEW_HTML, "text/html", "UTF-8");
-                //webview.loadUrl("https://android-developers.blogspot.com/2015/08/m-developer-preview-3-final-sdk.html");
+                if (getPackageManager().hasSystemFeature(
+                        PackageManager.FEATURE_WEBVIEW)) {
+                    setContentView(R.layout.webview);
+                    setTitle(R.string.webViewActivityTitle);
+                    WebView webview = (WebView) findViewById(R.id.webview);
+                    webview.setWebViewClient(new WebViewClient() {
+                        @Override
+                        public void onPageFinished(WebView view, String url) {
+                            sendBroadcast(new Intent(Utils.TEST_ACTIVITY_LOADED));
+                        }
+                    });
+                    webview.loadData(Utils.WEBVIEW_HTML, "text/html", "UTF-8");
+                }
                 return;
         }
     }
