@@ -180,6 +180,38 @@ jint android_security_cts_AudioPolicy_test_getStreamVolumeLeak(JNIEnv* env __unu
     return index;
 }
 
+jboolean android_security_cts_AudioPolicy_test_startAudioSource(JNIEnv* env __unused,
+                                                                jobject thiz __unused)
+{
+    sp<IAudioPolicyService> aps;
+
+    if (!init(aps, NULL, NULL)) {
+        return false;
+    }
+
+    // Keep synchronized with IAudioPolicyService.cpp!
+    enum {
+        START_AUDIO_SOURCE = 41,
+    };
+
+    for (int i = 0; i < 10; ++i) {
+        Parcel data, reply;
+        data.writeInterfaceToken(aps->getInterfaceDescriptor());
+        data.writeInt32(-i);
+        aps->asBinder()->transact(START_AUDIO_SOURCE, data, &reply);
+        status_t err = (status_t)reply.readInt32();
+        if (err == NO_ERROR) {
+            continue;
+        }
+        audio_io_handle_t handle = (audio_io_handle_t)reply.readInt32();
+        if (handle != 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 static JNINativeMethod gMethods[] = {
     {  "native_test_startOutput", "()Z",
             (void *) android_security_cts_AudioPolicy_test_startOutput },
@@ -189,6 +221,8 @@ static JNINativeMethod gMethods[] = {
                 (void *) android_security_cts_AudioPolicy_test_isStreamActive },
     {  "native_test_getStreamVolumeLeak", "()I",
                 (void *) android_security_cts_AudioPolicy_test_getStreamVolumeLeak },
+    {  "native_test_startAudioSource", "()Z",
+                (void *) android_security_cts_AudioPolicy_test_startAudioSource },
 };
 
 int register_android_security_cts_AudioPolicyBinderTest(JNIEnv* env)
