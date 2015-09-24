@@ -18,6 +18,7 @@
 
 #include <jni.h>
 #include <binder/IServiceManager.h>
+#include <binder/Parcel.h>
 #include <media/IAudioPolicyService.h>
 #include <media/AudioSystem.h>
 #include <system/audio.h>
