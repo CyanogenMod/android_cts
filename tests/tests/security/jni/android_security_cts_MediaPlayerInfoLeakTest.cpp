@@ -39,14 +39,14 @@ static status_t connectMediaPlayer(sp<IMediaPlayer>& iMP)
    Parcel data, reply;
    int dummyAudioSessionId = 1;
    data.writeInterfaceToken(iMPService->getInterfaceDescriptor());
-   data.writeStrongBinder(client->asBinder());
+   data.writeStrongBinder(client->asBinder(client));
    data.writeInt32(dummyAudioSessionId);
 
    // Keep synchronized with IMediaPlayerService.cpp!
     enum {
         CREATE = IBinder::FIRST_CALL_TRANSACTION,
     };
-   status_t err = iMPService->asBinder()->transact(CREATE, data, &reply);
+   status_t err = iMPService->asBinder(iMPService)->transact(CREATE, data, &reply);
 
    if (err == NO_ERROR) {
        iMP = interface_cast<IMediaPlayer>(reply.readStrongBinder());
@@ -64,7 +64,7 @@ int testMediaPlayerInfoLeak(int command)
 
     Parcel data, reply;
     data.writeInterfaceToken(iMP->getInterfaceDescriptor());
-    iMP->asBinder()->transact(command, data, &reply);
+    iMP->asBinder(iMP)->transact(command, data, &reply);
 
     int leak = reply.readInt32();
     status_t err = reply.readInt32();

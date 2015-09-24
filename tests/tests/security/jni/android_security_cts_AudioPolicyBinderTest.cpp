@@ -205,7 +205,7 @@ jboolean android_security_cts_AudioPolicy_test_startAudioSource(JNIEnv* env __un
         Parcel data, reply;
         data.writeInterfaceToken(aps->getInterfaceDescriptor());
         data.writeInt32(-i);
-        aps->asBinder()->transact(START_AUDIO_SOURCE, data, &reply);
+        aps->asBinder(aps)->transact(START_AUDIO_SOURCE, data, &reply);
         status_t err = (status_t)reply.readInt32();
         if (err == NO_ERROR) {
             continue;
@@ -238,7 +238,7 @@ jint android_security_cts_AudioPolicy_test_getStreamVolumeLeak(JNIEnv* env __unu
     data.writeInterfaceToken(aps->getInterfaceDescriptor());
     data.writeInt32(-1); // stream type
     data.writeInt32(-1); // device
-    aps->asBinder()->transact(GET_STREAM_VOLUME, data, &reply);
+    aps->asBinder(aps)->transact(GET_STREAM_VOLUME, data, &reply);
     int index = reply.readInt32();
     err = reply.readInt32();
 
