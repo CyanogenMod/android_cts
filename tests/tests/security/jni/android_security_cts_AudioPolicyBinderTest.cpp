@@ -18,6 +18,7 @@
 
 #include <jni.h>
 #include <binder/IServiceManager.h>
+#include <binder/Parcel.h>
 #include <media/IAudioPolicyService.h>
 #include <media/AudioSystem.h>
 #include <system/audio.h>
@@ -186,6 +187,38 @@ jboolean android_security_cts_AudioPolicy_test_isStreamActiveRemotely(JNIEnv* en
     return true;
 }
 
+jboolean android_security_cts_AudioPolicy_test_startAudioSource(JNIEnv* env __unused,
+                                                                jobject thiz __unused)
+{
+    sp<IAudioPolicyService> aps;
+
+    if (!init(aps, NULL, NULL)) {
+        return false;
+    }
+
+    // Keep synchronized with IAudioPolicyService.cpp!
+    enum {
+        START_AUDIO_SOURCE = 41,
+    };
+
+    for (int i = 0; i < 10; ++i) {
+        Parcel data, reply;
+        data.writeInterfaceToken(aps->getInterfaceDescriptor());
+        data.writeInt32(-i);
+        aps->asBinder()->transact(START_AUDIO_SOURCE, data, &reply);
+        status_t err = (status_t)reply.readInt32();
+        if (err == NO_ERROR) {
+            continue;
+        }
+        audio_io_handle_t handle = (audio_io_handle_t)reply.readInt32();
+        if (handle != 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 static JNINativeMethod gMethods[] = {
     {  "native_test_startOutput", "()Z",
             (void *) android_security_cts_AudioPolicy_test_startOutput },
@@ -195,6 +228,8 @@ static JNINativeMethod gMethods[] = {
                 (void *) android_security_cts_AudioPolicy_test_isStreamActive },
     {  "native_test_isStreamActiveRemotely", "()Z",
                 (void *) android_security_cts_AudioPolicy_test_isStreamActiveRemotely },
+    {  "native_test_startAudioSource", "()Z",
+                (void *) android_security_cts_AudioPolicy_test_startAudioSource },
 };
 
 int register_android_security_cts_AudioPolicyBinderTest(JNIEnv* env)
