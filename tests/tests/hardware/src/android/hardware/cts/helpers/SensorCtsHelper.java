@@ -40,6 +40,9 @@ public class SensorCtsHelper {
     /**
      * Get percentiles using nearest rank algorithm.
      *
+     * @param percentiles List of percentiles interested. Its range is 0 to 1, instead of in %.
+     *        The value will be internally bounded.
+     *
      * @throws IllegalArgumentException if the collection or percentiles is null or empty
      */
     public static <TValue extends Comparable<? super TValue>> List<TValue> getPercentileValue(
@@ -55,7 +58,9 @@ public class SensorCtsHelper {
         List<TValue> percentileValues = new ArrayList<TValue>();
         for (float p : percentiles) {
             // zero-based array index
-            int arrayIndex = (int) Math.round(arrayCopy.size() * p + .5) - 1;
+            int arrayIndex = (int) Math.round(arrayCopy.size() * p - .5f);
+            // bound the index to avoid out of range error
+            arrayIndex = Math.min(Math.max(arrayIndex, 0), arrayCopy.size() - 1);
             percentileValues.add(arrayCopy.get(arrayIndex));
         }
         return percentileValues;
