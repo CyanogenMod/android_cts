@@ -215,8 +215,8 @@ public class MediaRecorderTest extends ActivityInstrumentationTestCase2<MediaStu
 
     private void setSupportedResolution(Camera camera) {
         Camera.Parameters parameters = camera.getParameters();
-        List<Camera.Size> previewSizes = parameters.getSupportedPreviewSizes();
-        for (Camera.Size size : previewSizes)
+        List<Camera.Size> videoSizes = parameters.getSupportedVideoSizes();
+        for (Camera.Size size : videoSizes)
         {
             if (size.width == VIDEO_WIDTH && size.height == VIDEO_HEIGHT) {
                 mVideoWidth = VIDEO_WIDTH;
@@ -224,8 +224,8 @@ public class MediaRecorderTest extends ActivityInstrumentationTestCase2<MediaStu
                 return;
             }
         }
-        mVideoWidth = previewSizes.get(0).width;
-        mVideoHeight = previewSizes.get(0).height;
+        mVideoWidth = videoSizes.get(0).width;
+        mVideoHeight = videoSizes.get(0).height;
     }
 
     private void recordVideoUsingCamera(
