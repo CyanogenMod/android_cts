@@ -256,7 +256,7 @@ jboolean android_security_cts_AudioFlinger_test_createEffect(JNIEnv* env __unuse
         Parcel data, reply;
         data.writeInterfaceToken(af->getInterfaceDescriptor());
         data.writeInt32((int32_t)j);
-        status_t status = af->asBinder()->transact(40, data, &reply); // 40 is CREATE_EFFECT
+        status_t status = af->asBinder(af)->transact(40, data, &reply); // 40 is CREATE_EFFECT
         if (status != NO_ERROR) {
             return false;
         }
