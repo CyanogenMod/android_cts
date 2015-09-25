@@ -837,8 +837,8 @@ public class MediaPlayerTest extends MediaPlayerTestBase {
         boolean isSupported = false;
         mCamera = Camera.open(0);
         Camera.Parameters parameters = mCamera.getParameters();
-        List<Camera.Size> previewSizes = parameters.getSupportedPreviewSizes();
-        for (Camera.Size size : previewSizes)
+        List<Camera.Size> videoSizes = parameters.getSupportedVideoSizes();
+        for (Camera.Size size : videoSizes)
         {
             if (size.width == width && size.height == height) {
                 isSupported = true;
@@ -848,8 +848,8 @@ public class MediaPlayerTest extends MediaPlayerTestBase {
         mCamera.release();
         mCamera = null;
         if (!isSupported) {
-            width = previewSizes.get(0).width;
-            height = previewSizes.get(0).height;
+            width = videoSizes.get(0).width;
+            height = videoSizes.get(0).height;
         }
         checkOrientation(angle);
         recordVideo(width, height, angle, file, durationMs);
