@@ -24,22 +24,36 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="10dip" >
+        android:padding="10dip">
 
-        <TextView
-            android:id="@+id/test_instruction"
-            style="@style/InstructionsFont"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0" />
-
-        <TextView
-            android:id="@+id/test_log"
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_gravity="bottom"
-            android:orientation="vertical" />
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:id="@+id/test_messages"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/test_instruction"
+                    style="@style/InstructionsFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0" />
+
+                <TextView
+                    android:id="@+id/test_log"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical" />
+
+            </LinearLayout>
+        </ScrollView>
 
         <LinearLayout
             android:id="@+id/action_buttons"
