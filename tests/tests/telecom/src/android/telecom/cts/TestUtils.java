@@ -33,6 +33,7 @@ public class TestUtils {
     static final String TAG = "TelecomCTSTests";
     static final boolean HAS_TELECOM = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     static final long WAIT_FOR_STATE_CHANGE_TIMEOUT_MS = 10000;
+    static final long WAIT_FOR_CALL_ADDED_TIMEOUT_S = 15;
 
     // Non-final to allow modification by tests not in this package (e.g. permission-related
     // tests in the Telecom2 test package.

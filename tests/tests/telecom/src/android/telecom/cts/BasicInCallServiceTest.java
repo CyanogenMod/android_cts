@@ -77,7 +77,8 @@ public class BasicInCallServiceTest extends InstrumentationTestCase {
         mContext.startActivity(intent);
 
         try {
-            if (callbacks.lock.tryAcquire(3, TimeUnit.SECONDS)) {
+            if (callbacks.lock.tryAcquire(TestUtils.WAIT_FOR_CALL_ADDED_TIMEOUT_S,
+                        TimeUnit.SECONDS)) {
                 return;
             }
         } catch (InterruptedException e) {
