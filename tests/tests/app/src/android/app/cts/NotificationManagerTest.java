@@ -74,9 +74,8 @@ public class NotificationManagerTest extends AndroidTestCase {
         sendNotification(id, R.drawable.black);
         mNotificationManager.cancel(id);
 
-        StatusBarNotification[] sbns = mNotificationManager.getActiveNotifications();
-        for (StatusBarNotification sbn : sbns) {
-            assertFalse("canceled notification was still alive, id=" + id, sbn.getId() == id);
+        if (!checkNotificationExistence(id, /*shouldExist=*/ false)) {
+            fail("canceled notification was still alive, id=" + id);
         }
     }
 
@@ -116,10 +115,31 @@ public class NotificationManagerTest extends AndroidTestCase {
                 .build();
         mNotificationManager.notify(id, notification);
 
-        StatusBarNotification[] sbns = mNotificationManager.getActiveNotifications();
-        for (StatusBarNotification sbn : sbns) {
-            if (sbn.getId() == id) return;
+
+        if (!checkNotificationExistence(id, /*shouldExist=*/ true)) {
+            fail("couldn't find posted notification id=" + id);
         }
-        fail("couldn't find posted notification id=" + id);
+    }
+
+    private boolean checkNotificationExistence(int id, boolean shouldExist) {
+        // notification is a bit asynchronous so it may take a few ms to appear in getActiveNotifications()
+        // we will check for it for up to 200ms before giving up
+        boolean found = false;
+        for (int tries=3; tries-->0;) {
+            final StatusBarNotification[] sbns = mNotificationManager.getActiveNotifications();
+            for (StatusBarNotification sbn : sbns) {
+                if (sbn.getId() == id) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found == shouldExist) break;
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+                // pass
+            }
+        }
+        return found == shouldExist;
     }
 }
