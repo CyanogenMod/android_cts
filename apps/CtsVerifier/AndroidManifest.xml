@@ -754,7 +754,7 @@
             android:screenOrientation="locked" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.cts.intent.category.MANUAL_TEST"/>
+                <category android:name="android.cts.intent.category.MANUAL_TEST_disabled"/>
             </intent-filter>
 
             <meta-data
@@ -763,8 +763,6 @@
             <meta-data
                 android:name="test_required_features"
                 android:value="android.hardware.sensor.accelerometer:android.hardware.sensor.gyroscope:android.hardware.sensor.compass:android.hardware.camera.any" />
-            <meta-data android:name="test_excluded_features"
-                    android:value="android.hardware.type.television" />
         </activity>
         <activity
             android:name=".sensors.RVCVRecordActivity"
