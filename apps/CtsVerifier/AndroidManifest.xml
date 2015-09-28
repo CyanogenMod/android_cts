@@ -1419,6 +1419,7 @@
         </activity>
 
         <activity android:name=".managedprovisioning.ByodHelperActivity">
+                android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="com.android.cts.verifier.managedprovisioning.BYOD_QUERY" />
                 <action android:name="com.android.cts.verifier.managedprovisioning.BYOD_REMOVE" />
