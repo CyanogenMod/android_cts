@@ -19,28 +19,35 @@
         android:padding="10dip"
         android:orientation="vertical">
 
-  <TextView
+  <ScrollView
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:scrollbars="vertical"
-      android:gravity="bottom"
-      android:id="@+id/info_text"
-      android:text="@string/audio_loopback_instructions" />
-  <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:orientation="vertical">
+      android:layout_height="match_parent"
+      android:id="@+id/scrollView">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:scrollbars="vertical"
+          android:gravity="bottom"
+          android:id="@+id/info_text"
+          android:text="@string/audio_loopback_instructions" />
+
       <Button
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:id="@+id/audio_loopback_plug_ready_btn"
           android:text="@string/audio_loopback_plug_ready_btn"/>
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/audio_loopback_layout">
+      <LinearLayout
+          android:orientation="vertical"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:id="@+id/audio_loopback_layout">
 
         <TextView
             android:layout_width="wrap_content"
@@ -75,9 +82,9 @@
             android:layout_height="wrap_content"
             android:text="@string/audio_loopback_results_text"
             android:id="@+id/audio_loopback_results_text"/>
+      </LinearLayout>
+      <include layout="@layout/pass_fail_buttons" />
     </LinearLayout>
-    </LinearLayout>
-
-  <include layout="@layout/pass_fail_buttons" />
+  </ScrollView>
 
 </LinearLayout>
