@@ -1277,6 +1277,7 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="provisioning_byod_no_video_capture_resolver">No video capture app present. Skip test.</string>
     <string name="provisioning_byod_no_audio_capture_resolver">No audio capture app present. Skip test.</string>
     <string name="provisioning_byod_capture_media_error">Error while capturing media from managed profile.</string>
+    <string name="provisioning_byod_capture_image_error">Error while capturing image from managed profile.</string>
 
     <string name="provisioning_byod_auth_bound_key">Autentication-boud keys</string>
     <string name="provisioning_byod_auth_bound_key_info">
