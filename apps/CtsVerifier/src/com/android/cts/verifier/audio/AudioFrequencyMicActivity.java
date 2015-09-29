@@ -72,6 +72,9 @@ public class AudioFrequencyMicActivity extends PassFailButtons.Activity implemen
     final OnBtnClickListener mBtnClickListener = new OnBtnClickListener();
     Context mContext;
 
+    Button mHeadsetPortYes;
+    Button mHeadsetPortNo;
+
     Button mSpeakersReady;              //user signal to have connected external speakers
     Button mTest1Button;                //execute test 1
     Button mUsbMicReady;          //user signal to have connected USB Microphone
@@ -137,6 +140,20 @@ public class AudioFrequencyMicActivity extends PassFailButtons.Activity implemen
             case R.id.audio_frequency_mic_test2_btn:
                 startTest2();
                 break;
+            case R.id.audio_general_headset_yes:
+                Log.i(TAG, "User confirms Headset Port existence");
+                mSpeakersReady.setEnabled(true);
+                recordHeasetPortFound(true);
+                mHeadsetPortYes.setEnabled(false);
+                mHeadsetPortNo.setEnabled(false);
+                break;
+            case R.id.audio_general_headset_no:
+                Log.i(TAG, "User denies Headset Port existence");
+                recordHeasetPortFound(false);
+                getPassButton().setEnabled(true);
+                mHeadsetPortYes.setEnabled(false);
+                mHeadsetPortNo.setEnabled(false);
+                break;
             }
         }
     }
@@ -146,10 +163,17 @@ public class AudioFrequencyMicActivity extends PassFailButtons.Activity implemen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.audio_frequency_mic_activity);
         mContext = this;
+
+        mHeadsetPortYes = (Button)findViewById(R.id.audio_general_headset_yes);
+        mHeadsetPortYes.setOnClickListener(mBtnClickListener);
+        mHeadsetPortNo = (Button)findViewById(R.id.audio_general_headset_no);
+        mHeadsetPortNo.setOnClickListener(mBtnClickListener);
+
         mSpeakerReadyText = (TextView) findViewById(R.id.audio_frequency_mic_speakers_ready_status);
 
         mSpeakersReady  = (Button)findViewById(R.id.audio_frequency_mic_speakers_ready_btn);
         mSpeakersReady.setOnClickListener(mBtnClickListener);
+        mSpeakersReady.setEnabled(false);
         mTest1Button = (Button)findViewById(R.id.audio_frequency_mic_test1_btn);
         mTest1Button.setOnClickListener(mBtnClickListener);
         mTest1Result = (TextView)findViewById(R.id.audio_frequency_mic_results1_text);
@@ -642,6 +666,14 @@ public class AudioFrequencyMicActivity extends PassFailButtons.Activity implemen
                 ResultUnit.NONE);
 
         Log.v(TAG, "Results Recorded");
+    }
+
+    private void recordHeasetPortFound(boolean found) {
+        getReportLog().addValue(
+                "User Reported Headset Port",
+                found ? 1.0 : 0,
+                ResultType.NEUTRAL,
+                ResultUnit.NONE);
     }
 
     private void startRecording() {
