@@ -247,12 +247,6 @@ public class ByodHelperActivity extends Activity implements DialogCallback {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig){
-        Log.v(TAG,"onConfigurationChanged");
-        super.onConfigurationChanged(newConfig);
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_INSTALL_PACKAGE: {
