@@ -90,6 +90,21 @@ public class FingerprintBoundKeysTest extends PassFailButtons.Activity {
             mFingerprintManager = (FingerprintManager) getSystemService(Context.FINGERPRINT_SERVICE);
             mKeyguardManager = (KeyguardManager) getSystemService(KeyguardManager.class);
 
+            if (!mKeyguardManager.isKeyguardSecure()) {
+                // Show a message that the user hasn't set up a lock screen.
+                showToast( "Secure lock screen hasn't been set up.\n"
+                                + "Go to 'Settings -> Security -> Screen lock' to set up a lock screen");
+                startTestButton.setEnabled(false);
+                return;
+            } else if (!mFingerprintManager.hasEnrolledFingerprints()) {
+                showToast("No fingerprints enrolled.\n"
+                                + "Go to 'Settings -> Security -> Fingerprint' to set up a fingerprint");
+                startTestButton.setEnabled(false);
+                return;
+            }
+
+            createKey();
+
             try {
                 KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
                 keyStore.load(null);
@@ -117,21 +132,7 @@ public class FingerprintBoundKeysTest extends PassFailButtons.Activity {
                         showAuthenticationScreen();
                     }
                 }
-
             });
-
-            if (!mKeyguardManager.isKeyguardSecure()) {
-                // Show a message that the user hasn't set up a lock screen.
-                showToast( "Secure lock screen hasn't been set up.\n"
-                                + "Go to 'Settings -> Security -> Screen lock' to set up a lock screen");
-                startTestButton.setEnabled(false);
-            } else if (!mFingerprintManager.hasEnrolledFingerprints()) {
-                showToast("No fingerprints enrolled.\n"
-                                + "Go to 'Settings -> Security -> Fingerprint' to set up a fingerprint");
-                startTestButton.setEnabled(false);
-            } else {
-                createKey();
-            }
         }
     }
 
