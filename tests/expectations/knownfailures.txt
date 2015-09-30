@@ -305,5 +305,37 @@
     "android.assist.cts.WebViewTest"
   ],
   bug: 21668302
+},
+{
+  description: "ConnectivityConstraintTest job scheduler not working.",
+  names: [
+     "android.jobscheduler.cts.ConnectivityConstraintTest#testConnectivityConstraintExecutes_withWifi",
+     "android.jobscheduler.cts.ConnectivityConstraintTest#testUnmeteredConstraintExecutes_withWifi"
+  ],
+  bug: 21262226
+},
+{
+   description: "ConnectivityConstraintTest times out.",
+   names: [
+     "android.jobscheduler.cts.TimingConstraintsTest#testJobParameters_unexpiredDeadline"
+   ],
+   bug: 23144425
+},
+{
+   description: "Telephony returning wrong value.",
+   names: [
+     "android.telephony.cts.CellInfoTest#testCellInfo"
+   ],
+   bug: 23979591
+},
+{
+   description: "Adoptable host tests fails.",
+   names: [
+      "com.android.cts.appsecurity.AdoptableHostTest#testApps",
+      "com.android.cts.appsecurity.AdoptableHostTest#testEjected",
+      "com.android.cts.appsecurity.AdoptableHostTest#testPackageInstaller",
+      "com.android.cts.appsecurity.AdoptableHostTest#testPrimaryStorage"
+    ],
+    bug: 23040468
 }
 ]
