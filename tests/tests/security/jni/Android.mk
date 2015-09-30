@@ -32,10 +32,11 @@ LOCAL_SRC_FILES := \
 		android_security_cts_SELinuxTest.cpp \
 		android_security_cts_MMapExecutableTest.cpp \
 		android_security_cts_NetlinkSocket.cpp \
-		android_security_cts_AudioPolicyBinderTest.cpp
+		android_security_cts_AudioPolicyBinderTest.cpp \
+		android_security_cts_StagefrightFoundationTest.cpp
 
 LOCAL_C_INCLUDES := $(JNI_H_INCLUDE)
 
-LOCAL_SHARED_LIBRARIES := libnativehelper liblog libbinder libutils libmedia libselinux libdl
+LOCAL_SHARED_LIBRARIES := libnativehelper liblog libbinder libutils libmedia libselinux libdl libstagefright_foundation
 
 include $(BUILD_SHARED_LIBRARY)
