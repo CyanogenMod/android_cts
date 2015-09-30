@@ -2069,14 +2069,19 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="audio_routingnotification_trackRoutingMsg">AudioTrack rerouting</string>
     <string name="audio_routingnotification_recordRoutingMsg">AudioRecord rerouting</string>
 
+    <!-- Audio general text -->
+    <string name="audio_general_headset_port_exists">Does this device have a headset port?</string>
+    <string name="audio_general_headset_no">No</string>
+    <string name="audio_general_headset_yes">Yes</string>
+
     <!-- Audio Loopback Latency Test -->
     <string name="audio_loopback_test">Audio Loopback Latency Test</string>
      <string name="audio_loopback_info">
-          This test requires the Loopback Plug. Please connect a Loopback Plug on the headset
+          This test requires the Loopback Plug. Please connect a Loopback Plug into the headset
           connector, and proceed with the instructions on the screen.
           The system will measure the input-output audio latency by injecting a pulse on the output,
           and computing the distance between replicas of the pulse.
-          You can vary the Audio Level slider to ensure the pulse will feed back at adecuate levels.
+          You can vary the Audio Level slider to ensure the pulse will feed back at adequate levels.
           Repeat until a confidence level >= 0.6 is achieved.
     </string>
     <string name="audio_loopback_instructions">
@@ -2111,7 +2116,7 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="audio_frequency_speaker_test">Audio Frequency Speaker Test</string>
     <string name="audio_frequency_speaker_info">
         This test requires an external USB reference microphone. Please connect the USB microphone and proceed with the instructions on the screen.
-        The system will measure frequency response of the left and right speakers (if there are two speakers), or twice the response of the mono speaker.
+        The system will measure frequency response of the left and right speakers (if there are two speakers), or the response of the mono speaker twice.
        </string>
     <string name="audio_frequency_speaker_instructions">
           Please connect an USB reference microphone and press "USB Reference microphone ready"
