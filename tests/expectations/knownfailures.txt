@@ -337,5 +337,13 @@
       "com.android.cts.appsecurity.AdoptableHostTest#testPrimaryStorage"
     ],
     bug: 23040468
+},
+{
+  description: "tests not yet ready",
+  names: [
+    "android.telecom.cts.OutgoingCallTest#testStartCallWithSpeakerphoneFalse_SpeakerphoneOffInCall",
+    "android.telecom.cts.OutgoingCallTest#testStartCallWithSpeakerphoneNotProvided_SpeakerphoneOffByDefault"
+  ],
+  bug: 24067587
 }
 ]
