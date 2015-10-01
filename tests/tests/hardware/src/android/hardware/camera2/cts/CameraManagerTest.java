@@ -149,7 +149,8 @@ public class CameraManagerTest extends AndroidTestCase {
             assertNotNull("Can't get lens facing info", lensFacing);
             if (lensFacing == CameraCharacteristics.LENS_FACING_FRONT) {
                 assertTrue("System doesn't have front camera feature",
-                        mPackageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT));
+                        mPackageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT) ||
+                        mPackageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_EXTERNAL));
             } else if (lensFacing == CameraCharacteristics.LENS_FACING_BACK) {
                 assertTrue("System doesn't have back camera feature",
                         mPackageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA));
