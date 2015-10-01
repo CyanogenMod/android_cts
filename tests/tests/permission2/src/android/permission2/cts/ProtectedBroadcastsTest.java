@@ -258,7 +258,7 @@ public class ProtectedBroadcastsTest extends AndroidTestCase {
         "com.android.nfc_extras.action.AID_SELECTED",
         "com.android.nfc_extras.action.RF_FIELD_OFF_DETECTED",
         "com.android.nfc_extras.action.RF_FIELD_ON_DETECTED",
-        "com.android.server.connectivityservice.CONNECTED_TO_PROVISIONING_NETWORK_ACTION”,
+        "com.android.server.connectivityservice.CONNECTED_TO_PROVISIONING_NETWORK_ACTION",
         "com.android.server.WifiManager.action.DELAYED_DRIVER_STOP",
         "com.android.server.WifiManager.action.START_PNO",
         "com.android.server.WifiManager.action.START_SCAN"
