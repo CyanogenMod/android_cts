@@ -329,14 +329,12 @@
    bug: 23979591
 },
 {
-   description: "Adoptable host tests fails.",
+   description: "Video encoding tests are timing out.",
    names: [
-      "com.android.cts.appsecurity.AdoptableHostTest#testApps",
-      "com.android.cts.appsecurity.AdoptableHostTest#testEjected",
-      "com.android.cts.appsecurity.AdoptableHostTest#testPackageInstaller",
-      "com.android.cts.appsecurity.AdoptableHostTest#testPrimaryStorage"
-    ],
-    bug: 23040468
+     "android.media.cts.VideoEncoderTest#testGoogH264FlexArbitraryW",
+     "android.media.cts.VideoEncoderTest#testGoogH264SurfArbitraryW"
+   ],
+   bug: 23827982
 },
 {
   description: "tests not yet ready",
