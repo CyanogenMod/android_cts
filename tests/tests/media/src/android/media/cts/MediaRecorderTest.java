@@ -890,6 +890,12 @@ public class MediaRecorderTest extends ActivityInstrumentationTestCase2<MediaStu
         boolean success = false;
         Surface surface = null;
         int noOfFailure = 0;
+
+        if (!hasH264()) {
+            MediaUtils.skipTest("no codecs");
+            return true;
+        }
+
         try {
             if (persistent) {
                 surface = MediaCodec.createPersistentInputSurface();
