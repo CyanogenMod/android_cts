@@ -263,7 +263,7 @@ public class ProtectedBroadcastsTest extends AndroidTestCase {
         "com.android.server.WifiManager.action.START_PNO",
         "com.android.server.WifiManager.action.START_SCAN"
     };
-    private static final String PHONE_BROADCASTS = new String[] {
+    private static final String PHONE_BROADCASTS[] = new String[] {
         "android.intent.action.ACTION_MDN_STATE_CHANGED",
         "android.intent.action.ACTION_SHOW_NOTICE_ECM_BLOCK_OTHERS",
         "android.intent.action.ANY_DATA_STATE",
@@ -291,7 +291,7 @@ public class ProtectedBroadcastsTest extends AndroidTestCase {
         "com.android.internal.telephony.data-restart-trysetup",
         "com.android.internal.telephony.data-stall"
     };
-    private static final String TELECOM_BROADCASTS = new String[] {
+    private static final String TELECOM_BROADCASTS[] = new String[] {
         "android.intent.action.SHOW_MISSED_CALLS_NOTIFICATION"
     };
 
@@ -309,7 +309,8 @@ public class ProtectedBroadcastsTest extends AndroidTestCase {
             }
         }
         try {
-            PackageInfo packageInfo = packageManager.getPackageInfo("com.android.phone", NO_FLAGS);
+            PackageInfo packageInfo =
+                    getPackageManager().getPackageInfo("com.android.phone", 0);
             for (String action : PHONE_BROADCASTS) {
                 try {
                     Intent intent = new Intent(action);
@@ -325,7 +326,7 @@ public class ProtectedBroadcastsTest extends AndroidTestCase {
         }
         try {
             PackageInfo packageInfo =
-                    packageManager.getPackageInfo("com.android.server.telecom", NO_FLAGS);
+                    getPackageManager().getPackageInfo("com.android.server.telecom", 0);
             for (String action : TELECOM_BROADCASTS) {
                 try {
                     Intent intent = new Intent(action);
