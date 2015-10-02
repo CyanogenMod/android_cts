@@ -140,6 +140,11 @@ public abstract class BasePrintTest extends UiAutomatorTestCase {
 
     @Override
     public void setUp() throws Exception {
+        super.setUp();
+        if (!supportsPrinting()) {
+            return;
+        }
+
         // Make sure we start with a clean slate.
         clearPrintSpoolerData();
         enablePrintServices();
@@ -176,23 +181,26 @@ public abstract class BasePrintTest extends UiAutomatorTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        // Done with the activity.
-        getActivity().finish();
-        enableImes();
+        if (supportsPrinting()) {
+            // Done with the activity.
+            getActivity().finish();
+            enableImes();
 
-        // Restore the locale if needed.
-        if (mOldLocale != null) {
-            Resources resources = getInstrumentation().getTargetContext().getResources();
-            DisplayMetrics displayMetrics = resources.getDisplayMetrics();
-            Configuration newConfiguration = new Configuration(resources.getConfiguration());
-            newConfiguration.locale = mOldLocale;
-            mOldLocale = null;
-            resources.updateConfiguration(newConfiguration, displayMetrics);
+            // Restore the locale if needed.
+            if (mOldLocale != null) {
+                Resources resources = getInstrumentation().getTargetContext().getResources();
+                DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+                Configuration newConfiguration = new Configuration(resources.getConfiguration());
+                newConfiguration.locale = mOldLocale;
+                mOldLocale = null;
+                resources.updateConfiguration(newConfiguration, displayMetrics);
+            }
+
+            disablePrintServices();
+            // Make sure the spooler is cleaned.
+            clearPrintSpoolerData();
         }
-
-        disablePrintServices();
-        // Make sure the spooler is cleaned.
-        clearPrintSpoolerData();
+        super.tearDown();
     }
 
     protected void print(final PrintDocumentAdapter adapter) {
