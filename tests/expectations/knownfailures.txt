@@ -343,5 +343,12 @@
     "android.telecom.cts.OutgoingCallTest#testStartCallWithSpeakerphoneNotProvided_SpeakerphoneOffByDefault"
   ],
   bug: 24067587
+},
+{
+  description: "protected broadcast not working",
+  names: [
+   "android.permission2.cts.ProtectedBroadcastsTest#testSendProtectedBroadcasts"
+  ],
+  bug: 23192492
 }
 ]
