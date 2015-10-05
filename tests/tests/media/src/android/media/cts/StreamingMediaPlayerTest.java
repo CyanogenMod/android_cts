@@ -312,6 +312,11 @@ public class StreamingMediaPlayerTest extends MediaPlayerTestBase {
     }
 
     public void testPlayHlsStreamWithTimedId3() throws Throwable {
+        if (!MediaUtils.checkDecoder(MediaFormat.MIMETYPE_VIDEO_AVC)) {
+            Log.d(TAG, "Device doesn't have video codec, skipping test");
+            return;
+        }
+
         mServer = new CtsTestServer(mContext);
         try {
             // counter must be final if we want to access it inside onTimedMetaData;
