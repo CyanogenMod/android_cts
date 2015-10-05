@@ -18,6 +18,7 @@
 
 #include <jni.h>
 #include <binder/IServiceManager.h>
+#include <binder/Parcel.h>
 #include <media/IAudioPolicyService.h>
 #include <media/AudioSystem.h>
 #include <system/audio.h>
@@ -229,7 +230,7 @@ jboolean android_security_cts_AudioPolicy_test_startAudioSource(JNIEnv* env __un
         Parcel data, reply;
         data.writeInterfaceToken(aps->getInterfaceDescriptor());
         data.writeInt32(-i);
-        IInterface::asBinder(aps)->transact(START_AUDIO_SOURCE, data, &reply);
+        aps->asBinder()->transact(START_AUDIO_SOURCE, data, &reply);
         status_t err = (status_t)reply.readInt32();
         if (err == NO_ERROR) {
             continue;
