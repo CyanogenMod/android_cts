@@ -59,7 +59,16 @@ public class VoiceInteractionTest extends ActivityInstrumentationTestCase2<TestS
 
     @Override
     protected void tearDown() throws Exception {
-        mContext.unregisterReceiver(mReceiver);
+        if (mReceiver != null) {
+            try {
+                mContext.unregisterReceiver(mReceiver);
+            } catch (IllegalArgumentException e) {
+                // This exception is thrown if mReceiver in
+                // the above call to unregisterReceiver is never registered.
+                // If so, no harm done by ignoring this exception.
+            }
+            mReceiver = null;
+        }
         super.tearDown();
     }
 
