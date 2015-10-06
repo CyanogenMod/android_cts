@@ -23,6 +23,8 @@ import android.test.UiThreadTest;
 
 import com.android.internal.telephony.SmsUsageMonitor;
 
+import android.telephony.PhoneNumberUtils;
+
 /**
  * Test cases for SMS short code pattern matching in SmsUsageMonitor.
  */
@@ -79,7 +81,7 @@ public class SmsUsageMonitorShortCodeTest extends InstrumentationTestCase {
             new ShortCodeTest("al", "55600", CATEGORY_PREMIUM_SHORT_CODE),
             new ShortCodeTest("al", "654321", CATEGORY_NOT_SHORT_CODE),
 
-            new ShortCodeTest("am", "112", CATEGORY_NOT_SHORT_CODE),
+            new ShortCodeTest("am", "112", expectedReturnCode("112")),
             new ShortCodeTest("am", "101", CATEGORY_FREE_SHORT_CODE),
             new ShortCodeTest("am", "102", CATEGORY_FREE_SHORT_CODE),
             new ShortCodeTest("am", "103", CATEGORY_FREE_SHORT_CODE),
@@ -204,7 +206,7 @@ public class SmsUsageMonitorShortCodeTest extends InstrumentationTestCase {
             new ShortCodeTest("dk", "16123", CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE),
             new ShortCodeTest("dk", "987654321", CATEGORY_NOT_SHORT_CODE),
 
-            new ShortCodeTest("ee", "112", CATEGORY_NOT_SHORT_CODE),
+            new ShortCodeTest("ee", "112", expectedReturnCode("112")),
             new ShortCodeTest("ee", "116117", CATEGORY_FREE_SHORT_CODE),
             new ShortCodeTest("ee", "123", CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE),
             new ShortCodeTest("ee", "1259", CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE),
@@ -316,7 +318,7 @@ public class SmsUsageMonitorShortCodeTest extends InstrumentationTestCase {
             new ShortCodeTest("kz", "7790", CATEGORY_PREMIUM_SHORT_CODE),
             new ShortCodeTest("kz", "98765", CATEGORY_NOT_SHORT_CODE),
 
-            new ShortCodeTest("lt", "112", CATEGORY_NOT_SHORT_CODE),
+            new ShortCodeTest("lt", "112", expectedReturnCode("112")),
             new ShortCodeTest("lt", "116117", CATEGORY_FREE_SHORT_CODE),
             new ShortCodeTest("lt", "123", CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE),
             new ShortCodeTest("lt", "1234", CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE),
@@ -369,7 +371,7 @@ public class SmsUsageMonitorShortCodeTest extends InstrumentationTestCase {
             new ShortCodeTest("no", "23456", CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE),
             new ShortCodeTest("no", "234567", CATEGORY_NOT_SHORT_CODE),
 
-            new ShortCodeTest("nz", "112", CATEGORY_NOT_SHORT_CODE),
+            new ShortCodeTest("nz", "112", expectedReturnCode("112")),
             new ShortCodeTest("nz", "123", CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE),
             new ShortCodeTest("nz", "2345", CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE),
             new ShortCodeTest("nz", "3903", CATEGORY_PREMIUM_SHORT_CODE),
@@ -472,12 +474,12 @@ public class SmsUsageMonitorShortCodeTest extends InstrumentationTestCase {
             new ShortCodeTest("zz", "54321", CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE),
             new ShortCodeTest("zz", "4321", CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE),
             new ShortCodeTest("zz", "321", CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE),
-            new ShortCodeTest("zz", "112", CATEGORY_NOT_SHORT_CODE),
+            new ShortCodeTest("zz", "112", expectedReturnCode("112")),
             new ShortCodeTest(null, "2000000", CATEGORY_NOT_SHORT_CODE),
             new ShortCodeTest(null, "54321", CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE),
             new ShortCodeTest(null, "4321", CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE),
             new ShortCodeTest(null, "321", CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE),
-            new ShortCodeTest(null, "112", CATEGORY_NOT_SHORT_CODE),
+            new ShortCodeTest(null, "112", expectedReturnCode("112")),
     };
 
     @Override
@@ -485,6 +487,11 @@ public class SmsUsageMonitorShortCodeTest extends InstrumentationTestCase {
         super.setUp();
         mContext = getInstrumentation().getTargetContext();
         mPackageManager = mContext.getPackageManager();
+    }
+
+    private static int expectedReturnCode(String address) {
+        return PhoneNumberUtils.isEmergencyNumber(address) ?
+            CATEGORY_NOT_SHORT_CODE : CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE;
     }
 
     @UiThreadTest
