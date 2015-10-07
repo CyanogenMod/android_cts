@@ -13,6 +13,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,28 +25,40 @@
       android:layout_height="wrap_content"
       android:scrollbars="vertical"
       android:gravity="bottom"
-      android:id="@+id/info_text"/>
+      android:id="@+id/info_text"
+      android:text="@string/audio_input_routingnotification_instructions" />
 
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:orientation="vertical">
-      <Button
+      android:orientation="vertical"
+      android:id="@+id/audioRecordRoutingLayout">
+      <TextView
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:id="@+id/audio_dev_notification_connect_clearmsgs_btn"
-          android:text="@string/audio_dev_notification_clearmsgs"/>
+              android:text="@string/audio_routingnotification_recHeader"/>
 
       <TextView
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:id="@+id/audio_dev_notification_connect_msg"/>
+          android:id="@+id/audio_routingnotification_audioRecord_change"/>
 
-      <TextView
-          android:layout_width="match_parent"
+      <LinearLayout
+          android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:id="@+id/audio_dev_notification_disconnect_msg"/>
+          android:orientation="horizontal">
+          <Button
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:id="@+id/audio_routingnotification_recordBtn"
+              android:text="@string/audio_routingnotification_recBtn"/>
 
+          <Button
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:id="@+id/audio_routingnotification_recordStopBtn"
+              android:text="@string/audio_routingnotification_recStopBtn"/>
+      </LinearLayout>
     </LinearLayout>
 
   <include layout="@layout/pass_fail_buttons" />

@@ -24,7 +24,6 @@ import android.content.Context;
 import android.media.AudioDeviceCallback;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
-import android.media.AudioRecord;
 import android.media.AudioTrack;
 
 import android.os.Bundle;
@@ -41,18 +40,16 @@ import android.widget.TextView;
 /**
  * Tests AudioTrack and AudioRecord (re)Routing messages.
  */
-public class AudioRoutingNotificationsActivity extends PassFailButtons.Activity {
-    private static final String TAG = "AudioRoutingNotificationsActivity";
+public class AudioOutputRoutingNotificationsActivity extends PassFailButtons.Activity {
+    private static final String TAG = "AudioOutputRoutingNotificationsActivity";
 
     Context mContext;
 
     OnBtnClickListener mBtnClickListener = new OnBtnClickListener();
 
     int mNumTrackNotifications = 0;
-    int mNumRecordNotifications = 0;
 
     TrivialPlayer mAudioPlayer = new TrivialPlayer();
-    TrivialRecorder mAudioRecorder = new TrivialRecorder();
 
     private class OnBtnClickListener implements OnClickListener {
         @Override
@@ -64,14 +61,6 @@ public class AudioRoutingNotificationsActivity extends PassFailButtons.Activity 
 
                 case R.id.audio_routingnotification_playStopBtn:
                     mAudioPlayer.stop();
-                    break;
-
-                case R.id.audio_routingnotification_recordBtn:
-                    mAudioRecorder.start();
-                    break;
-
-                case R.id.audio_routingnotification_recordStopBtn:
-                    mAudioRecorder.stop();
                     break;
             }
         }
@@ -93,35 +82,15 @@ public class AudioRoutingNotificationsActivity extends PassFailButtons.Activity 
         }
     }
 
-    private class AudioRecordRoutingChangeListener implements AudioRecord.OnRoutingChangedListener {
-        public void onRoutingChanged(AudioRecord audioRecord) {
-            mNumRecordNotifications++;
-            TextView textView =
-                    (TextView)findViewById(R.id.audio_routingnotification_audioRecord_change);
-            String msg = mContext.getResources().getString(
-                    R.string.audio_routingnotification_recordRoutingMsg);
-            AudioDeviceInfo routedDevice = audioRecord.getRoutedDevice();
-            CharSequence deviceName = routedDevice != null ? routedDevice.getProductName() : "none";
-            int deviceType = routedDevice != null ? routedDevice.getType() : -1;
-            textView.setText(msg + " - " +
-                             deviceName + " [0x" + Integer.toHexString(deviceType) + "]" +
-                             " - " + mNumRecordNotifications);
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.audio_routingnotifications_test);
+        setContentView(R.layout.audio_output_routingnotifications_test);
 
         Button btn;
         btn = (Button)findViewById(R.id.audio_routingnotification_playBtn);
         btn.setOnClickListener(mBtnClickListener);
         btn = (Button)findViewById(R.id.audio_routingnotification_playStopBtn);
-        btn.setOnClickListener(mBtnClickListener);
-        btn = (Button)findViewById(R.id.audio_routingnotification_recordBtn);
-        btn.setOnClickListener(mBtnClickListener);
-        btn = (Button)findViewById(R.id.audio_routingnotification_recordStopBtn);
         btn.setOnClickListener(mBtnClickListener);
 
         mContext = this;
@@ -130,17 +99,12 @@ public class AudioRoutingNotificationsActivity extends PassFailButtons.Activity 
         audioTrack.addOnRoutingChangedListener(
             new AudioTrackRoutingChangeListener(), new Handler());
 
-        AudioRecord audioRecord = mAudioRecorder.getAudioRecord();
-        audioRecord.addOnRoutingChangedListener(
-            new AudioRecordRoutingChangeListener(), new Handler());
-
         setPassFailButtonClickListeners();
     }
 
     @Override
     public void onBackPressed () {
         mAudioPlayer.shutDown();
-        mAudioRecorder.shutDown();
         super.onBackPressed();
     }
 }
