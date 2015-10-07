@@ -34,10 +34,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 /**
- * Tests Audio Device Connection events by prompting the user to insert/remove a wired headset
- * and noting the presence (or absence) of notifictions.
+ * Tests Audio Device Connection events for output by prompting the user to insert/remove a
+ * wired headset (or microphone) and noting the presence (or absence) of notifications.
  */
-public class AudioDeviceNotificationsActivity extends PassFailButtons.Activity {
+public class AudioInputDeviceNotificationsActivity extends PassFailButtons.Activity {
     Context mContext;
 
     TextView mConnectView;
@@ -70,6 +70,9 @@ public class AudioDeviceNotificationsActivity extends PassFailButtons.Activity {
 
         mConnectView = (TextView)findViewById(R.id.audio_dev_notification_connect_msg);
         mDisconnectView = (TextView)findViewById(R.id.audio_dev_notification_disconnect_msg);
+
+        ((TextView)findViewById(R.id.info_text)).setText(mContext.getResources().getString(
+                R.string.audio_in_devices_notification_instructions));
 
         mClearMsgsBtn = (Button)findViewById(R.id.audio_dev_notification_connect_clearmsgs_btn);
         mClearMsgsBtn.setOnClickListener(new View.OnClickListener() {

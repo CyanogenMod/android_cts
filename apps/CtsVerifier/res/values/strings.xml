@@ -2040,25 +2040,34 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="error_screen_pinning_did_not_exit">Screen was not unpinned.</string>
     <string name="error_screen_pinning_couldnt_exit">Could not exit screen pinning through API.</string>
 
-    <!--  Audio Devices Notifcations Test -->
-    <string name="audio_devices_notifications_test">Audio Devices Notifications Test</string>
-    <string name="audio_devices_notification_instructions">
+    <!--  Audio Devices Notifcations Tests -->
+    <string name="audio_out_devices_notifications_test">Audio Output Devices Notifications Test</string>
+    <string name="audio_out_devices_notification_instructions">
           Click the "Clear Messages" button then connect and disconnect a wired headset.
+          Note if the appropriate notification messages appear below.
+    </string>
+    <string name="audio_in_devices_notifications_test">Audio Input Devices Notifications Test</string>
+    <string name="audio_in_devices_notification_instructions">
+          Click the "Clear Messages" button then connect and disconnect a microphone or wired headset.
           Note if the appropriate notification messages appear below.
     </string>
     <string name="audio_dev_notification_clearmsgs">Clear Messages</string>
     <string name="audio_dev_notification_connectMsg">CONNECT DETECTED</string>
     <string name="audio_dev_notification_disconnectMsg">DISCONNECT DETECTED</string>
 
-    <!--  Audio Routing Notifcations Test -->
-    <string name="audio_routingnotifications_test">Audio Routing Notifications Test</string>
-    <string name="audio_dev_routingnotification_instructions">
-          Click on the "Play" button in the AudioTrack Routing Notifictions section below to
+    <string name="audio_input_routingnotifications_test">Audio Input Routing Notifications Test</string>
+    <string name="audio_input_routingnotification_instructions">
+          Click on the "Record" button in the AudioRecord Routing Notifications section below to
+          start recording. Insert a wired headset or microphone. Observe a message acknowledging the
+          rerouting event below. Remove the wired headset and observe the new routing message.
+          Click on the "Stop" button to stop recording.\n
+    </string>
+    <string name="audio_output_routingnotifications_test">Audio Output Routing Notifications Test</string>
+    <string name="audio_output_routingnotification_instructions">
+          Click on the "Play" button in the AudioTrack Routing Notifications section below to
           start (silent) playback. Insert a wired headset. Observe a message acknowledging the
           rerouting event below. Remove the wired headset and observe the new routing message.
           Click on the "Stop" button to stop playback.\n
-          Repeat the process with "Record" and "Stop" button in the AudioRecord Routing
-          Notifications section below.
     </string>
     <string name="audio_routingnotification_playBtn">Play</string>
     <string name="audio_routingnotification_playStopBtn">Stop</string>
