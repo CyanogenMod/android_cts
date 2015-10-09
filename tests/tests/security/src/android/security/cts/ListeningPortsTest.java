@@ -18,11 +18,14 @@ package android.security.cts;
 
 import android.content.pm.PackageManager;
 import android.test.AndroidTestCase;
+import android.util.Log;
 import junit.framework.AssertionFailedError;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +40,9 @@ import java.util.regex.Pattern;
  * is considered a security best practice.
  */
 public class ListeningPortsTest extends AndroidTestCase {
+    private static final String TAG = "ListeningPortsTest";
+
+    private static final int CONN_TIMEOUT_IN_MS = 5000;
 
     /** Ports that are allowed to be listening. */
     private static final List<String> EXCEPTION_PATTERNS = new ArrayList<String>(6);
@@ -202,8 +208,12 @@ public class ListeningPortsTest extends AndroidTestCase {
             String addrPortUid = addrPort + ' ' + entry.uid;
 
             if (isPortListening(entry.state, isTcp)
-                && !(isException(addrPort) || isException(addrUid) || isException(addrPortUid))
-                && (!entry.localAddress.isLoopbackAddress() ^ loopback)) {
+                    && !(isException(addrPort) || isException(addrUid) || isException(addrPortUid))
+                    && (!entry.localAddress.isLoopbackAddress() ^ loopback)) {
+                if (isTcp && !isTcpConnectable(entry.localAddress, entry.port)) {
+                    continue;
+                }
+
                 errors += "\nFound port listening on addr="
                         + entry.localAddress.getHostAddress() + ", port="
                         + entry.port + ", UID=" + entry.uid
@@ -223,6 +233,33 @@ public class ListeningPortsTest extends AndroidTestCase {
             return "[unknown]";
         }
         return Arrays.asList(packages).toString();
+    }
+
+    private boolean isTcpConnectable(InetAddress address, int port) {
+        Socket socket = new Socket();
+
+        try {
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "Trying to connect " + address + ":" + port);
+            }
+            socket.connect(new InetSocketAddress(address, port), CONN_TIMEOUT_IN_MS);
+        } catch (IOException ioe) {
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "Unable to connect:" + ioe);
+            }
+            return false;
+        } finally {
+            try {
+                socket.close();
+            } catch (IOException closeError) {
+                Log.e(TAG, "Unable to close socket: " + closeError);
+            }
+        }
+
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, address + ":" + port + " is connectable.");
+        }
+        return true;
     }
 
     private static boolean isException(String localAddress) {
