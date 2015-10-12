@@ -96,8 +96,6 @@ public class HoloDeviceActivity extends Activity {
         if (layout.mModifier != null) {
             layout.mModifier.modifyView(mView);
         }
-        mViewGroup.measure(0, 0);
-        mViewGroup.layout(0, 0, mViewGroup.getMeasuredWidth(), mViewGroup.getMeasuredHeight());
         mView.setFocusable(false);
         mName = String.format("%s_%s", theme.mName, layout.mName);
 
