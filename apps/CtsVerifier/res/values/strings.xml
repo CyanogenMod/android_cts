@@ -124,6 +124,8 @@
         settings that may specify a timeout.\n\nClick the \"Force Lock\" button to lock the screen.
         Your screen should be locked and require the password to be entered.
     </string>
+    <string name="da_kg_disabled_features_test">Keyguard Disabled Features Test</string>
+    <string name="rn_kg_disabled_features_test">Redacted Notifications Keyguard Disabled Features Test</string>
     <string name="da_force_lock">Force Lock</string>
     <string name="da_lock_success">It appears the screen was locked successfully!</string>
     <string name="da_lock_error">It does not look like the screen was locked...</string>
@@ -1423,8 +1425,29 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="snsr_rotation_vector_set_final">Place the device back to the reference position.</string>
     <string name="snsr_rotation_vector_verification">Angular deviation [%1$4.1f %2$4.1f %3$4.1f]. Current: %4$f deg. Max tolerated: %5$f.</string>
 
+    <!-- Strings for device admin tests -->
+    <string name="device_admin_notification">This is device admin notification</string>
+    <string name="device_admin_keyguard_disable_camera">Disable camera</string>
+    <string name="device_admin_keyguard_disable_camera_instruction">
+        Please press the Go button to lock the screen. Then try to open the camera
+        from the lower right corner of the screen. Expected result is you cannot
+        open the camera from lock screen and it will ask for password instead.
+    </string>
+    <string name="device_admin_disable_notifications">Disable notifications</string>
+    <string name="device_admin_disable_notifications_instruction">
+        Please press the Go button to lock the screen. Wait a few seconds to see
+        if a notification appears. Expected result is no notifications appear.
+        You should be able to see one after unlocking.
+    </string>
+    <string name="device_admin_disable_unredacted_notifications">Disable unredacted notifications</string>
+    <string name="device_admin_disable_unredacted_notifications_instruction">
+        Please press the Go button to lock the screen. Wait a few seconds to see
+        if a notification appears. Expected result is a notification appear with
+        its content hidden. You should be able to see the content after unlocking.
+    </string>
+
     <!-- Strings common for BYOD and DO managed provisioning tests. -->
-    <string name="afw_device_admin">CTS Verifier - AfW Admin</string>
+    <string name="afw_device_admin">CTS Verifier</string>
 
     <!-- Strings for BYOD managed provisioning tests (ByodFlowTestActivity) -->
     <string name="test_category_managed_provisioning">Managed Provisioning</string>
@@ -1492,7 +1515,7 @@ You should be prompted to select credentials; choose the ones you just installed
     </string>
     <string name="provisioning_byod_keyguard_disabled_features_instruction">
         Please go to Settings &gt; Security &gt; Device administrators and set
-        \"CTS Verifier - AfW Admin\" as active admin.\n
+        \"CTS Verifier\" as active admin.\n
         After that please press the \"Prepare test\" button to disable trust agents.\n
         Then please press through the following verification steps.\n
         Note: Device password will be set to \"testpassword\". After leaving the screen device
@@ -1509,8 +1532,9 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="provisioning_byod_fingerprint_disabled_in_settings">Fingerprint is disabled in Settings</string>
     <string name="provisioning_byod_fingerprint_disabled_in_settings_instruction">
         Please press the Go button to go to Settings > Security. Then go to Fingerprint and\n
-        check if the screen is shown as disabled by the administrator.
-        Then please press Back and mark the test as \"Pass\" or \"Fail\".
+        check if the disclaimer at the bottom of screen is altered to warn the users for\n
+        fingerprint being disabled in lock screen. Then please press Back and mark the \n
+        test as \"Pass\" or \"Fail\".
     </string>
     <string name="provisioning_byod_disable_fingerprint">Fingerprint disabled on keyguard</string>
     <string name="provisioning_byod_disable_fingerprint_instruction">
@@ -1518,12 +1542,12 @@ You should be prompted to select credentials; choose the ones you just installed
         Expected result is you cannot log in using your fingerprint.\n
         After you log back in, please navigate back to CtsVerifier and mark the test as \"Pass\" or \"Fail\".
     </string>
-    <string name="provisioning_byod_disable_notifications">Notifications disabled on keyguard</string>
-    <string name="provisioning_byod_disable_notifications_instruction">
+    <string name="provisioning_byod_disable_unredacted_notifications">Unredacted notifications disabled on keyguard</string>
+    <string name="provisioning_byod_disable_unredacted_notifications_instruction">
         Please press the Go button to lock the screen. Wait a couple of seconds and look out for a
         notification from CtsVerifier.\n
         Expected result is the notification is shown as \"Contents hidden\", you can not see the contents
-        (Which would read \"This is a work notification\").\n
+        (Which would read \"This is a notification\"). You should be seeing a work badge.\n
         After you log back in, please navigate back to CtsVerifier and mark the test as \"Pass\" or \"Fail\".
     </string>
     <string name="provisioning_byod_work_notification">Work notification is badged</string>
@@ -1532,7 +1556,7 @@ You should be prompted to select credentials; choose the ones you just installed
         \n
         Verify that the notification is badged (see sample badge below). Then mark this test accordingly.
     </string>
-    <string name="provisioning_byod_work_notification_title">This is a work notification</string>
+    <string name="provisioning_byod_notification_title">This is a notification</string>
     <string name="provisioning_byod_work_status_icon">Work status icon is displayed</string>
     <string name="provisioning_byod_work_status_icon_instruction">
         Verify that the current status bar does not have a work status icon (see sample icon below).
@@ -1577,7 +1601,7 @@ You should be prompted to select credentials; choose the ones you just installed
         Navigate to Device administrators and confirm that:\n
         \n
         - Both Personal and Work categories exist.\n
-        - \"CTS Verifier - AfW Admin\" exists under the Work category, and is activated.\n
+        - \"CTS Verifier\" exists under the Work category, and is activated.\n
         \n
         Use the Back button to return to this page.
     </string>
@@ -1844,8 +1868,8 @@ You should be prompted to select credentials; choose the ones you just installed
         Please press the Go button to open the Security page in Settings.
         Navigate to Device administrators and confirm that:\n
         \n
-        - \"CTS Verifier - AfW Admin\" exists and is activated.\n
-        - \"CTS Verifier - AfW Admin\" cannot be disabled.\n
+        - \"CTS Verifier\" exists and is activated.\n
+        - \"CTS Verifier\" cannot be disabled.\n
         \n
         Use the Back button to return to this page.
     </string>

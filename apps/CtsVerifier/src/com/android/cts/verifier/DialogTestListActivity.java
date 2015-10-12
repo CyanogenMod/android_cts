@@ -188,6 +188,7 @@ public abstract class DialogTestListActivity extends PassFailButtons.TestListAct
         try {
             startActivity(intent);
         } catch (ActivityNotFoundException e) {
+            Log.w(TAG, "Cannot start activity.", e);
             Toast.makeText(this, "Cannot start " + intent, Toast.LENGTH_LONG).show();
             setTestResult(test, TestResult.TEST_RESULT_FAILED);
             return false;
