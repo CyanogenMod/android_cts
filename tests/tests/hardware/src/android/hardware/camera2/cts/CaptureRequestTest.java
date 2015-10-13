@@ -1712,9 +1712,10 @@ public class CaptureRequestTest extends Camera2SurfaceViewTestCase {
         // video stabilization test.
         List<Key<?>> keys = mStaticInfo.getCharacteristics().getKeys();
 
-        int[] videoStabModes = (keys.contains(CameraCharacteristics.
+        Integer[] videoStabModes = (keys.contains(CameraCharacteristics.
                 CONTROL_AVAILABLE_VIDEO_STABILIZATION_MODES)) ?
-                mStaticInfo.getAvailableVideoStabilizationModesChecked() : new int[0];
+                CameraTestUtils.toObject(mStaticInfo.getAvailableVideoStabilizationModesChecked()) :
+                    new Integer[0];
         int[] opticalStabModes = (keys.contains(
                 CameraCharacteristics.LENS_INFO_AVAILABLE_OPTICAL_STABILIZATION)) ?
                 mStaticInfo.getAvailableOpticalStabilizationChecked() : new int[0];
@@ -1725,13 +1726,14 @@ public class CaptureRequestTest extends Camera2SurfaceViewTestCase {
         SimpleCaptureCallback listener = new SimpleCaptureCallback();
         startPreview(requestBuilder, maxPreviewSize, listener);
 
-        for (int mode : videoStabModes) {
+        for (Integer mode : videoStabModes) {
             listener = new SimpleCaptureCallback();
             requestBuilder.set(CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE, mode);
             mSession.setRepeatingRequest(requestBuilder.build(), listener, mHandler);
             waitForSettingsApplied(listener, NUM_FRAMES_WAITED_FOR_UNKNOWN_LATENCY);
-            verifyCaptureResultForKey(CaptureResult.CONTROL_VIDEO_STABILIZATION_MODE, mode,
-                    listener, NUM_FRAMES_VERIFIED);
+            // Video stabilization could return any modes.
+            verifyAnyCaptureResultForKey(CaptureResult.CONTROL_VIDEO_STABILIZATION_MODE,
+                    videoStabModes, listener, NUM_FRAMES_VERIFIED);
         }
 
         for (int mode : opticalStabModes) {
@@ -2158,6 +2160,30 @@ public class CaptureRequestTest extends Camera2SurfaceViewTestCase {
             }
             mCollector.expectEquals("Key " + key.getName() + " result should match request",
                     requestMode, resultMode);
+        }
+    }
+
+    /**
+     * Basic verification that the value of a capture result key should be one of the expected
+     * values.
+     *
+     * @param key The capture result key to be verified against
+     * @param expectedModes The list of any possible expected modes for this result
+     * @param listener The capture listener to get capture results
+     * @param numFramesVerified The number of capture results to be verified
+     */
+    private <T> void verifyAnyCaptureResultForKey(CaptureResult.Key<T> key, T[] expectedModes,
+            SimpleCaptureCallback listener, int numFramesVerified) {
+        for (int i = 0; i < numFramesVerified; i++) {
+            CaptureResult result = listener.getCaptureResult(WAIT_FOR_RESULT_TIMEOUT_MS);
+            validatePipelineDepth(result);
+            T resultMode = getValueNotNull(result, key);
+            if (VERBOSE) {
+                Log.v(TAG, "Expect values: " + Arrays.toString(expectedModes) + " result value: "
+                        + resultMode.toString());
+            }
+            // Capture result should be one of the expected values.
+            mCollector.expectContains(expectedModes, resultMode);
         }
     }
 
