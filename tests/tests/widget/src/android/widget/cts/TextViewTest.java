@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources.NotFoundException;
 import android.cts.util.PollingCheck;
@@ -4416,9 +4417,18 @@ public class TextViewTest extends ActivityInstrumentationTestCase2<TextViewCtsAc
     public void testSetGetBreakStrategy() {
         TextView tv = new TextView(mActivity);
 
+        final PackageManager pm = getInstrumentation().getTargetContext().getPackageManager();
+
         // The default value is from the theme, here the default is BREAK_STRATEGY_HIGH_QUALITY for
-        // TextView.
-        assertEquals(Layout.BREAK_STRATEGY_HIGH_QUALITY, tv.getBreakStrategy());
+        // TextView except for Android Wear. The default value for Android Wear is
+        // BREAK_STRATEGY_BALANCED.
+        if (pm.hasSystemFeature(PackageManager.FEATURE_WATCH)) {
+            // Android Wear
+            assertEquals(Layout.BREAK_STRATEGY_BALANCED, tv.getBreakStrategy());
+        } else {
+            // All other form factor.
+            assertEquals(Layout.BREAK_STRATEGY_HIGH_QUALITY, tv.getBreakStrategy());
+        }
 
         tv.setBreakStrategy(Layout.BREAK_STRATEGY_SIMPLE);
         assertEquals(Layout.BREAK_STRATEGY_SIMPLE, tv.getBreakStrategy());
