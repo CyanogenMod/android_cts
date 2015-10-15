@@ -16,7 +16,6 @@
 
 package com.android.cts.verifier.audio;
 
-import com.android.cts.verifier.PassFailButtons;
 import com.android.cts.verifier.R;
 
 import android.content.Context;
@@ -40,8 +39,11 @@ import android.widget.TextView;
 /**
  * Tests AudioRecord (re)Routing messages.
  */
-public class AudioInputRoutingNotificationsActivity extends PassFailButtons.Activity {
+public class AudioInputRoutingNotificationsActivity extends HeadsetHonorSystemActivity {
     private static final String TAG = "AudioInputRoutingNotificationsActivity";
+
+    Button recordBtn;
+    Button stopBtn;
 
     Context mContext;
 
@@ -82,22 +84,30 @@ public class AudioInputRoutingNotificationsActivity extends PassFailButtons.Acti
         }
     }
 
+    protected void enableTestButtons(boolean enabled) {
+        recordBtn.setEnabled(enabled);
+        stopBtn.setEnabled(enabled);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.audio_input_routingnotifications_test);
 
         Button btn;
-        btn = (Button)findViewById(R.id.audio_routingnotification_recordBtn);
-        btn.setOnClickListener(mBtnClickListener);
-        btn = (Button)findViewById(R.id.audio_routingnotification_recordStopBtn);
-        btn.setOnClickListener(mBtnClickListener);
+        recordBtn = (Button)findViewById(R.id.audio_routingnotification_recordBtn);
+        recordBtn.setOnClickListener(mBtnClickListener);
+        stopBtn = (Button)findViewById(R.id.audio_routingnotification_recordStopBtn);
+        stopBtn.setOnClickListener(mBtnClickListener);
 
         mContext = this;
 
         AudioRecord audioRecord = mAudioRecorder.getAudioRecord();
         audioRecord.addOnRoutingChangedListener(
             new AudioRecordRoutingChangeListener(), new Handler());
+
+        // "Honor System" buttons
+        super.setup();
 
         setPassFailButtonClickListeners();
     }
