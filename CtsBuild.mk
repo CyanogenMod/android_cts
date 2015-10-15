@@ -40,6 +40,10 @@ define cts-get-executable-paths
 	$(foreach executable,$(1),$(CTS_TESTCASES_OUT)/$(executable))
 endef
 
+define cts-get-deqp-api-test-xmls
+	$(foreach file,$(call find-files-in-subdirs, external/deqp/android/cts/master, 'com.drawelements.deqp.$(1).*xml', .),$(CTS_TESTCASES_OUT)/$(file))
+endef
+
 define cts-get-deqp-test-xmls
-	$(foreach api,$(1),$(CTS_TESTCASES_OUT)/com.drawelements.deqp.$(api).xml)
+	$(foreach api,$(1),$(call cts-get-deqp-api-test-xmls,$(api)))
 endef
