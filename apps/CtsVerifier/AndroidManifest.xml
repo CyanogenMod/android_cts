@@ -1709,15 +1709,12 @@
         </activity>
 
         <activity android:name=".audio.AudioOutputDeviceNotificationsActivity"
-                  android:label="@string/audio_in_devices_notifications_test">
+                  android:label="@string/audio_out_devices_notifications_test">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.cts.intent.category.MANUAL_TEST" />
             </intent-filter>
             <meta-data android:name="test_category" android:value="@string/test_category_audio" />
-            <!--
-            <meta-data android:name="test_required_features" android:value="android.hardware.microphone" />
-            -->
             <meta-data android:name="test_required_features" android:value="android.hardware.audio.output" />
         </activity>
 
@@ -1739,7 +1736,7 @@
             </intent-filter>
             <meta-data android:name="test_category" android:value="@string/test_category_audio" />
             <meta-data android:name="test_required_features" android:value="android.hardware.audio.output" />
-        </activity>
+            </activity>
 
         <activity android:name=".audio.AudioInputRoutingNotificationsActivity"
                   android:label="@string/audio_input_routingnotifications_test">
@@ -1749,7 +1746,7 @@
             </intent-filter>
             <meta-data android:name="test_category" android:value="@string/test_category_audio" />
             <meta-data android:name="test_required_features" android:value="android.hardware.microphone" />
-        </activity>
+            </activity>
 
         <activity android:name=".audio.AudioLoopbackActivity"
                   android:label="@string/audio_loopback_test">
