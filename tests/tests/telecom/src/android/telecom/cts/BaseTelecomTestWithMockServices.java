@@ -590,6 +590,25 @@ public class BaseTelecomTestWithMockServices extends InstrumentationTestCase {
         );
     }
 
+    void assertNotAudioRoute(final InCallService incallService, final int route) {
+        waitUntilConditionIsTrueOrTimeout(
+                new Condition() {
+                    @Override
+                    public Object expected() {
+                        return new Boolean(true);
+                    }
+
+                    @Override
+                    public Object actual() {
+                        final CallAudioState state = incallService.getCallAudioState();
+                        return route != state.getRoute();
+                    }
+                },
+                WAIT_FOR_STATE_CHANGE_TIMEOUT_MS,
+                "Phone's audio route should not be: " + route
+        );
+    }
+
     void assertAudioRoute(final MockConnection connection, final int route) {
         waitUntilConditionIsTrueOrTimeout(
                 new Condition() {
