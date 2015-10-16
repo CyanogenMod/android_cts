@@ -16,7 +16,6 @@
 
 package com.android.cts.verifier.audio;
 
-import com.android.cts.verifier.PassFailButtons;
 import com.android.cts.verifier.R;
 
 import android.content.Context;
@@ -37,7 +36,7 @@ import android.widget.TextView;
  * Tests Audio Device Connection events for output by prompting the user to insert/remove a
  * wired headset (or microphone) and noting the presence (or absence) of notifications.
  */
-public class AudioInputDeviceNotificationsActivity extends PassFailButtons.Activity {
+public class AudioInputDeviceNotificationsActivity extends HeadsetHonorSystemActivity {
     Context mContext;
 
     TextView mConnectView;
@@ -59,6 +58,11 @@ public class AudioInputDeviceNotificationsActivity extends PassFailButtons.Activ
                         R.string.audio_dev_notification_disconnectMsg));
             }
         }
+    }
+
+    @Override
+    protected void enableTestButtons(boolean enabled) {
+        // Nothing to do.
     }
 
     @Override
@@ -84,6 +88,9 @@ public class AudioInputDeviceNotificationsActivity extends PassFailButtons.Activ
 
         AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
         audioManager.registerAudioDeviceCallback(new TestAudioDeviceCallback(), null);
+
+        // "Honor System" buttons
+        super.setup();
 
         setPassFailButtonClickListeners();
     }

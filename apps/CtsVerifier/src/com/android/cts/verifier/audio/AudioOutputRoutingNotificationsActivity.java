@@ -16,7 +16,6 @@
 
 package com.android.cts.verifier.audio;
 
-import com.android.cts.verifier.PassFailButtons;
 import com.android.cts.verifier.R;
 
 import android.content.Context;
@@ -40,12 +39,15 @@ import android.widget.TextView;
 /**
  * Tests AudioTrack and AudioRecord (re)Routing messages.
  */
-public class AudioOutputRoutingNotificationsActivity extends PassFailButtons.Activity {
+public class AudioOutputRoutingNotificationsActivity extends HeadsetHonorSystemActivity {
     private static final String TAG = "AudioOutputRoutingNotificationsActivity";
 
     Context mContext;
 
-    OnBtnClickListener mBtnClickListener = new OnBtnClickListener();
+    Button playBtn;
+    Button stopBtn;
+
+    private OnBtnClickListener mBtnClickListener = new OnBtnClickListener();
 
     int mNumTrackNotifications = 0;
 
@@ -83,21 +85,29 @@ public class AudioOutputRoutingNotificationsActivity extends PassFailButtons.Act
     }
 
     @Override
+    protected void enableTestButtons(boolean enabled) {
+        playBtn.setEnabled(enabled);
+        stopBtn.setEnabled(enabled);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.audio_output_routingnotifications_test);
 
-        Button btn;
-        btn = (Button)findViewById(R.id.audio_routingnotification_playBtn);
-        btn.setOnClickListener(mBtnClickListener);
-        btn = (Button)findViewById(R.id.audio_routingnotification_playStopBtn);
-        btn.setOnClickListener(mBtnClickListener);
-
         mContext = this;
+
+        playBtn = (Button)findViewById(R.id.audio_routingnotification_playBtn);
+        playBtn.setOnClickListener(mBtnClickListener);
+        stopBtn = (Button)findViewById(R.id.audio_routingnotification_playStopBtn);
+        stopBtn.setOnClickListener(mBtnClickListener);
 
         AudioTrack audioTrack = mAudioPlayer.getAudioTrack();
         audioTrack.addOnRoutingChangedListener(
             new AudioTrackRoutingChangeListener(), new Handler());
+
+        // "Honor System" buttons
+        super.setup();
 
         setPassFailButtonClickListeners();
     }
