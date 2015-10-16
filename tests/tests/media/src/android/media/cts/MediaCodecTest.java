@@ -798,6 +798,11 @@ public class MediaCodecTest extends AndroidTestCase {
     }
 
     public void testDecodeAfterFlush() throws InterruptedException {
+        testDecodeAfterFlush(true /* audio */);
+        testDecodeAfterFlush(false /* audio */);
+    }
+
+    private void testDecodeAfterFlush(final boolean audio) throws InterruptedException {
         final int INPUT_RESOURCE_ID =
                 R.raw.video_480x360_mp4_h264_1350kbps_30fps_aac_stereo_192kbps_44100hz;
 
@@ -806,23 +811,27 @@ public class MediaCodecTest extends AndroidTestCase {
         final int DECODING_TIMEOUT_MS = 10000;
 
         final AtomicBoolean completed = new AtomicBoolean(false);
-        Thread videoDecodingThread = new Thread(new Runnable() {
+        Thread decodingThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 OutputSurface outputSurface = null;
                 MediaExtractor mediaExtractor = null;
                 MediaCodec mediaCodec = null;
                 try {
-                    outputSurface = new OutputSurface(1, 1);
-                    mediaExtractor = getMediaExtractorForMimeType(INPUT_RESOURCE_ID, "video/");
+                    String mimeTypePrefix  = audio ? "audio/" : "video/";
+                    if (!audio) {
+                        outputSurface = new OutputSurface(1, 1);
+                    }
+                    mediaExtractor = getMediaExtractorForMimeType(INPUT_RESOURCE_ID, mimeTypePrefix);
                     MediaFormat mediaFormat =
                             mediaExtractor.getTrackFormat(mediaExtractor.getSampleTrackIndex());
                     if (!MediaUtils.checkDecoderForFormat(mediaFormat)) {
+                        completed.set(true);
                         return; // skip
                     }
                     String mimeType = mediaFormat.getString(MediaFormat.KEY_MIME);
                     mediaCodec = MediaCodec.createDecoderByType(mimeType);
-                    mediaCodec.configure(mediaFormat, outputSurface.getSurface(),
+                    mediaCodec.configure(mediaFormat, outputSurface == null ? null : outputSurface.getSurface(),
                             null /* crypto */, 0 /* flags */);
                     mediaCodec.start();
 
@@ -851,10 +860,10 @@ public class MediaCodecTest extends AndroidTestCase {
                 }
             }
         });
-        videoDecodingThread.start();
-        videoDecodingThread.join(DECODING_TIMEOUT_MS);
+        decodingThread.start();
+        decodingThread.join(DECODING_TIMEOUT_MS);
         // In case it's timed out, need to stop the thread and have all resources released.
-        videoDecodingThread.interrupt();
+        decodingThread.interrupt();
         if (!completed.get()) {
             throw new RuntimeException("timed out decoding to end-of-stream");
         }
