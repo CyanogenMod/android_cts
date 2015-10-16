@@ -1413,9 +1413,7 @@
     <string name="provisioning_byod_nfc_beam_allowed_instruction">
         Please press the Go button to test if Nfc beam can be triggered in the work profile.\n
         \n
-        For the first test, press \"Send manual beam\" to trigger a beam, then bump into another device to send the file. Verify that the file is successfully received.\n
-        \n
-        For the second test, press \"Send share intent\" to trigger a beam, then bump into another device to send the file. Verify that the file is successfully received.\n
+        Press \"Send share intent\" to trigger a beam. Verify that the beam is invoked.\n
         \n
         Then use the Back button to return to this test and mark accordingly.
     </string>
