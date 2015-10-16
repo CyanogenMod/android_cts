@@ -53,7 +53,16 @@ public class VoiceSettingsTestBase extends ActivityInstrumentationTestCase2<Test
 
     @Override
     protected void tearDown() throws Exception {
-        mContext.unregisterReceiver(mActivityDoneReceiver);
+        if (mActivityDoneReceiver != null) {
+            try {
+                mContext.unregisterReceiver(mActivityDoneReceiver);
+            } catch (IllegalArgumentException e) {
+                // This exception is thrown if mActivityDoneReceiver in
+                // the above call to unregisterReceiver is never registered.
+                // If so, no harm done by ignoring this exception.
+            }
+            mActivityDoneReceiver = null;
+        }
         super.tearDown();
     }
 
@@ -69,9 +78,6 @@ public class VoiceSettingsTestBase extends ActivityInstrumentationTestCase2<Test
     protected void registerBroadcastReceiver(Utils.TestcaseType testCaseType) throws Exception {
         mTestCaseType = testCaseType;
         mLatch = new CountDownLatch(1);
-        if (mActivityDoneReceiver != null) {
-            mContext.unregisterReceiver(mActivityDoneReceiver);
-        }
         mActivityDoneReceiver = new ActivityDoneReceiver();
         mContext.registerReceiver(mActivityDoneReceiver,
                 new IntentFilter(Utils.BROADCAST_INTENT + testCaseType.toString()));
