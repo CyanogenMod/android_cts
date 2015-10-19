@@ -25,6 +25,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.method.MovementMethod;
 import android.text.method.ScrollingMovementMethod;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -738,7 +739,8 @@ public class ScrollingMovementMethodTest extends ActivityInstrumentationTestCase
             public void run() {
                 mTextView.setText("short");
                 mTextView.setSingleLine();
-                int width = WidgetTestUtils.convertDipToPixels(getActivity(), LITTLE_SPACE);
+                DisplayMetrics dm = getActivity().getResources().getDisplayMetrics();
+                int width = (int) (LITTLE_SPACE * dm.scaledDensity);
                 getActivity().setContentView(mTextView,
                         new ViewGroup.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT));
             }
