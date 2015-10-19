@@ -35,6 +35,7 @@ import android.theme.app.R;
 import android.theme.app.ReferenceViewGroup;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 
@@ -97,6 +98,7 @@ public class HoloDeviceActivity extends Activity {
             layout.mModifier.modifyView(mView);
         }
         mView.setFocusable(false);
+        mViewGroup.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         mName = String.format("%s_%s", theme.mName, layout.mName);
 
         final Handler handler = new Handler();
