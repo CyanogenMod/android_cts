@@ -64,7 +64,9 @@ public class DeviceAdminTestReceiver extends DeviceAdminReceiver {
             filter.addAction(ByodHelperActivity.ACTION_KEYGUARD_DISABLED_FEATURES);
             filter.addAction(ByodHelperActivity.ACTION_LOCKNOW);
             filter.addAction(ByodHelperActivity.ACTION_TEST_NFC_BEAM);
-            filter.addAction(CrossProfileTestActivity.ACTION_CROSS_PROFILE);
+            filter.addAction(ByodHelperActivity.ACTION_TEST_CROSS_PROFILE_INTENTS_DIALOG);
+            filter.addAction(ByodHelperActivity.ACTION_TEST_APP_LINKING_DIALOG);
+            filter.addAction(CrossProfileTestActivity.ACTION_CROSS_PROFILE_TO_WORK);
             filter.addAction(WorkNotificationTestActivity.ACTION_WORK_NOTIFICATION);
             filter.addAction(WorkNotificationTestActivity.ACTION_WORK_NOTIFICATION_ON_LOCKSCREEN);
             filter.addAction(WorkNotificationTestActivity.ACTION_CLEAR_WORK_NOTIFICATION);
@@ -72,12 +74,14 @@ public class DeviceAdminTestReceiver extends DeviceAdminReceiver {
             filter.addAction(WorkStatusTestActivity.ACTION_WORK_STATUS_ICON);
             filter.addAction(
                     PermissionLockdownTestActivity.ACTION_MANAGED_PROFILE_CHECK_PERMISSION_LOCKDOWN);
+            filter.addAction(AuthenticationBoundKeyTestActivity.ACTION_AUTH_BOUND_KEY_TEST);
             dpm.addCrossProfileIntentFilter(getWho(context), filter,
                     DevicePolicyManager.FLAG_MANAGED_CAN_ACCESS_PARENT);
 
             // Work -> primary direction
             filter = new IntentFilter();
             filter.addAction(ByodHelperActivity.ACTION_PROFILE_OWNER_STATUS);
+            filter.addAction(CrossProfileTestActivity.ACTION_CROSS_PROFILE_TO_PERSONAL);
             dpm.addCrossProfileIntentFilter(getWho(context), filter,
                     DevicePolicyManager.FLAG_PARENT_CAN_ACCESS_MANAGED);
 

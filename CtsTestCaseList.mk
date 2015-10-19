@@ -100,6 +100,7 @@ cts_support_packages := \
     CtsManagedProfileApp \
     CtsMonkeyApp \
     CtsMonkeyApp2 \
+    CtsPackageInstallerApp \
     CtsPermissionApp \
     CtsSimpleApp \
     CtsSimplePreMApp \
@@ -193,6 +194,7 @@ cts_test_packages := \
     CtsSecurityTestCases \
     CtsSignatureTestCases \
     CtsSpeechTestCases \
+    CtsSystemUiTestCases \
     CtsTelecomTestCases \
     CtsTelecomTestCases2 \
     CtsTelephonyTestCases \

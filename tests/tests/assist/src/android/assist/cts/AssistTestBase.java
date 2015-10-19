@@ -33,31 +33,41 @@ import android.content.res.XmlResourceParser;
 import android.cts.util.SystemUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.webkit.WebView;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import java.lang.Math;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class AssistTestBase extends ActivityInstrumentationTestCase2<TestStartActivity> {
-    static final String TAG = "AssistTestBase";
+    private static final String TAG = "AssistTestBase";
 
     protected TestStartActivity mTestActivity;
     protected AssistContent mAssistContent;
     protected AssistStructure mAssistStructure;
-    protected Bitmap mScreenshot;
+    protected boolean mScreenshot;
+    protected Bitmap mAppScreenshot;
     protected BroadcastReceiver mReceiver;
     protected Bundle mAssistBundle;
     protected Context mContext;
-    protected CountDownLatch mLatch, mAssistantReadyLatch;
-
+    protected CountDownLatch mLatch, mScreenshotLatch, mHasResumedLatch;
+    protected boolean mScreenshotMatches;
+    private Point mDisplaySize;
     private String mTestName;
     private View mView;
 
@@ -68,29 +78,49 @@ public class AssistTestBase extends ActivityInstrumentationTestCase2<TestStartAc
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mAssistantReadyLatch = new CountDownLatch(1);
         mContext = getInstrumentation().getTargetContext();
         SystemUtil.runShellCommand(getInstrumentation(),
                 "settings put secure assist_structure_enabled 1");
         SystemUtil.runShellCommand(getInstrumentation(),
                 "settings put secure assist_screenshot_enabled 1");
         logContextAndScreenshotSetting();
+
+        // reset old values
+        mScreenshotMatches = false;
+        mScreenshot = false;
+        mAssistStructure = null;
+        mAssistContent = null;
+        mAssistBundle = null;
+
+        if (mReceiver != null) {
+            mContext.unregisterReceiver(mReceiver);
+        }
+        mReceiver = new TestResultsReceiver();
+        mContext.registerReceiver(mReceiver,
+            new IntentFilter(Utils.BROADCAST_ASSIST_DATA_INTENT));
     }
 
     @Override
     protected void tearDown() throws Exception {
-        mContext.unregisterReceiver(mReceiver);
         mTestActivity.finish();
-        super.tearDown();
         mContext.sendBroadcast(new Intent(Utils.HIDE_SESSION));
+        if (mReceiver != null) {
+            mContext.unregisterReceiver(mReceiver);
+            mReceiver = null;
+        }
+        super.tearDown();
     }
 
+    /**
+     * Starts the shim service activity
+     */
     protected void startTestActivity(String testName) {
         Intent intent = new Intent();
         mTestName = testName;
         intent.setAction("android.intent.action.TEST_START_ACTIVITY_" + testName);
         intent.setComponent(new ComponentName(getInstrumentation().getContext(),
                 TestStartActivity.class));
+        intent.putExtra(Utils.TESTCASE_TYPE, testName);
         setActivityIntent(intent);
         mTestActivity = getActivity();
     }
@@ -98,9 +128,9 @@ public class AssistTestBase extends ActivityInstrumentationTestCase2<TestStartAc
     /**
      * Called when waiting for Assistant's Broadcast Receiver to be setup
      */
-    public void waitForAssistantToBeReady() throws Exception {
+    public void waitForAssistantToBeReady(CountDownLatch latch) throws Exception {
         Log.i(TAG, "waiting for assistant to be ready before continuing");
-        if (!mAssistantReadyLatch.await(Utils.TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
+        if (!latch.await(Utils.TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
             fail("Assistant was not ready before timeout of: " + Utils.TIMEOUT_MS + "msec");
         }
     }
@@ -109,11 +139,33 @@ public class AssistTestBase extends ActivityInstrumentationTestCase2<TestStartAc
      * Send broadcast to MainInteractionService to start a session
      */
     protected void startSession() {
-        mContext.sendBroadcast(new Intent(Utils.BROADCAST_INTENT_START_ASSIST));
+        startSession(mTestName, new Bundle());
+    }
+
+    protected void startSession(String testName, Bundle extras) {
+        Intent intent = new Intent(Utils.BROADCAST_INTENT_START_ASSIST);
+        Log.i(TAG, "passed in class test name is: " + testName);
+        intent.putExtra(Utils.TESTCASE_TYPE, testName);
+        addDimensionsToIntent(intent);
+        intent.putExtras(extras);
+        mContext.sendBroadcast(intent);
     }
 
     /**
-     * Called after startTestActivity
+     * Calculate display dimensions (including navbar) to pass along in the given intent.
+     */
+    private void addDimensionsToIntent(Intent intent) {
+        if (mDisplaySize == null) {
+            Display display = mTestActivity.getWindowManager().getDefaultDisplay();
+            mDisplaySize = new Point();
+            display.getRealSize(mDisplaySize);
+        }
+        intent.putExtra(Utils.DISPLAY_WIDTH_KEY, mDisplaySize.x);
+        intent.putExtra(Utils.DISPLAY_HEIGHT_KEY, mDisplaySize.y);
+    }
+
+    /**
+     * Called after startTestActivity. Includes check for receiving context.
      */
     protected boolean waitForBroadcast() throws Exception {
         mTestActivity.start3pApp(mTestName);
@@ -123,15 +175,16 @@ public class AssistTestBase extends ActivityInstrumentationTestCase2<TestStartAc
 
     protected boolean waitForContext() throws Exception {
         mLatch = new CountDownLatch(1);
+
         if (mReceiver != null) {
             mContext.unregisterReceiver(mReceiver);
         }
         mReceiver = new TestResultsReceiver();
         mContext.registerReceiver(mReceiver,
-            new IntentFilter(Utils.BROADCAST_ASSIST_DATA_INTENT));
+                new IntentFilter(Utils.BROADCAST_ASSIST_DATA_INTENT));
 
-        if (!mLatch.await(Utils.TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
-            fail("Failed to receive broadcast in " + Utils.TIMEOUT_MS + "msec");
+        if (!mLatch.await(Utils.getAssistDataTimeout(mTestName), TimeUnit.MILLISECONDS)) {
+            fail("Fail to receive broadcast in " + Utils.getAssistDataTimeout(mTestName) + "msec");
         }
         Log.i(TAG, "Received broadcast with all information.");
         return true;
@@ -150,23 +203,40 @@ public class AssistTestBase extends ActivityInstrumentationTestCase2<TestStartAc
 
         if ((mAssistContent == null) != isContentNull) {
             fail(String.format("Should %s have been null - AssistContent: %s",
-                    isContentNull? "":"not", mAssistContent));
+                    isContentNull ? "" : "not", mAssistContent));
         }
 
         if ((mAssistStructure == null) != isStructureNull) {
             fail(String.format("Should %s have been null - AssistStructure: %s",
-                isStructureNull ? "" : "not", mAssistStructure));
+                    isStructureNull ? "" : "not", mAssistStructure));
         }
 
         if ((mAssistBundle == null) != isBundleNull) {
             fail(String.format("Should %s have been null - AssistBundle: %s",
-                    isBundleNull? "":"not", mAssistBundle));
+                    isBundleNull ? "" : "not", mAssistBundle));
         }
 
-        if ((mScreenshot == null) != isScreenshotNull) {
+        if (mScreenshot == isScreenshotNull) {
             fail(String.format("Should %s have been null - Screenshot: %s",
-                    isScreenshotNull? "":"not", mScreenshot));
+                    isScreenshotNull ? "":"not", mScreenshot));
         }
+    }
+
+    /**
+     * Sends a broadcast with the specified scroll positions to the test app.
+     */
+    protected void scrollTestApp(int scrollX, int scrollY, boolean scrollTextView,
+            boolean scrollScrollView) {
+        mTestActivity.scrollText(scrollX, scrollY, scrollTextView, scrollScrollView);
+        Intent intent = null;
+        if (scrollTextView) {
+            intent = new Intent(Utils.SCROLL_TEXTVIEW_ACTION);
+        } else if (scrollScrollView) {
+            intent = new Intent(Utils.SCROLL_SCROLLVIEW_ACTION);
+        }
+        intent.putExtra(Utils.SCROLL_X_POSITION, scrollX);
+        intent.putExtra(Utils.SCROLL_Y_POSITION, scrollY);
+        mContext.sendBroadcast(intent);
     }
 
     /**
@@ -178,7 +248,7 @@ public class AssistTestBase extends ActivityInstrumentationTestCase2<TestStartAc
     protected void verifyAssistStructure(ComponentName backgroundApp, boolean isSecureWindow) {
         // Check component name matches
         assertEquals(backgroundApp.flattenToString(),
-            mAssistStructure.getActivityComponent().flattenToString());
+                mAssistStructure.getActivityComponent().flattenToString());
 
         Log.i(TAG, "Traversing down structure for: " + backgroundApp.flattenToString());
         mView = mTestActivity.findViewById(android.R.id.content).getRootView();
@@ -187,7 +257,7 @@ public class AssistTestBase extends ActivityInstrumentationTestCase2<TestStartAc
 
     protected void logContextAndScreenshotSetting() {
         Log.i(TAG, "Context is: " + Settings.Secure.getString(
-            mContext.getContentResolver(), "assist_structure_enabled"));
+                mContext.getContentResolver(), "assist_structure_enabled"));
         Log.i(TAG, "Screenshot is: " + Settings.Secure.getString(
                 mContext.getContentResolver(), "assist_screenshot_enabled"));
     }
@@ -240,9 +310,10 @@ public class AssistTestBase extends ActivityInstrumentationTestCase2<TestStartAc
                         + ((ViewGroup) parentView).getChildAt(childInt).getClass().getName());
             }
         }
+        String parentViewId = null;
         if (parentView.getId() > 0) {
-            Log.i(TAG, "View ID: "
-                    + mTestActivity.getResources().getResourceEntryName(parentView.getId()));
+            parentViewId = mTestActivity.getResources().getResourceEntryName(parentView.getId());
+            Log.i(TAG, "View ID: " + parentViewId);
         }
 
         Log.i(TAG, "parentNode is of type: " + parentNode.getClassName());
@@ -251,7 +322,9 @@ public class AssistTestBase extends ActivityInstrumentationTestCase2<TestStartAc
                     "nodechild" + nodeInt + " is of type: "
                     + parentNode.getChildAt(nodeInt).getClassName());
         }
-            Log.i(TAG, "Node ID: " + parentNode.getIdEntry());
+        Log.i(TAG, "Node ID: " + parentNode.getIdEntry());
+
+        assertEquals("IDs do not match", parentViewId, parentNode.getIdEntry());
 
         int numViewChildren = 0;
         int numNodeChildren = 0;
@@ -260,29 +333,55 @@ public class AssistTestBase extends ActivityInstrumentationTestCase2<TestStartAc
         }
         numNodeChildren = parentNode.getChildCount();
 
-        if  (isSecureWindow) {
+        if (isSecureWindow) {
+            assertTrue("ViewNode property isAssistBlocked is false", parentNode.isAssistBlocked());
             assertEquals("Secure window should only traverse root node.", 0, numNodeChildren);
             isSecureWindow = false;
-            return;
+        } else if (parentNode.getClassName().equals("android.webkit.WebView")) {
+            // WebView will also appear to have no children while the node does, traverse node
+            assertTrue("AssistStructure returned a WebView where the view wasn't one",
+                    parentView instanceof WebView);
+
+            boolean textInWebView = false;
+
+            for (int i = numNodeChildren - 1; i >= 0; i--) {
+               textInWebView |= traverseWebViewForText(parentNode.getChildAt(i));
+            }
+            assertTrue("Did not find expected strings inside WebView", textInWebView);
         } else {
             assertEquals("Number of children did not match.", numViewChildren, numNodeChildren);
-        }
 
-        verifyViewProperties(parentView, parentNode);
+            verifyViewProperties(parentView, parentNode);
 
-        if (parentView instanceof ViewGroup) {
-            parentGroup = (ViewGroup) parentView;
+            if (parentView instanceof ViewGroup) {
+                parentGroup = (ViewGroup) parentView;
 
-            // TODO: set a max recursion level
-            for (int i = numNodeChildren - 1; i >= 0; i--) {
-                View childView = parentGroup.getChildAt(i);
-                ViewNode childNode = parentNode.getChildAt(i);
+                // TODO: set a max recursion level
+                for (int i = numNodeChildren - 1; i >= 0; i--) {
+                    View childView = parentGroup.getChildAt(i);
+                    ViewNode childNode = parentNode.getChildAt(i);
 
-                // if isSecureWindow, should not have reached this point.
-                assertFalse(isSecureWindow);
-                traverseViewAndStructure(childView, childNode, isSecureWindow);
+                    // if isSecureWindow, should not have reached this point.
+                    assertFalse(isSecureWindow);
+                    traverseViewAndStructure(childView, childNode, isSecureWindow);
+                }
             }
         }
+    }
+
+    /** 
+     * Return true if the expected strings are found in the WebView, else fail.
+     */
+    private boolean traverseWebViewForText(ViewNode parentNode) {
+        boolean textFound = false;
+        if (parentNode.getText() != null 
+                && parentNode.getText().toString().equals(Utils.WEBVIEW_HTML_GREETING)) {
+            return true;
+        }
+        for (int i = parentNode.getChildCount() - 1; i >= 0; i--) {
+            textFound |= traverseWebViewForText(parentNode.getChildAt(i));
+        }
+        return textFound;
     }
 
     /**
@@ -304,21 +403,48 @@ public class AssistTestBase extends ActivityInstrumentationTestCase2<TestStartAc
             assertNull("View Node should not have an ID.", parentNode.getIdEntry());
         }
 
-        assertEquals("Scroll X does not match.",
-                parentView.getScrollX(), parentNode.getScrollX());
+        Log.i(TAG, "parent text: " + parentNode.getText());
+        if (parentView instanceof TextView) {
+            Log.i(TAG, "view text: " + ((TextView) parentView).getText());
+        }
 
-        assertEquals("Scroll Y does not match.",
-                parentView.getScrollY(), parentNode.getScrollY());
 
-        assertEquals("Heights do not match.", parentView.getHeight(),
-                parentNode.getHeight());
-
+        assertEquals("Scroll X does not match.", parentView.getScrollX(), parentNode.getScrollX());
+        assertEquals("Scroll Y does not match.", parentView.getScrollY(), parentNode.getScrollY());
+        assertEquals("Heights do not match.", parentView.getHeight(), parentNode.getHeight());
         assertEquals("Widths do not match.", parentView.getWidth(), parentNode.getWidth());
 
-        // TODO: handle unicode/i18n
         if (parentView instanceof TextView) {
-            assertEquals("Text in TextView does not match.",
-                    ((TextView) parentView).getText().toString(), parentNode.getText());
+            if (parentView instanceof EditText) {
+                assertEquals("Text selection start does not match",
+                    ((EditText)parentView).getSelectionStart(), parentNode.getTextSelectionStart());
+                assertEquals("Text selection end does not match",
+                        ((EditText)parentView).getSelectionEnd(), parentNode.getTextSelectionEnd());
+            }
+            TextView textView = (TextView) parentView;
+            assertEquals(textView.getTextSize(), parentNode.getTextSize());
+            String viewString = textView.getText().toString();
+            String nodeString = parentNode.getText().toString();
+
+            if (parentNode.getScrollX() == 0 && parentNode.getScrollY() == 0) {
+                Log.i(TAG, "Verifying text within TextView at the beginning");
+                Log.i(TAG, "view string: " + viewString);
+                Log.i(TAG, "node string: " + nodeString);
+                assertTrue("String length is unexpected: original string - " + viewString.length() +
+                                ", string in AssistData - " + nodeString.length(),
+                        viewString.length() >= nodeString.length());
+                assertTrue("Expected a longer string to be shown. expected: "
+                                + Math.min(viewString.length(), 30) + " was: " + nodeString
+                                .length(),
+                        nodeString.length() >= Math.min(viewString.length(), 30));
+                for (int x = 0; x < parentNode.getText().length(); x++) {
+                    assertEquals("Char not equal at index: " + x,
+                            ((TextView) parentView).getText().toString().charAt(x),
+                            parentNode.getText().charAt(x));
+                }
+            } else if (parentNode.getScrollX() == parentView.getWidth()) {
+
+            }
         } else {
             assertNull(parentNode.getText());
         }
@@ -336,16 +462,19 @@ public class AssistTestBase extends ActivityInstrumentationTestCase2<TestStartAc
                 AssistTestBase.this.mAssistContent = assistData.getParcelable(
                         Utils.ASSIST_CONTENT_KEY);
 
-                byte[] bitmapArray = assistData.getByteArray(Utils.ASSIST_SCREENSHOT_KEY);
-                if (bitmapArray != null) {
-                    AssistTestBase.this.mScreenshot = BitmapFactory.decodeByteArray(
-                            bitmapArray, 0, bitmapArray.length);
-                } else {
-                    AssistTestBase.this.mScreenshot = null;
-                }
+                AssistTestBase.this.mScreenshot =
+                        assistData.getBoolean(Utils.ASSIST_SCREENSHOT_KEY, false);
+
+                AssistTestBase.this.mScreenshotMatches = assistData.getBoolean(
+                        Utils.COMPARE_SCREENSHOT_KEY, false);
 
                 if (mLatch != null) {
+                    Log.i(AssistTestBase.TAG, "counting down latch. received assist data.");
                     mLatch.countDown();
+                }
+            } else if (intent.getAction().equals(Utils.APP_3P_HASRESUMED)) {
+                if (mHasResumedLatch != null) {
+                    mHasResumedLatch.countDown();
                 }
             }
         }

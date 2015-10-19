@@ -20,6 +20,16 @@ import android.assist.common.Utils;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+
+import java.io.ByteArrayOutputStream;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -31,12 +41,20 @@ import java.lang.Override;
 public class TestApp extends Activity {
     static final String TAG = "TestApp";
 
+    private String mTestCaseName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "TestApp created");
-        setContentView(R.layout.test_app);
+        mTestCaseName = getIntent().getStringExtra(Utils.TESTCASE_TYPE);
+        switch (mTestCaseName) {
+            case Utils.LARGE_VIEW_HIERARCHY:
+                setContentView(R.layout.multiple_text_views);
+                return;
+            default:
+                setContentView(R.layout.test_app);
+        }
     }
 
     @Override
@@ -49,7 +67,7 @@ public class TestApp extends Activity {
             @Override
             public void onGlobalLayout() {
                 layout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                sendBroadcast(new Intent(Utils.ASSIST_STRUCTURE_HASRESUMED));
+                sendBroadcast(new Intent(Utils.APP_3P_HASRESUMED));
             }
         });
     }

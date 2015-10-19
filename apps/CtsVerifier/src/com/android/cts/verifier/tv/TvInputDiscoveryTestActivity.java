@@ -25,8 +25,6 @@ import android.view.View;
 
 import com.android.cts.verifier.R;
 
-import java.util.List;
-
 /**
  * Tests for verifying TV app behavior for third-party TV input apps.
  */
@@ -131,7 +129,7 @@ public class TvInputDiscoveryTestActivity extends TvAppVerifierActivity
         mGoToEpgItem = createUserItem(R.string.tv_input_discover_test_go_to_epg,
                 R.string.tv_launch_epg, this);
         mVerifyEpgItem = createUserItem(R.string.tv_input_discover_test_verify_epg,
-                R.string.tv_input_discover_test_yes, this);
+                android.R.string.yes, this);
     }
 
     @Override

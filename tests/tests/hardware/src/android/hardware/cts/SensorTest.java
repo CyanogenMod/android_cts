@@ -88,7 +88,7 @@ public class SensorTest extends SensorTestCase {
     }
 
     @Override
-    protected void tearDown(){
+    protected void tearDown() {
         if (mSensorManager != null) {
             // SensorManager will check listener and status, so just unregister listener
             mSensorManager.unregisterListener(mNullSensorEventListener);
@@ -256,7 +256,8 @@ public class SensorTest extends SensorTestCase {
         if (mTriggerSensor == null) {
             throw new SensorNotSupportedException(Sensor.TYPE_ACCELEROMETER);
         }
-        boolean  result = mSensorManager.requestTriggerSensor(mNullTriggerEventListener, mTriggerSensor);
+        boolean  result =
+            mSensorManager.requestTriggerSensor(mNullTriggerEventListener, mTriggerSensor);
         assertFalse(result);
     }
 
@@ -265,7 +266,8 @@ public class SensorTest extends SensorTestCase {
         if (mTriggerSensor == null) {
             throw new SensorNotSupportedException(Sensor.TYPE_ACCELEROMETER);
         }
-        boolean result = mSensorManager.cancelTriggerSensor(mNullTriggerEventListener, mTriggerSensor);
+        boolean result =
+            mSensorManager.cancelTriggerSensor(mNullTriggerEventListener, mTriggerSensor);
         assertFalse(result);
     }
 

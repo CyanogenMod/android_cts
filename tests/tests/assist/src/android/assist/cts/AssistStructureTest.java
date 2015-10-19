@@ -34,10 +34,12 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class AssistStructureTest extends AssistTestBase {
+    private static final String TAG = "AssistStructureTest";
     private static final String TEST_CASE_TYPE = Utils.ASSIST_STRUCTURE;
 
     private BroadcastReceiver mReceiver;
     private CountDownLatch mHasResumedLatch = new CountDownLatch(1);
+    private CountDownLatch mReadyLatch = new CountDownLatch(1);
 
     public AssistStructureTest() {
         super();
@@ -65,7 +67,7 @@ public class AssistStructureTest extends AssistTestBase {
         }
         mReceiver = new AssistStructureTestBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Utils.ASSIST_STRUCTURE_HASRESUMED);
+        filter.addAction(Utils.APP_3P_HASRESUMED);
         filter.addAction(Utils.ASSIST_RECEIVER_REGISTERED);
         mContext.registerReceiver(mReceiver, filter);
     }
@@ -80,7 +82,7 @@ public class AssistStructureTest extends AssistTestBase {
     public void testAssistStructure() throws Exception {
         mTestActivity.start3pApp(TEST_CASE_TYPE);
         mTestActivity.startTest(TEST_CASE_TYPE);
-        waitForAssistantToBeReady();
+        waitForAssistantToBeReady(mReadyLatch);
         waitForOnResume();
         startSession();
         waitForContext();
@@ -94,10 +96,14 @@ public class AssistStructureTest extends AssistTestBase {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(Utils.ASSIST_STRUCTURE_HASRESUMED)) {
-                mHasResumedLatch.countDown();
+            if (action.equals(Utils.APP_3P_HASRESUMED)) {
+                if (mHasResumedLatch != null) {
+                    mHasResumedLatch.countDown();
+                }
             } else if (action.equals(Utils.ASSIST_RECEIVER_REGISTERED)) {
-                mAssistantReadyLatch.countDown();
+                if (mReadyLatch != null) {
+                    mReadyLatch.countDown();
+                }
             }
         }
     }

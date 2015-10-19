@@ -460,6 +460,10 @@ public class ImageReaderTest extends Camera2AndroidTestCase {
 
                             // Stop capture, delete the streams.
                             stopCapture(/*fast*/false);
+                            yuvImage.close();
+                            jpegImage.close();
+                            yuvListener.drain();
+                            jpegListener.drain();
                         } finally {
                             closeImageReader(jpegReader);
                             jpegReader = null;
@@ -645,6 +649,8 @@ public class ImageReaderTest extends Camera2AndroidTestCase {
                             maxYuvSz.getHeight(), ImageFormat.YUV_420_888, /*filePath*/null);
                     CameraTestUtils.validateImage(captureImage, captureSz.getWidth(),
                             captureSz.getHeight(), format, /*filePath*/null);
+                    yuvImage.close();
+                    captureImage.close();
                 }
 
                 // Stop capture, delete the streams.
@@ -788,7 +794,7 @@ public class ImageReaderTest extends Camera2AndroidTestCase {
                                     getValueNotNull(result, CaptureResult.SENSOR_EXPOSURE_TIME),
                                     TEST_EXPOSURE_TIME_NS),
                             exposureTimeDiff < EXPOSURE_TIME_ERROR_MARGIN_NS &&
-                            exposureTimeDiff > 0);
+                            exposureTimeDiff >= 0);
 
                     mCollector.expectTrue(
                             String.format("Long processing frame %d format %d size %s " +

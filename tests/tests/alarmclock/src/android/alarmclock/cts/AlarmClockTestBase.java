@@ -23,6 +23,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.provider.AlarmClock;
 import android.os.Bundle;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
@@ -53,23 +55,61 @@ public class AlarmClockTestBase extends ActivityInstrumentationTestCase2<TestSta
 
     @Override
     protected void tearDown() throws Exception {
-        mContext.unregisterReceiver(mActivityDoneReceiver);
+        if (mActivityDoneReceiver != null) {
+            try {
+                mContext.unregisterReceiver(mActivityDoneReceiver);
+            } catch (IllegalArgumentException e) {
+                // This exception is thrown if mActivityDoneReceiver in
+                // the above call to unregisterReceiver is never registered.
+                // If so, no harm done by ignoring this exception.
+            }
+            mActivityDoneReceiver = null;
+        }
         super.tearDown();
     }
 
     private void registerBroadcastReceiver(TestcaseType testCaseType) throws Exception {
         mTestCaseType = testCaseType;
         mLatch = new CountDownLatch(1);
-        if (mActivityDoneReceiver != null) {
-            mContext.unregisterReceiver(mActivityDoneReceiver);
-        }
         mActivityDoneReceiver = new ActivityDoneReceiver();
         mContext.registerReceiver(mActivityDoneReceiver,
                 new IntentFilter(Utils.BROADCAST_INTENT + testCaseType.toString()));
     }
 
+    private boolean isIntentSupported(TestcaseType testCaseType) {
+        Intent intent;
+        switch (testCaseType) {
+          case DISMISS_ALARM:
+              intent = new Intent(AlarmClock.ACTION_DISMISS_ALARM);
+              break;
+
+          case SET_ALARM:
+          case SET_ALARM_FOR_DISMISSAL:
+              intent = new Intent(AlarmClock.ACTION_SET_ALARM);
+              break;
+
+          case SNOOZE_ALARM:
+              intent = new Intent(AlarmClock.ACTION_SNOOZE_ALARM);
+              break;
+
+          default:
+              // shouldn't happen
+              return false;
+        }
+        final PackageManager manager = mContext.getPackageManager();
+        assertNotNull(manager);
+        if (manager.resolveActivity(intent, 0) == null) {
+            Log.i(TAG, "No Voice Activity found for the intent: " + intent.getAction());
+            return false;
+        }
+        return true;
+    }
+
     protected String runTest(TestcaseType testCaseType) throws Exception {
         Log.i(TAG, "Begin Testing: " + testCaseType);
+        // Make sure the corresponding intent is supported by the platform, before testing.
+        if (!isIntentSupported(testCaseType)) return Utils.COMPLETION_RESULT;
+
         if (!startTestActivity(testCaseType)) {
             fail("test activity start failed for testcase = " + testCaseType);
             return "";

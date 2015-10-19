@@ -1277,7 +1277,25 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="provisioning_byod_no_video_capture_resolver">No video capture app present. Skip test.</string>
     <string name="provisioning_byod_no_audio_capture_resolver">No audio capture app present. Skip test.</string>
     <string name="provisioning_byod_capture_media_error">Error while capturing media from managed profile.</string>
+    <string name="provisioning_byod_capture_image_error">Error while capturing image from managed profile.</string>
 
+    <string name="provisioning_byod_auth_bound_key">Autentication-boud keys</string>
+    <string name="provisioning_byod_auth_bound_key_info">
+        This test verifies keystore cryptographic keys can be bound to device credentials.
+        These keys should only be available if there was a recent enough authentication.
+    </string>
+    <string name="provisioning_byod_auth_bound_key_instruction">
+        This test verifies keystore cryptographic keys can be bound to device lockscreen challenge or fingerprints (if available).
+        These keys should only be available if there was a recent enough authentication. \n
+
+        1. Press "Set up" to open Security settings. Create a lockscreen password and if available, enroll a fingerprint.\n
+        2. Go through the list of tests.\n
+        3. Mark the overall test pass or fail.\n
+        4. Once the set of tests are completed, remove the lockscreen challenge.
+    </string>
+    <string name="provisioning_byod_auth_bound_key_set_up">Set up</string>
+    <string name="provisioning_byod_lockscreen_bound_key">Lockscreen-bound key test</string>
+    <string name="provisioning_byod_fingerprint_bound_key">Fingerprint-bound key test</string>
     <!-- Strings for DeskClock -->
     <string name="deskclock_tests">Alarms and Timers Tests</string>
     <string name="deskclock_tests_info">
@@ -1436,16 +1454,36 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="provisioning_byod_profile_visible">Profile-aware accounts settings</string>
     <string name="provisioning_byod_admin_visible">Profile-aware device administrator settings</string>
     <string name="provisioning_byod_workapps_visible">Badged work apps visible in Launcher</string>
-    <string name="provisioning_byod_cross_profile">Open app cross profiles</string>
-    <string name="provisioning_byod_cross_profile_app_personal">
-        You selected the CTS Verifier option.
-    </string>
+    <string name="provisioning_byod_cross_profile_from_personal">Open app cross profiles from the personal side</string>
+    <string name="provisioning_byod_cross_profile_from_work">Open app cross profiles from the work side</string>
+    <string name="provisioning_app_linking">App links from the work side</string>
+    <string name="provisioning_byod_cross_profile_app_personal">You selected the personal option.</string>
     <string name="provisioning_byod_cross_profile_app_work">You selected the Work option.</string>
-    <string name="provisioning_byod_cross_profile_instruction">
+    <string name="provisioning_byod_cross_profile_app_ctsverifier"> You selected the ctsverifier option </string>
+    <string name="provisioning_byod_cross_profile_from_personal_instruction">
         Please press the Go button to start an action.\n
         \n
         You should be asked to choose either \"CTS Verifier\" or \"Work\" to complete the action.
         Pressing either should bring up a page stating your choice.\n
+        \n
+        Verify that you are prompted with the above choices and both options work as intended. Then mark this test accordingly.
+    </string>
+    <string name="provisioning_byod_cross_profile_from_work_instruction">
+        Please press the Go button to start an action.\n
+        \n
+        You should be asked to choose either \"CTS Verifier\" or \"Personal\" to complete the action.
+        Pressing either should bring up a page stating your choice.\n
+        \n
+        Verify that you are prompted with the above choices and both options work as intended. Then mark this test accordingly.
+    </string>
+    <string name="provisioning_byod_app_linking_instruction">
+        Please press the Go button to start an action.\n
+        \n
+        You should be asked to choose either \"CTS Verifier\" or \"Personal\" to complete the action.\n
+        - If you choose \"CTS Verifier\", you should see a page stating your chose \"CTS Verifier\".\n
+        - If you choose \"Personal\", you should be presented with another dialog between \"CTS Verifier\"
+        and some other apps. In this case, you should choose \"CTS verifier\".\n
+        You should then see a page stating you chose \"Personal\".\n
         \n
         Verify that you are prompted with the above choices and both options work as intended. Then mark this test accordingly.
     </string>
@@ -1640,6 +1678,7 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="provisioning_byod_send_share_intent">Send share intent</string>
     <string name="provisioning_byod_cannot_resolve_beam_activity">Cannot find beam activity</string>
 
+    <string name="test_failed_cannot_start_intent">Cannot start the given intent.</string>
     <string name="provisioning_byod_no_activity">Cannot communicate with activity in the work profile.</string>
     <string name="provisioning_byod_delete_profile">Initiate deletion of work profile.</string>
     <string name="provisioning_byod_profile_deleted">Work profile deleted.</string>
@@ -1875,7 +1914,6 @@ You should be prompted to select credentials; choose the ones you just installed
     Do you see the programs named \"Dummy Program\" and their descriptions
     "Dummy Program Description" in the EPG?
     </string>
-    <string name="tv_input_discover_test_yes">Yes</string>
 
     <string name="tv_parental_control_test">TV app parental controls test</string>
     <string name="tv_parental_control_test_info">
@@ -1964,6 +2002,24 @@ You should be prompted to select credentials; choose the ones you just installed
     The playback position should be moved to the next position.
     </string>
 
+    <string name="tv_app_link_test">TV app app-link test</string>
+    <string name="tv_app_link_test_info">
+    Verify that the bundled TV app supports linking to channel apps. If TV input service provides
+    links for its specific channels, TV app should show the links in a proper format.
+    </string>
+    <string name="tv_app_link_test_select_app_link">
+    Select the \"Launch TV app\" button, then check if you can see a menu with \"Cts App-Link Text\"
+    text in red background. If you see the link, select it to follow the link.
+    </string>
+    <string name="tv_app_link_test_verify_link_clicked">
+    The app-link must have been clicked and the activity should be changed correctly.
+    </string>
+    <string name="tv_input_link_test_verify_link_interface">
+    Do you see the app-link card similar to the image on the left?\n
+    1) You should see the poster art image, but the color could be differ.\n
+    2) You should see the text \"Cts App-Link Text\".\n
+    </string>
+
     <string name="overlay_view_text">Overlay View Dummy Text</string>
     <string name="fake_rating">Fake</string>
 
@@ -1984,25 +2040,34 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="error_screen_pinning_did_not_exit">Screen was not unpinned.</string>
     <string name="error_screen_pinning_couldnt_exit">Could not exit screen pinning through API.</string>
 
-    <!--  Audio Devices Notifcations Test -->
-    <string name="audio_devices_notifications_test">Audio Devices Notifications Test</string>
-    <string name="audio_devices_notification_instructions">
+    <!--  Audio Devices Notifcations Tests -->
+    <string name="audio_out_devices_notifications_test">Audio Output Devices Notifications Test</string>
+    <string name="audio_out_devices_notification_instructions">
           Click the "Clear Messages" button then connect and disconnect a wired headset.
+          Note if the appropriate notification messages appear below.
+    </string>
+    <string name="audio_in_devices_notifications_test">Audio Input Devices Notifications Test</string>
+    <string name="audio_in_devices_notification_instructions">
+          Click the "Clear Messages" button then connect and disconnect a microphone or wired headset.
           Note if the appropriate notification messages appear below.
     </string>
     <string name="audio_dev_notification_clearmsgs">Clear Messages</string>
     <string name="audio_dev_notification_connectMsg">CONNECT DETECTED</string>
     <string name="audio_dev_notification_disconnectMsg">DISCONNECT DETECTED</string>
 
-    <!--  Audio Routing Notifcations Test -->
-    <string name="audio_routingnotifications_test">Audio Routing Notifications Test</string>
-    <string name="audio_dev_routingnotification_instructions">
-          Click on the "Play" button in the AudioTrack Routing Notifictions section below to
+    <string name="audio_input_routingnotifications_test">Audio Input Routing Notifications Test</string>
+    <string name="audio_input_routingnotification_instructions">
+          Click on the "Record" button in the AudioRecord Routing Notifications section below to
+          start recording. Insert a wired headset or microphone. Observe a message acknowledging the
+          rerouting event below. Remove the wired headset and observe the new routing message.
+          Click on the "Stop" button to stop recording.\n
+    </string>
+    <string name="audio_output_routingnotifications_test">Audio Output Routing Notifications Test</string>
+    <string name="audio_output_routingnotification_instructions">
+          Click on the "Play" button in the AudioTrack Routing Notifications section below to
           start (silent) playback. Insert a wired headset. Observe a message acknowledging the
           rerouting event below. Remove the wired headset and observe the new routing message.
           Click on the "Stop" button to stop playback.\n
-          Repeat the process with "Record" and "Stop" button in the AudioRecord Routing
-          Notifications section below.
     </string>
     <string name="audio_routingnotification_playBtn">Play</string>
     <string name="audio_routingnotification_playStopBtn">Stop</string>
@@ -2013,14 +2078,19 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="audio_routingnotification_trackRoutingMsg">AudioTrack rerouting</string>
     <string name="audio_routingnotification_recordRoutingMsg">AudioRecord rerouting</string>
 
+    <!-- Audio general text -->
+    <string name="audio_general_headset_port_exists">Does this device have a headset port?</string>
+    <string name="audio_general_headset_no">No</string>
+    <string name="audio_general_headset_yes">Yes</string>
+
     <!-- Audio Loopback Latency Test -->
     <string name="audio_loopback_test">Audio Loopback Latency Test</string>
      <string name="audio_loopback_info">
-          This test requires the Loopback Plug. Please connect a Loopback Plug on the headset
+          This test requires the Loopback Plug. Please connect a Loopback Plug into the headset
           connector, and proceed with the instructions on the screen.
           The system will measure the input-output audio latency by injecting a pulse on the output,
           and computing the distance between replicas of the pulse.
-          You can vary the Audio Level slider to ensure the pulse will feed back at adecuate levels.
+          You can vary the Audio Level slider to ensure the pulse will feed back at adequate levels.
           Repeat until a confidence level >= 0.6 is achieved.
     </string>
     <string name="audio_loopback_instructions">
@@ -2055,7 +2125,7 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="audio_frequency_speaker_test">Audio Frequency Speaker Test</string>
     <string name="audio_frequency_speaker_info">
         This test requires an external USB reference microphone. Please connect the USB microphone and proceed with the instructions on the screen.
-        The system will measure frequency response of the left and right speakers (if there are two speakers), or twice the response of the mono speaker.
+        The system will measure frequency response of the left and right speakers (if there are two speakers), or the response of the mono speaker twice.
        </string>
     <string name="audio_frequency_speaker_instructions">
           Please connect an USB reference microphone and press "USB Reference microphone ready"

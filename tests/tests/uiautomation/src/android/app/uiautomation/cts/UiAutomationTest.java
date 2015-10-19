@@ -165,6 +165,9 @@ public class UiAutomationTest extends UiAutomatorTestCase {
             // Wait for things to settle.
             getUiDevice().waitForIdle();
 
+            // Wait for Activity draw finish
+            getInstrumentation().waitForIdleSync();
+
             // Clear the window animation stats to be with a clean slate.
             uiAutomation.clearWindowAnimationFrameStats();
 
@@ -176,6 +179,9 @@ public class UiAutomationTest extends UiAutomatorTestCase {
 
             // Wait for things to settle.
             getUiDevice().waitForIdle();
+
+            // Wait for Activity draw finish
+            getInstrumentation().waitForIdleSync();
 
             // Get the frame stats.
             WindowAnimationFrameStats stats = uiAutomation.getWindowAnimationFrameStats();

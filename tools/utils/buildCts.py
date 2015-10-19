@@ -470,6 +470,15 @@ def BuildCtsTemporarilyKnownFailureList():
           'android.alarmclock.cts.SetAlarmTest#testAll',
           'android.alarmclock.cts.SnoozeAlarmTest#testAll',
       ],
+      'android.assist' : [
+          'android.assist.cts.AssistantContentViewTest',
+          'android.assist.cts.ExtraAssistDataTest',
+          'android.assist.cts.FocusChangeTest',
+          'android.assist.cts.LargeViewHierarchyTest',
+          'android.assist.cts.ScreenshotTest',
+          'android.assist.cts.TextViewTest',
+          'android.assist.cts.WebViewTest',
+      ],
       'android.calllog' : [
           'android.calllog.cts.CallLogBackupTest#testSingleCallBackup',
       ],
@@ -487,8 +496,15 @@ def BuildCtsTemporarilyKnownFailureList():
       'android.voicesettings' : [
           'android.voicesettings.cts.ZenModeTest#testAll',
       ],
+      'com.android.cts.systemui' : [
+          'com.android.cts.systemui.LightStatusBarTests#testLightStatusBarIcons',
+      ],
       'com.android.cts.app.os' : [
           'com.android.cts.app.os.OsHostTests#testNonExportedActivities',
+      ],
+      'com.android.cts.devicepolicy' : [
+          'com.android.cts.devicepolicy.MixedDeviceOwnerTest#testPackageInstallUserRestrictions',
+          'com.android.cts.devicepolicy.MixedProfileOwnerTest#testPackageInstallUserRestrictions',
       ],
       '' : []}
 

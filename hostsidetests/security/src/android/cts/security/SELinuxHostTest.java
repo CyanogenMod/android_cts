@@ -589,9 +589,9 @@ public class SELinuxHostTest extends DeviceTestCase {
         assertDomainN("u:r:zygote:s0", "zygote", "zygote64");
     }
 
-    /* drm server is always present */
+    /* Checks drmserver for devices that require it */
     public void testDrmServerDomain() throws DeviceNotAvailableException {
-        assertDomainOne("u:r:drmserver:s0", "/system/bin/drmserver");
+        assertDomainZeroOrOne("u:r:drmserver:s0", "/system/bin/drmserver");
     }
 
     /* Media server is always running */

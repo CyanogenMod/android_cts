@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.DisplayMetrics;
@@ -40,12 +41,29 @@ public class ActivityManagerMemoryClassTest
     }
 
     public static class ExpectedMemorySizesClass {
+        private static final Map<Integer, Integer> expectedMemorySizeForWatch
+            =  new HashMap<Integer, Integer>();
         private static final Map<Integer, Integer> expectedMemorySizeForSmallNormalScreen
             =  new HashMap<Integer, Integer>();
         private static final Map<Integer, Integer> expectedMemorySizeForLargeScreen
             =  new HashMap<Integer, Integer>();
         private static final Map<Integer, Integer> expectedMemorySizeForXLargeScreen
             =  new HashMap<Integer, Integer>();
+
+        static {
+            expectedMemorySizeForWatch.put(DisplayMetrics.DENSITY_LOW, 32);
+            expectedMemorySizeForWatch.put(DisplayMetrics.DENSITY_MEDIUM, 32);
+            expectedMemorySizeForWatch.put(DisplayMetrics.DENSITY_TV, 32);
+            expectedMemorySizeForWatch.put(DisplayMetrics.DENSITY_HIGH, 36);
+            expectedMemorySizeForWatch.put(DisplayMetrics.DENSITY_280, 36);
+            expectedMemorySizeForWatch.put(DisplayMetrics.DENSITY_XHIGH, 48);
+            expectedMemorySizeForWatch.put(DisplayMetrics.DENSITY_360, 48);
+            expectedMemorySizeForWatch.put(DisplayMetrics.DENSITY_400, 56);
+            expectedMemorySizeForWatch.put(DisplayMetrics.DENSITY_420, 64);
+            expectedMemorySizeForWatch.put(DisplayMetrics.DENSITY_XXHIGH, 88);
+            expectedMemorySizeForWatch.put(DisplayMetrics.DENSITY_560, 112);
+            expectedMemorySizeForWatch.put(DisplayMetrics.DENSITY_XXXHIGH, 154);
+        }
 
         static {
             expectedMemorySizeForSmallNormalScreen.put(DisplayMetrics.DENSITY_LOW, 32);
@@ -92,7 +110,15 @@ public class ActivityManagerMemoryClassTest
             expectedMemorySizeForXLargeScreen.put(DisplayMetrics.DENSITY_XXXHIGH, 768);
         }
 
-        public static Integer getExpectedMemorySize(int screenSize, int screenDensity) {
+        public static Integer getExpectedMemorySize(
+                int screenSize,
+                int screenDensity,
+                boolean isWatch) {
+
+           if (isWatch) {
+              return expectedMemorySizeForWatch.get(screenDensity);
+           }
+
            switch (screenSize) {
                 case Configuration.SCREENLAYOUT_SIZE_SMALL:
                 case Configuration.SCREENLAYOUT_SIZE_NORMAL:
@@ -141,8 +167,11 @@ public class ActivityManagerMemoryClassTest
     }
 
     private void assertMemoryForScreenDensity(int memoryClass, int screenDensity, int screenSize) {
-        int expectedMinimumMemory = ExpectedMemorySizesClass.getExpectedMemorySize(screenSize,
-                                                                                   screenDensity);
+        Context context = getInstrumentation().getTargetContext();
+        boolean isWatch =
+            context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WATCH);
+        int expectedMinimumMemory =
+            ExpectedMemorySizesClass.getExpectedMemorySize(screenSize, screenDensity, isWatch);
 
         assertTrue("Expected to have at least " + expectedMinimumMemory
                 + "mb of memory for screen density " + screenDensity,

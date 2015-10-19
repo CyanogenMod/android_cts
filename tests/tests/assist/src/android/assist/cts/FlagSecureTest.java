@@ -37,7 +37,7 @@ public class FlagSecureTest extends AssistTestBase {
 
     private BroadcastReceiver mReceiver;
     private CountDownLatch mHasResumedLatch = new CountDownLatch(1);
-
+    private CountDownLatch mReadyLatch = new CountDownLatch(1);
     public FlagSecureTest() {
         super();
     }
@@ -78,7 +78,7 @@ public class FlagSecureTest extends AssistTestBase {
 
     public void testSecureActivity() throws Exception {
         mTestActivity.startTest(TEST_CASE_TYPE);
-        waitForAssistantToBeReady();
+        waitForAssistantToBeReady(mReadyLatch);
         mTestActivity.start3pApp(TEST_CASE_TYPE);
         waitForOnResume();
         startSession();
@@ -93,9 +93,13 @@ public class FlagSecureTest extends AssistTestBase {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(Utils.FLAG_SECURE_HASRESUMED)) {
-                mHasResumedLatch.countDown();
+                if (mHasResumedLatch != null) {
+                    mHasResumedLatch.countDown();
+                }
             } else if (action.equals(Utils.ASSIST_RECEIVER_REGISTERED)) {
-                mAssistantReadyLatch.countDown();
+                if (mReadyLatch != null) {
+                    mReadyLatch.countDown();
+                }
             }
         }
     }
