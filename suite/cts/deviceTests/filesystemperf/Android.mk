@@ -26,5 +26,7 @@ LOCAL_PACKAGE_NAME := CtsDeviceFilePerf
 
 LOCAL_SDK_VERSION := 16
 
+cts_runtime_hint := 28
+
 include $(BUILD_CTS_PACKAGE)
 
