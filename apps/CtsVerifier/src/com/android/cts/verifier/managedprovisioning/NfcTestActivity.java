@@ -82,12 +82,6 @@ public class NfcTestActivity extends Activity {
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         mNfcAdapter.setBeamPushUris(uris, this);
 
-        findViewById(R.id.manual_beam_button).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mNfcAdapter.invokeBeam(NfcTestActivity.this);
-            }
-        });
         findViewById(R.id.intent_share_button).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -17,15 +17,9 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <Button android:text="@string/provisioning_byod_send_manual_beam"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/manual_beam_button" />
-
     <Button android:text="@string/provisioning_byod_send_share_intent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/intent_share_button"
-        android:layout_below="@+id/manual_beam_button" />
+        android:id="@+id/intent_share_button" />
 
 </RelativeLayout>
