@@ -330,11 +330,32 @@ public class MediaUtils {
                 ex.release();
             }
         }
-        return false;
+        return true;
     }
 
     public static boolean checkCodecsForPath(Context context, String path) {
         return check(hasCodecsForPath(context, path), "no decoder found");
+    }
+
+    public static boolean hasCodecForDomain(boolean encoder, String domain) {
+        for (MediaCodecInfo info : sMCL.getCodecInfos()) {
+            if (encoder != info.isEncoder()) {
+                continue;
+            }
+
+            for (String type : info.getSupportedTypes()) {
+                if (type.toLowerCase().startsWith(domain.toLowerCase() + "/")) {
+                    Log.i(TAG, "found codec " + info.getName() + " for mime " + type);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean checkCodecForDomain(boolean encoder, String domain) {
+        return check(hasCodecForDomain(encoder, domain),
+                "no " + domain + (encoder ? " encoder" : " decoder") + " found");
     }
 
     private static boolean hasCodecForMime(boolean encoder, String mime) {

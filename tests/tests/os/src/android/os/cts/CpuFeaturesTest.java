@@ -82,8 +82,8 @@ public class CpuFeaturesTest extends TestCase {
     }
 
     private static final String[] armv8RequiredFeatures = {
-            "wp", "half", "thumb", "fastmult", "vfp", "edsp", "neon",
-            "vfpv3", "tlsi", "vfpv4", "idiva", "idivt" };
+            "half", "thumb", "fastmult", "vfp", "edsp", "neon",
+            "vfpv3", "vfpv4", "idiva", "idivt" };
 
     private static void assertInCpuinfo(List<String> features,
             String feature) {

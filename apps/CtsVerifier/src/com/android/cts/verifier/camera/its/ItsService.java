@@ -39,12 +39,14 @@ import android.hardware.SensorManager;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.ImageWriter;
+import android.media.Image.Plane;
 import android.net.Uri;
 import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.SystemClock;
 import android.os.Vibrator;
 import android.util.Log;
 import android.util.Rational;
@@ -55,6 +57,8 @@ import com.android.ex.camera2.blocking.BlockingCameraManager;
 import com.android.ex.camera2.blocking.BlockingCameraManager.BlockingOpenException;
 import com.android.ex.camera2.blocking.BlockingStateCallback;
 import com.android.ex.camera2.blocking.BlockingSessionCallback;
+
+import com.android.cts.verifier.camera.its.StatsImage;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -70,6 +74,8 @@ import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -154,6 +160,9 @@ public class ItsService extends Service implements SensorEventListener {
     private AtomicInteger mCountYuv = new AtomicInteger();
     private AtomicInteger mCountCapRes = new AtomicInteger();
     private boolean mCaptureRawIsDng;
+    private boolean mCaptureRawIsStats;
+    private int mCaptureStatsGridWidth;
+    private int mCaptureStatsGridHeight;
     private CaptureResult mCaptureResults[] = null;
 
     private volatile ConditionVariable mInterlock3A = new ConditionVariable(true);
@@ -404,7 +413,7 @@ public class ItsService extends Service implements SensorEventListener {
                             continue;
                         }
                         if (b.hasArray()) {
-                            mOpenSocket.getOutputStream().write(b.array());
+                            mOpenSocket.getOutputStream().write(b.array(), 0, b.capacity());
                         } else {
                             byte[] barray = new byte[b.capacity()];
                             b.get(barray);
@@ -665,7 +674,16 @@ public class ItsService extends Service implements SensorEventListener {
                     jsonSurface.put("height", readers[i].getHeight());
                     int format = readers[i].getImageFormat();
                     if (format == ImageFormat.RAW_SENSOR) {
-                        jsonSurface.put("format", "raw");
+                        if (mCaptureRawIsStats) {
+                            jsonSurface.put("format", "rawStats");
+                            jsonSurface.put("width", readers[i].getWidth()/mCaptureStatsGridWidth);
+                            jsonSurface.put("height",
+                                    readers[i].getHeight()/mCaptureStatsGridHeight);
+                        } else if (mCaptureRawIsDng) {
+                            jsonSurface.put("format", "dng");
+                        } else {
+                            jsonSurface.put("format", "raw");
+                        }
                     } else if (format == ImageFormat.RAW10) {
                         jsonSurface.put("format", "raw10");
                     } else if (format == ImageFormat.RAW12) {
@@ -1068,6 +1086,12 @@ public class ItsService extends Service implements SensorEventListener {
                         outputFormats[i] = ImageFormat.RAW_SENSOR;
                         sizes = ItsUtils.getRaw16OutputSizes(mCameraCharacteristics);
                         mCaptureRawIsDng = true;
+                    } else if ("rawStats".equals(sformat)) {
+                        outputFormats[i] = ImageFormat.RAW_SENSOR;
+                        sizes = ItsUtils.getRaw16OutputSizes(mCameraCharacteristics);
+                        mCaptureRawIsStats = true;
+                        mCaptureStatsGridWidth = surfaceObj.optInt("gridWidth");
+                        mCaptureStatsGridHeight = surfaceObj.optInt("gridHeight");
                     } else {
                         throw new ItsException("Unsupported format: " + sformat);
                     }
@@ -1086,6 +1110,14 @@ public class ItsService extends Service implements SensorEventListener {
                     if (height <= 0) {
                         height = ItsUtils.getMaxSize(sizes).getHeight();
                     }
+                    if (mCaptureStatsGridWidth <= 0) {
+                        mCaptureStatsGridWidth = width;
+                    }
+                    if (mCaptureStatsGridHeight <= 0) {
+                        mCaptureStatsGridHeight = height;
+                    }
+
+                    // TODO: Crop to the active array in the stats image analysis.
 
                     outputSizes[i] = new Size(width, height);
                 }
@@ -1122,6 +1154,7 @@ public class ItsService extends Service implements SensorEventListener {
                 mCountRaw12.set(0);
                 mCountCapRes.set(0);
                 mCaptureRawIsDng = false;
+                mCaptureRawIsStats = false;
                 mCaptureResults = new CaptureResult[requests.size()];
 
                 JSONArray jsonOutputSpecs = ItsUtils.getOutputSpecs(params);
@@ -1235,6 +1268,7 @@ public class ItsService extends Service implements SensorEventListener {
         mCountRaw12.set(0);
         mCountCapRes.set(0);
         mCaptureRawIsDng = false;
+        mCaptureRawIsStats = false;
 
         try {
             // Parse the JSON to get the list of capture requests.
@@ -1427,8 +1461,28 @@ public class ItsService extends Service implements SensorEventListener {
                     int count = mCountRawOrDng.getAndIncrement();
                     if (! mCaptureRawIsDng) {
                         byte[] img = ItsUtils.getDataFromImage(capture);
-                        ByteBuffer buf = ByteBuffer.wrap(img);
-                        mSocketRunnableObj.sendResponseCaptureBuffer("rawImage", buf);
+                        if (! mCaptureRawIsStats) {
+                            ByteBuffer buf = ByteBuffer.wrap(img);
+                            mSocketRunnableObj.sendResponseCaptureBuffer("rawImage", buf);
+                        } else {
+                            // Compute the requested stats on the raw frame, and return the results
+                            // in a new "stats image".
+                            long startTimeMs = SystemClock.elapsedRealtime();
+                            int w = capture.getWidth();
+                            int h = capture.getHeight();
+                            int gw = mCaptureStatsGridWidth;
+                            int gh = mCaptureStatsGridHeight;
+                            float[] stats = StatsImage.computeStatsImage(img, w, h, gw, gh);
+                            long endTimeMs = SystemClock.elapsedRealtime();
+                            Log.e(TAG, "Raw stats computation takes " + (endTimeMs - startTimeMs) + " ms");
+
+                            ByteBuffer bBuf = ByteBuffer.allocateDirect(stats.length * 4);
+                            bBuf.order(ByteOrder.nativeOrder());
+                            FloatBuffer fBuf = bBuf.asFloatBuffer();
+                            fBuf.put(stats);
+                            fBuf.position(0);
+                            mSocketRunnableObj.sendResponseCaptureBuffer("rawStatsImage", bBuf);
+                        }
                     } else {
                         // Wait until the corresponding capture result is ready, up to a timeout.
                         long t0 = android.os.SystemClock.elapsedRealtime();

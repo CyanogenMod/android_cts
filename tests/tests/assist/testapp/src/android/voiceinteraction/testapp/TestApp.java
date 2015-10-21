@@ -16,25 +16,59 @@
 
 package android.assist.testapp;
 
+import android.assist.common.Utils;
+
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+
+import java.io.ByteArrayOutputStream;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+
+import java.lang.Override;
 
 public class TestApp extends Activity {
     static final String TAG = "TestApp";
 
-    Bundle mTestinfo = new Bundle();
-    Bundle mTotalInfo = new Bundle();
+    private String mTestCaseName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "TestApp created");
-        getLayoutInflater().inflate(R.layout.test_app, null);
+        mTestCaseName = getIntent().getStringExtra(Utils.TESTCASE_TYPE);
+        switch (mTestCaseName) {
+            case Utils.LARGE_VIEW_HIERARCHY:
+                setContentView(R.layout.multiple_text_views);
+                return;
+            default:
+                setContentView(R.layout.test_app);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.i(TAG, "TestApp has resumed");
+        final View layout = findViewById(android.R.id.content);
+        ViewTreeObserver vto = layout.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                layout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                sendBroadcast(new Intent(Utils.APP_3P_HASRESUMED));
+            }
+        });
     }
 }

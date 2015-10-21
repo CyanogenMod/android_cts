@@ -27,6 +27,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.UserManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.content.FileProvider;
@@ -83,6 +84,18 @@ public class ByodHelperActivity extends Activity implements DialogCallback {
     // Primary -> managed intent: check if the required cross profile intent filters are set.
     public static final String ACTION_CHECK_INTENT_FILTERS =
             "com.android.cts.verifier.managedprovisioning.action.CHECK_INTENT_FILTERS";
+
+    // Primary -> managed intent: will send a cross profile intent and check if the user sees an
+    // intent picker dialog and can open the apps.
+    public static final String ACTION_TEST_CROSS_PROFILE_INTENTS_DIALOG =
+            "com.android.cts.verifier.managedprovisioning.action.TEST_CROSS_PROFILE_INTENTS_DIALOG";
+
+    // Primary -> managed intent: will send an app link intent and check if the user sees a
+    // dialog and can open the apps. This test is extremely similar to
+    // ACTION_TEST_CROSS_PROFILE_INTENTS_DIALOG, but the intent used is a web intent, and there is
+    // some behavior which is specific to web intents.
+    public static final String ACTION_TEST_APP_LINKING_DIALOG =
+            "com.android.cts.verifier.managedprovisioning.action.TEST_APP_LINKING_DIALOG";
 
     public static final int RESULT_FAILED = RESULT_FIRST_USER;
 
@@ -160,6 +173,8 @@ public class ByodHelperActivity extends Activity implements DialogCallback {
                             IntentFiltersTestHelper.FLAG_INTENTS_FROM_MANAGED);
             setResult(intentFiltersSetForManagedIntents? RESULT_OK : RESULT_FAILED, null);
         } else if (action.equals(ACTION_CAPTURE_AND_CHECK_IMAGE)) {
+            // We need the camera permission to send the image capture intent.
+            grantCameraPermissionToSelf();
             Intent captureImageIntent = getCaptureImageIntent();
             mImageUri = getTempUri("image.jpg");
             captureImageIntent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
@@ -172,6 +187,8 @@ public class ByodHelperActivity extends Activity implements DialogCallback {
             }
             return;
         } else if (action.equals(ACTION_CAPTURE_AND_CHECK_VIDEO)) {
+            // We need the camera permission to send the video capture intent.
+            grantCameraPermissionToSelf();
             Intent captureVideoIntent = getCaptureVideoIntent();
             mVideoUri = getTempUri("video.mp4");
             captureVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, mVideoUri);
@@ -207,6 +224,16 @@ public class ByodHelperActivity extends Activity implements DialogCallback {
             startActivity(testNfcBeamIntent);
             finish();
             return;
+        } else if (action.equals(ACTION_TEST_CROSS_PROFILE_INTENTS_DIALOG)) {
+            sendIntentInsideChooser(new Intent(
+                    CrossProfileTestActivity.ACTION_CROSS_PROFILE_TO_PERSONAL));
+        } else if (action.equals(ACTION_TEST_APP_LINKING_DIALOG)) {
+            mDevicePolicyManager.addUserRestriction(
+                    DeviceAdminTestReceiver.getReceiverComponentName(),
+                    UserManager.ALLOW_PARENT_PROFILE_APP_LINKING);
+            Intent toSend = new Intent(Intent.ACTION_VIEW);
+            toSend.setData(Uri.parse("http://com.android.cts.verifier"));
+            sendIntentInsideChooser(toSend);
         }
         // This activity has no UI and is only used to respond to CtsVerifier in the primary side.
         finish();
@@ -334,6 +361,19 @@ public class ByodHelperActivity extends Activity implements DialogCallback {
     private void showToast(int messageId) {
         String message = getString(messageId);
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void grantCameraPermissionToSelf() {
+        mDevicePolicyManager.setPermissionGrantState(mAdminReceiverComponent, getPackageName(),
+                android.Manifest.permission.CAMERA,
+                DevicePolicyManager.PERMISSION_GRANT_STATE_GRANTED);
+    }
+
+    private void sendIntentInsideChooser(Intent toSend) {
+        toSend.putExtra(CrossProfileTestActivity.EXTRA_STARTED_FROM_WORK, true);
+        Intent chooser = Intent.createChooser(toSend,
+                getResources().getString(R.string.provisioning_cross_profile_chooser));
+        startActivity(chooser);
     }
 
     @Override

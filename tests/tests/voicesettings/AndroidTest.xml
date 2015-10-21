@@ -17,7 +17,5 @@
     <option name="cts-apk-installer:test-file-name" value="CtsVoiceSettingsService.apk" />
     <option name="run-command:run-command"
          value="settings put secure voice_interaction_service android.voicesettings.service/.MainInteractionService" />
-    <option name="run-command:teardown-command"
-         value="settings put secure voice_interaction_service com.google.android.googlequicksearchbox/com.google.android.voiceinteraction.GsaVoiceInteractionService" />
     <option name="cts-apk-installer:test-file-name" value="CtsVoiceSettingsTestCases.apk" />
 </configuration>

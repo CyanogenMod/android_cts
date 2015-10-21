@@ -16,7 +16,7 @@
 
 package android.assist.cts;
 
-import android.assist.TestStartActivity;
+import android.assist.cts.TestStartActivity;
 import android.assist.common.Utils;
 
 import android.app.Activity;
@@ -46,15 +46,18 @@ public class LifecycleTest extends AssistTestBase {
     private static final String action_onStop = Utils.LIFECYCLE_ONSTOP;
     private static final String action_onDestroy = Utils.LIFECYCLE_ONDESTROY;
 
+    private static final String TEST_CASE_TYPE = Utils.LIFECYCLE;
+
     private BroadcastReceiver mLifecycleTestBroadcastReceiver;
     private CountDownLatch mHasResumedLatch = new CountDownLatch(1);
     private CountDownLatch mActivityLifecycleLatch = new CountDownLatch(1);
+    private CountDownLatch mReadyLatch = new CountDownLatch(1);
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         setUpAndRegisterReceiver();
-        startTestActivity(Utils.LIFECYCLE);
+        startTestActivity(TEST_CASE_TYPE);
     }
 
     @Override
@@ -96,7 +99,7 @@ public class LifecycleTest extends AssistTestBase {
 
     public void testLayerDoesNotTriggerLifecycleMethods() throws Exception {
         mTestActivity.startTest(Utils.LIFECYCLE);
-        waitForAssistantToBeReady();
+        waitForAssistantToBeReady(mReadyLatch);
         mTestActivity.start3pApp(Utils.LIFECYCLE);
         waitForOnResume();
         startSession();
@@ -108,16 +111,18 @@ public class LifecycleTest extends AssistTestBase {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(action_hasResumed)) {
+            if (action.equals(action_hasResumed) && mHasResumedLatch != null) {
                 mHasResumedLatch.countDown();
-            } else if (action.equals(action_onPause)) {
+            } else if (action.equals(action_onPause) && mActivityLifecycleLatch != null) {
                 mActivityLifecycleLatch.countDown();
-            } else if (action.equals(action_onStop)) {
+            } else if (action.equals(action_onStop) && mActivityLifecycleLatch != null) {
                 mActivityLifecycleLatch.countDown();
-            } else if (action.equals(action_onDestroy)) {
+            } else if (action.equals(action_onDestroy) && mActivityLifecycleLatch != null) {
                 mActivityLifecycleLatch.countDown();
             } else if (action.equals(Utils.ASSIST_RECEIVER_REGISTERED)) {
-                mAssistantReadyLatch.countDown();
+                if (mReadyLatch != null) {
+                    mReadyLatch.countDown();
+                }
             }
         }
     }

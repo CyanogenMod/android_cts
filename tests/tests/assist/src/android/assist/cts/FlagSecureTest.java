@@ -31,14 +31,13 @@ import java.util.concurrent.TimeUnit;
  * invoked on an app with FLAG_SECURE set.
  */
 public class FlagSecureTest extends AssistTestBase {
-
     static final String TAG = "FlagSecureTest";
 
     private static final String TEST_CASE_TYPE = Utils.FLAG_SECURE;
 
     private BroadcastReceiver mReceiver;
     private CountDownLatch mHasResumedLatch = new CountDownLatch(1);
-
+    private CountDownLatch mReadyLatch = new CountDownLatch(1);
     public FlagSecureTest() {
         super();
     }
@@ -78,8 +77,13 @@ public class FlagSecureTest extends AssistTestBase {
     }
 
     public void testSecureActivity() throws Exception {
+        mTestActivity.startTest(TEST_CASE_TYPE);
+        waitForAssistantToBeReady(mReadyLatch);
+        mTestActivity.start3pApp(TEST_CASE_TYPE);
+        waitForOnResume();
+        startSession();
+        waitForContext();
         verifyAssistDataNullness(false, false, false, false);
-
         // verify that we have only the root window and not its children.
         verifyAssistStructure(Utils.getTestAppComponent(TEST_CASE_TYPE), true);
     }
@@ -89,9 +93,13 @@ public class FlagSecureTest extends AssistTestBase {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(Utils.FLAG_SECURE_HASRESUMED)) {
-                mHasResumedLatch.countDown();
+                if (mHasResumedLatch != null) {
+                    mHasResumedLatch.countDown();
+                }
             } else if (action.equals(Utils.ASSIST_RECEIVER_REGISTERED)) {
-                mAssistantReadyLatch.countDown();
+                if (mReadyLatch != null) {
+                    mReadyLatch.countDown();
+                }
             }
         }
     }

@@ -16,6 +16,8 @@
 
 package android.voicesettings.cts;
 
+import static android.provider.Settings.ACTION_VOICE_CONTROL_AIRPLANE_MODE;
+
 import android.provider.Settings;
 import android.provider.Settings.Global;
 import android.util.Log;
@@ -33,9 +35,20 @@ public class AirplaneModeTest extends VoiceSettingsTestBase {
     }
 
     public void testAll() throws Exception {
+        if (!isIntentSupported(ACTION_VOICE_CONTROL_AIRPLANE_MODE)) {
+            Log.e(TAG, "Voice intent for Airplane Mode NOT supported. existing the test");
+            return;
+        }
+        int mode;
+        try {
+            mode = getMode();
+            Log.i(TAG, "Before testing, AIRPLANE_MODE is set to: " + mode);
+        } catch (Settings.SettingNotFoundException e) {
+            // if the mode is not supported, don't run the test.
+            Log.i(TAG, "airplane mode is not found in Settings. Skipping AirplaneModeTest");
+            return;
+        }
         startTestActivity("AIRPLANE_MODE");
-        int mode = getMode();
-        Log.i(TAG, "Before testing, AIRPLANE_MODE is set to: " + mode);
         if (mode == AIRPLANE_MODE_IS_OFF) {
             // mode is currently OFF.
             // run a test to turn it on.
@@ -70,7 +83,7 @@ public class AirplaneModeTest extends VoiceSettingsTestBase {
         return true;
     }
 
-    private int getMode() throws Exception {
+    private int getMode() throws Settings.SettingNotFoundException {
         return Settings.Global.getInt(mContext.getContentResolver(),
             Settings.Global.AIRPLANE_MODE_ON);
     }

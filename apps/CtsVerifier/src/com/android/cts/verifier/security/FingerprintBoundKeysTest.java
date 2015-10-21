@@ -89,6 +89,22 @@ public class FingerprintBoundKeysTest extends PassFailButtons.Activity {
         if (requestCode == FINGERPRINT_PERMISSION_REQUEST_CODE && state[0] == PackageManager.PERMISSION_GRANTED) {
             mFingerprintManager = (FingerprintManager) getSystemService(Context.FINGERPRINT_SERVICE);
             mKeyguardManager = (KeyguardManager) getSystemService(KeyguardManager.class);
+            Button startTestButton = (Button) findViewById(R.id.sec_start_test_button);
+
+            if (!mKeyguardManager.isKeyguardSecure()) {
+                // Show a message that the user hasn't set up a lock screen.
+                showToast( "Secure lock screen hasn't been set up.\n"
+                                + "Go to 'Settings -> Security -> Screen lock' to set up a lock screen");
+                startTestButton.setEnabled(false);
+                return;
+            } else if (!mFingerprintManager.hasEnrolledFingerprints()) {
+                showToast("No fingerprints enrolled.\n"
+                                + "Go to 'Settings -> Security -> Fingerprint' to set up a fingerprint");
+                startTestButton.setEnabled(false);
+                return;
+            }
+
+            createKey();
 
             try {
                 KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
@@ -107,7 +123,6 @@ public class FingerprintBoundKeysTest extends PassFailButtons.Activity {
                 throw new RuntimeException("Failed to init Cipher", e);
             }
 
-            Button startTestButton = (Button) findViewById(R.id.sec_start_test_button);
             startTestButton.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -117,21 +132,7 @@ public class FingerprintBoundKeysTest extends PassFailButtons.Activity {
                         showAuthenticationScreen();
                     }
                 }
-
             });
-
-            if (!mKeyguardManager.isKeyguardSecure()) {
-                // Show a message that the user hasn't set up a lock screen.
-                showToast( "Secure lock screen hasn't been set up.\n"
-                                + "Go to 'Settings -> Security -> Screen lock' to set up a lock screen");
-                startTestButton.setEnabled(false);
-            } else if (!mFingerprintManager.hasEnrolledFingerprints()) {
-                showToast("No fingerprints enrolled.\n"
-                                + "Go to 'Settings -> Security -> Fingerprint' to set up a fingerprint");
-                startTestButton.setEnabled(false);
-            } else {
-                createKey();
-            }
         }
     }
 

@@ -287,7 +287,9 @@ public class SignificantMotionTestActivity extends SensorCtsVerifierTestActivity
 
     @Override
     protected void activityCleanUp() {
-        mScreenManipulator.turnScreenOff();
+        if (mScreenManipulator != null) {
+            mScreenManipulator.turnScreenOff();
+        }
         LocalBroadcastManager.getInstance(this).unregisterReceiver(myBroadCastReceiver);
     }
 
@@ -302,8 +304,9 @@ public class SignificantMotionTestActivity extends SensorCtsVerifierTestActivity
      * It cannot be reused.
      */
     private class TriggerVerifier extends TriggerEventListener {
-        private volatile CountDownLatch mCountDownLatch = new CountDownLatch(1);
+        private volatile CountDownLatch mCountDownLatch;
         private volatile TriggerEventRegistry mEventRegistry;
+        private volatile long mTimestampForTriggeredEvent = 0;
 
         // TODO: refactor out if needed
         private class TriggerEventRegistry {
@@ -329,10 +332,7 @@ public class SignificantMotionTestActivity extends SensorCtsVerifierTestActivity
         }
 
         public long getTimeStampForTriggerEvent() {
-            if (mEventRegistry != null && mEventRegistry.triggerEvent != null) {
-                return mEventRegistry.triggerEvent.timestamp;
-            }
-            return 0;
+            return mTimestampForTriggeredEvent;
         }
 
         public String verifyEventTriggered() throws Throwable {
@@ -388,9 +388,16 @@ public class SignificantMotionTestActivity extends SensorCtsVerifierTestActivity
         }
 
         private TriggerEventRegistry awaitForEvent() throws InterruptedException {
+            mCountDownLatch = new CountDownLatch(1);
             mCountDownLatch.await(TRIGGER_MAX_DELAY_SECONDS, TimeUnit.SECONDS);
             TriggerEventRegistry registry = mEventRegistry;
 
+            // Save the last timestamp when the event triggered.
+            if (mEventRegistry != null && mEventRegistry.triggerEvent != null) {
+                mTimestampForTriggeredEvent = mEventRegistry.triggerEvent.timestamp;
+            }
+
+            mEventRegistry = null;
             playSound();
             return registry != null ? registry : new TriggerEventRegistry(null, 0);
         }

@@ -16,7 +16,6 @@
 
 package android.assist.cts;
 
-import android.assist.TestStartActivity;
 import android.assist.common.Utils;
 
 import android.app.Activity;
@@ -65,6 +64,7 @@ public class DisableContextTest extends AssistTestBase {
 
     public void testContextAndScreenshotOff() throws Exception {
         // Both settings off
+        Log.i(TAG, "DisableContext: Screenshot OFF, Context OFF");
         SystemUtil.runShellCommand(getInstrumentation(),
             "settings put secure assist_structure_enabled 0");
         SystemUtil.runShellCommand(getInstrumentation(),
@@ -76,6 +76,7 @@ public class DisableContextTest extends AssistTestBase {
         verifyAssistDataNullness(true, true, true, true);
 
         // Screenshot off, context on
+        Log.i(TAG, "DisableContext: Screenshot OFF, Context ON");
         SystemUtil.runShellCommand(getInstrumentation(),
             "settings put secure assist_structure_enabled 1");
         SystemUtil.runShellCommand(getInstrumentation(),
@@ -87,6 +88,7 @@ public class DisableContextTest extends AssistTestBase {
         verifyAssistDataNullness(false, false, false, true);
 
         // Context off, screenshot on
+        Log.i(TAG, "DisableContext: Screenshot ON, Context OFF");
         SystemUtil.runShellCommand(getInstrumentation(),
             "settings put secure assist_structure_enabled 0");
         SystemUtil.runShellCommand(getInstrumentation(),

@@ -100,6 +100,7 @@ cts_support_packages := \
     CtsManagedProfileApp \
     CtsMonkeyApp \
     CtsMonkeyApp2 \
+    CtsPackageInstallerApp \
     CtsPermissionApp \
     CtsSimpleApp \
     CtsSimplePreMApp \
@@ -176,6 +177,7 @@ cts_test_packages := \
     CtsNdefTestCases \
     CtsNetTestCases \
     CtsNetTestCasesLegacyApi22 \
+    CtsNetTestCasesLegacyPermission22 \
     CtsOpenGLTestCases \
     CtsOpenGlPerfTestCases \
     CtsOsTestCases \
@@ -192,6 +194,7 @@ cts_test_packages := \
     CtsSecurityTestCases \
     CtsSignatureTestCases \
     CtsSpeechTestCases \
+    CtsSystemUiTestCases \
     CtsTelecomTestCases \
     CtsTelecomTestCases2 \
     CtsTelephonyTestCases \

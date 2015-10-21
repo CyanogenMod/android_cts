@@ -19,6 +19,7 @@ package com.android.cts.verifier.managedprovisioning;
 import android.app.admin.DevicePolicyManager;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -59,7 +60,9 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
     private DialogTestListItem mProfileAccountVisibleTest;
     private DialogTestListItem mDeviceAdminVisibleTest;
     private DialogTestListItem mWorkAppVisibleTest;
-    private DialogTestListItem mCrossProfileIntentFiltersTest;
+    private DialogTestListItem mCrossProfileIntentFiltersTestFromPersonal;
+    private DialogTestListItem mCrossProfileIntentFiltersTestFromWork;
+    private DialogTestListItem mAppLinkingTest;
     private DialogTestListItem mDisableNonMarketTest;
     private DialogTestListItem mEnableNonMarketTest;
     private DialogTestListItem mWorkNotificationBadgedTest;
@@ -78,6 +81,7 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
     private DialogTestListItem mCrossProfileAudioCaptureSupportTest;
     private TestListItem mKeyguardDisabledFeaturesTest;
     private DialogTestListItem mDisableNfcBeamTest;
+    private TestListItem mAuthenticationBoundKeyTest;
 
     public ByodFlowTestActivity() {
         super(R.layout.provisioning_byod,
@@ -264,19 +268,38 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
                 R.string.provisioning_byod_print_settings_instruction,
                 new Intent(Settings.ACTION_PRINT_SETTINGS));
 
-        Intent intent = new Intent(CrossProfileTestActivity.ACTION_CROSS_PROFILE);
+        Intent intent = new Intent(CrossProfileTestActivity.ACTION_CROSS_PROFILE_TO_WORK);
+        intent.putExtra(CrossProfileTestActivity.EXTRA_STARTED_FROM_WORK, false);
         Intent chooser = Intent.createChooser(intent,
                 getResources().getString(R.string.provisioning_cross_profile_chooser));
-        mCrossProfileIntentFiltersTest = new DialogTestListItem(this,
-                R.string.provisioning_byod_cross_profile,
-                "BYOD_CrossProfileIntentFiltersTest",
-                R.string.provisioning_byod_cross_profile_instruction,
+        mCrossProfileIntentFiltersTestFromPersonal = new DialogTestListItem(this,
+                R.string.provisioning_byod_cross_profile_from_personal,
+                "BYOD_CrossProfileIntentFiltersTestFromPersonal",
+                R.string.provisioning_byod_cross_profile_from_personal_instruction,
                 chooser);
+
+        mCrossProfileIntentFiltersTestFromWork = new DialogTestListItem(this,
+                R.string.provisioning_byod_cross_profile_from_work,
+                "BYOD_CrossProfileIntentFiltersTestFromWork",
+                R.string.provisioning_byod_cross_profile_from_work_instruction,
+                new Intent(ByodHelperActivity.ACTION_TEST_CROSS_PROFILE_INTENTS_DIALOG));
+
+        mAppLinkingTest = new DialogTestListItem(this,
+                R.string.provisioning_app_linking,
+                "BYOD_AppLinking",
+                R.string.provisioning_byod_app_linking_instruction,
+                new Intent(ByodHelperActivity.ACTION_TEST_APP_LINKING_DIALOG));
 
         mKeyguardDisabledFeaturesTest = TestListItem.newTest(this,
                 R.string.provisioning_byod_keyguard_disabled_features,
                 KeyguardDisabledFeaturesActivity.class.getName(),
                 new Intent(this, KeyguardDisabledFeaturesActivity.class), null);
+
+        mAuthenticationBoundKeyTest = TestListItem.newTest(this,
+                R.string.provisioning_byod_auth_bound_key,
+                AuthenticationBoundKeyTestActivity.class.getName(),
+                new Intent(AuthenticationBoundKeyTestActivity.ACTION_AUTH_BOUND_KEY_TEST),
+                null);
 
         // Test for checking if the required intent filters are set during managed provisioning.
         mIntentFiltersTest = new DialogTestListItem(this,
@@ -287,7 +310,7 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
                 checkIntentFilters();
             }
         };
-        
+
         Intent permissionCheckIntent = new Intent(
                 PermissionLockdownTestActivity.ACTION_MANAGED_PROFILE_CHECK_PERMISSION_LOCKDOWN);
         mPermissionLockdownTest = new DialogTestListItem(this,
@@ -314,12 +337,15 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
         adapter.add(mDataUsageSettingsVisibleTest);
         adapter.add(mPrintSettingsVisibleTest);
 
-        adapter.add(mCrossProfileIntentFiltersTest);
+        adapter.add(mCrossProfileIntentFiltersTestFromPersonal);
+        adapter.add(mCrossProfileIntentFiltersTestFromWork);
+        adapter.add(mAppLinkingTest);
         adapter.add(mDisableNonMarketTest);
         adapter.add(mEnableNonMarketTest);
         adapter.add(mIntentFiltersTest);
         adapter.add(mPermissionLockdownTest);
         adapter.add(mKeyguardDisabledFeaturesTest);
+        adapter.add(mAuthenticationBoundKeyTest);
 
         if (canResolveIntent(ByodHelperActivity.getCaptureImageIntent())) {
             // Capture image intent can be resolved in primary profile, so test.
@@ -495,7 +521,8 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
             ByodHelperActivity.class.getName(),
             WorkNotificationTestActivity.class.getName(),
             WorkStatusTestActivity.class.getName(),
-            PermissionLockdownTestActivity.ACTIVITY_ALIAS
+            PermissionLockdownTestActivity.ACTIVITY_ALIAS,
+            AuthenticationBoundKeyTestActivity.class.getName()
         };
         for (String component : components) {
             getPackageManager().setComponentEnabledSetting(new ComponentName(this, component),
@@ -503,4 +530,5 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
                     PackageManager.DONT_KILL_APP);
         }
     }
+
 }

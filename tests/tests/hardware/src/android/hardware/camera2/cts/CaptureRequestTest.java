@@ -69,7 +69,8 @@ public class CaptureRequestTest extends Camera2SurfaceViewTestCase {
     private static final long EXPOSURE_TIME_BOUNDARY_50HZ_NS = 10000000L; // 10ms
     private static final long EXPOSURE_TIME_BOUNDARY_60HZ_NS = 8333333L; // 8.3ms, Approximation.
     private static final long EXPOSURE_TIME_ERROR_MARGIN_NS = 100000L; // 100us, Approximation.
-    private static final int SENSITIVITY_ERROR_MARGIN = 10; // 10
+    private static final float EXPOSURE_TIME_ERROR_MARGIN_RATE = 0.03f; // 3%, Approximation.
+    private static final float SENSITIVITY_ERROR_MARGIN_RATE = 0.03f; // 3%, Approximation.
     private static final int DEFAULT_NUM_EXPOSURE_TIME_STEPS = 3;
     private static final int DEFAULT_NUM_SENSITIVITY_STEPS = 16;
     private static final int DEFAULT_SENSITIVITY_STEP_SIZE = 100;
@@ -106,6 +107,12 @@ public class CaptureRequestTest extends Camera2SurfaceViewTestCase {
     private final int INDEX_ALGORITHM_AE = 0;
     private final int INDEX_ALGORITHM_AWB = 1;
     private final int INDEX_ALGORITHM_AF = 2;
+
+    private enum TorchSeqState {
+        RAMPING_UP,
+        FIRED,
+        RAMPING_DOWN
+    }
 
     @Override
     protected void setUp() throws Exception {
@@ -963,16 +970,39 @@ public class CaptureRequestTest extends Camera2SurfaceViewTestCase {
         waitForNumResults(listener, flashModeTorchRequests - NUM_FLASH_REQUESTS_TESTED);
 
         // Verify the results
+        TorchSeqState state = TorchSeqState.RAMPING_UP;
         for (int i = 0; i < NUM_FLASH_REQUESTS_TESTED; i++) {
             result = listener.getCaptureResultForRequest(torchRequest,
                     NUM_RESULTS_WAIT_TIMEOUT);
-
-            // Result mode must be TORCH, state must be FIRED
-            mCollector.expectEquals("Flash mode result must be TORCH",
+            int flashMode = result.get(CaptureResult.FLASH_MODE);
+            int flashState = result.get(CaptureResult.FLASH_STATE);
+            // Result mode must be TORCH
+            mCollector.expectEquals("Flash mode result " + i + " must be TORCH",
                     CaptureResult.FLASH_MODE_TORCH, result.get(CaptureResult.FLASH_MODE));
-            mCollector.expectEquals("Flash state result must be FIRED",
-                    CaptureResult.FLASH_STATE_FIRED, result.get(CaptureResult.FLASH_STATE));
+            if (state == TorchSeqState.RAMPING_UP &&
+                    flashState == CaptureResult.FLASH_STATE_FIRED) {
+                state = TorchSeqState.FIRED;
+            } else if (state == TorchSeqState.FIRED &&
+                    flashState == CaptureResult.FLASH_STATE_PARTIAL) {
+                state = TorchSeqState.RAMPING_DOWN;
+            }
+
+            if (i == 0 && mStaticInfo.isPerFrameControlSupported()) {
+                mCollector.expectTrue(
+                        "Per frame control device must enter FIRED state on first torch request",
+                        state == TorchSeqState.FIRED);
+            }
+
+            if (state == TorchSeqState.FIRED) {
+                mCollector.expectEquals("Flash state result " + i + " must be FIRED",
+                        CaptureResult.FLASH_STATE_FIRED, result.get(CaptureResult.FLASH_STATE));
+            } else {
+                mCollector.expectEquals("Flash state result " + i + " must be PARTIAL",
+                        CaptureResult.FLASH_STATE_PARTIAL, result.get(CaptureResult.FLASH_STATE));
+            }
         }
+        mCollector.expectTrue("Torch state FIRED never seen",
+                state == TorchSeqState.FIRED || state == TorchSeqState.RAMPING_DOWN);
 
         // Test flash OFF mode control
         requestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
@@ -1995,12 +2025,12 @@ public class CaptureRequestTest extends Camera2SurfaceViewTestCase {
     private long[] getExposureTimeTestValues() {
         long[] testValues = new long[DEFAULT_NUM_EXPOSURE_TIME_STEPS + 1];
         long maxExpTime = mStaticInfo.getExposureMaximumOrDefault(DEFAULT_EXP_TIME_NS);
-        long minxExpTime = mStaticInfo.getExposureMinimumOrDefault(DEFAULT_EXP_TIME_NS);
+        long minExpTime = mStaticInfo.getExposureMinimumOrDefault(DEFAULT_EXP_TIME_NS);
 
-        long range = maxExpTime - minxExpTime;
+        long range = maxExpTime - minExpTime;
         double stepSize = range / (double)DEFAULT_NUM_EXPOSURE_TIME_STEPS;
         for (int i = 0; i < testValues.length; i++) {
-            testValues[i] = minxExpTime + (long)(stepSize * i);
+            testValues[i] = maxExpTime - (long)(stepSize * i);
             testValues[i] = mStaticInfo.getExposureClampToRange(testValues[i]);
         }
 
@@ -2049,7 +2079,7 @@ public class CaptureRequestTest extends Camera2SurfaceViewTestCase {
         }
         int[] testValues = new int[numSteps + 1];
         for (int i = 0; i < testValues.length; i++) {
-            testValues[i] = minSensitivity + stepSize * i;
+            testValues[i] = maxSensitivity - stepSize * i;
             testValues[i] = mStaticInfo.getSensitivityClampToRange(testValues[i]);
         }
 
@@ -2066,10 +2096,12 @@ public class CaptureRequestTest extends Camera2SurfaceViewTestCase {
      */
     private void validateExposureTime(long request, long result) {
         long expTimeDelta = request - result;
+        long expTimeErrorMargin = (long)(Math.max(EXPOSURE_TIME_ERROR_MARGIN_NS, request
+                * EXPOSURE_TIME_ERROR_MARGIN_RATE));
         // First, round down not up, second, need close enough.
         mCollector.expectTrue("Exposture time is invalid for AE manaul control test, request: "
                 + request + " result: " + result,
-                expTimeDelta < EXPOSURE_TIME_ERROR_MARGIN_NS && expTimeDelta >= 0);
+                expTimeDelta < expTimeErrorMargin && expTimeDelta >= 0);
     }
 
     /**
@@ -2079,11 +2111,12 @@ public class CaptureRequestTest extends Camera2SurfaceViewTestCase {
      * @param result Result sensitivity
      */
     private void validateSensitivity(int request, int result) {
-        int sensitivityDelta = request - result;
+        float sensitivityDelta = (float)(request - result);
+        float sensitivityErrorMargin = request * SENSITIVITY_ERROR_MARGIN_RATE;
         // First, round down not up, second, need close enough.
         mCollector.expectTrue("Sensitivity is invalid for AE manaul control test, request: "
                 + request + " result: " + result,
-                sensitivityDelta < SENSITIVITY_ERROR_MARGIN && sensitivityDelta >= 0);
+                sensitivityDelta < sensitivityErrorMargin && sensitivityDelta >= 0);
     }
 
     /**

@@ -16,6 +16,7 @@
 
 package android.voicesettings.cts;
 
+import static android.provider.Settings.ACTION_VOICE_CONTROL_DO_NOT_DISTURB_MODE;
 import static android.provider.Settings.EXTRA_DO_NOT_DISTURB_MODE_ENABLED;
 import static android.provider.Settings.EXTRA_DO_NOT_DISTURB_MODE_MINUTES;
 
@@ -39,9 +40,20 @@ public class ZenModeTest extends VoiceSettingsTestBase {
     }
 
     public void testAll() throws Exception {
+        if (!isIntentSupported(ACTION_VOICE_CONTROL_DO_NOT_DISTURB_MODE)) {
+            Log.e(TAG, "Voice intent for Zen Mode NOT supported. existing the test");
+            return;
+        }
+        int mode;
+        try {
+            mode = getMode();
+            Log.i(TAG, "Before testing, zen-mode is set to: " + mode);
+        } catch (Settings.SettingNotFoundException e) {
+            // if the mode is not supported, don't run the test.
+            Log.i(TAG, "zen_mode is not found in Settings. Skipping ZenModeTest");
+            return;
+        }
         startTestActivity("ZEN_MODE");
-        int mode = getMode();
-        Log.i(TAG, "Before testing, zen-mode is set to: " + mode);
         if (mode == ZEN_MODE_IS_OFF) {
             // mode is currently OFF.
             // run a test to turn it on.
@@ -85,7 +97,7 @@ public class ZenModeTest extends VoiceSettingsTestBase {
         return true;
     }
 
-    private int getMode() throws Exception {
+    private int getMode() throws Settings.SettingNotFoundException {
         return Settings.Global.getInt(mContext.getContentResolver(), ZEN_MODE);
     }
 }

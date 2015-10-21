@@ -1,5 +1,14 @@
 [
 {
+  description: "some AlarmClockTests are not robust across different device types",
+  names: [
+    "android.alarmclock.cts.DismissAlarmTest#testAll",
+    "android.alarmclock.cts.SetAlarmTest#testAll",
+    "android.alarmclock.cts.SnoozeAlarmTest#testAll"
+  ],
+  bug: 23776083
+},
+{
   description: "the UsageStats is not yet stable enough",
   names: [
     "android.app.usage.cts.UsageStatsTest"
@@ -13,6 +22,21 @@
     "android.accessibilityservice.cts.AccessibilityTextTraversalTest#testActionNextAndPreviousAtGranularityPageOverTextExtend"
   ],
   bug: 17595050
+},
+{
+  description: "test fails on devices with no telephony",
+  names: [
+    "android.calllog.cts.CallLogBackupTest#testSingleCallBackup"
+  ],
+  bug: 23776099
+},
+{
+  description: "test fails on some devices",
+  names: [
+    "android.dumpsys.cts.DumpsysHostTest#testBatterystatsOutput",
+    "android.dumpsys.cts.DumpsysHostTest#testGfxinfoFramestats"
+  ],
+  bug: 23776893
 },
 {
   description: "the SSLCertificateSocketFactoryTest often fails because of lack of live internet or short timeout, it should be refactored to do a local server testing",
@@ -37,6 +61,21 @@
     "android.security.cts.AudioPolicyBinderTest"
   ],
   bug: 18461670
+},
+{
+  description: "test not robust",
+  names: [
+    "android.telecom.cts.ExtendedInCallServiceTest#testAddNewOutgoingCallAndThenDisconnect",
+    "android.telecom.cts.RemoteConferenceTest#testRemoteConferenceCallbacks_ConferenceableConnections"
+  ],
+  bug: 23604254
+},
+{
+  description: "tests too flaky",
+  names: [
+    "android.transition.cts.ChangeScrollTest#testChangeScroll"
+  ],
+  bug: 23779020
 },
 {
   description: "Not all jdwp features are currently supported. These tests will fail",
@@ -117,6 +156,21 @@
     "android.admin.cts.DevicePolicyManagerTest#testUninstallAllUserCaCerts_failIfNotProfileOwner"
   ],
   bug: 17508787
+},
+{
+  description: "This test should be outside of official CTS suite until it is verified for all Nexus devices",
+  names: [
+    "com.android.cts.devicepolicy.MixedDeviceOwnerTest#testPackageInstallUserRestrictions",
+    "com.android.cts.devicepolicy.MixedProfileOwnerTest#testPackageInstallUserRestrictions"
+  ],
+  bug: 18928535
+},
+{
+  description: "Test is not yet properly implemented",
+  names: [
+    "android.voicesettings.cts.ZenModeTest#testAll"
+  ],
+  bug: 23238984
 },
 {
   description: "These tests fail on some devices.",
@@ -208,6 +262,13 @@
   bug: 23008511
 },
 {
+  description: "Light status bar CTS coming in late",
+  names: [
+    "com.android.cts.systemui.LightStatusBarTests#testLightStatusBarIcons"
+  ],
+  bug: 23427621
+},
+{
   description: "known failures",
   names: [
     "android.hardware.cts.SensorBatchingTests#testAccelerometer_50hz_batching",
@@ -234,5 +295,70 @@
     "android.hardware.cts.SingleSensorTests#testOrientation_5hz"
   ],
   bug: 22922206
+},
+{
+  description: "tests are not yet ready",
+  names: [
+    "com.android.cts.app.os.OsHostTests#testNonExportedActivities"
+  ],
+  bug: 23779168
+},
+{
+  description: "New assist tests that do not yet have a track record.",
+  names: [
+    "android.assist.cts.AssistantContentViewTest",
+    "android.assist.cts.ExtraAssistDataTest",
+    "android.assist.cts.FocusChangeTest",
+    "android.assist.cts.LargeViewHierarchyTest",
+    "android.assist.cts.ScreenshotTest",
+    "android.assist.cts.TextViewTest",
+    "android.assist.cts.WebViewTest"
+  ],
+  bug: 21668302
+},
+{
+  description: "ConnectivityConstraintTest job scheduler not working.",
+  names: [
+     "android.jobscheduler.cts.ConnectivityConstraintTest#testConnectivityConstraintExecutes_withWifi",
+     "android.jobscheduler.cts.ConnectivityConstraintTest#testUnmeteredConstraintExecutes_withWifi"
+  ],
+  bug: 21262226
+},
+{
+   description: "ConnectivityConstraintTest times out.",
+   names: [
+     "android.jobscheduler.cts.TimingConstraintsTest#testJobParameters_unexpiredDeadline"
+   ],
+   bug: 23144425
+},
+{
+   description: "Telephony returning wrong value.",
+   names: [
+     "android.telephony.cts.CellInfoTest#testCellInfo"
+   ],
+   bug: 23979591
+},
+{
+   description: "Video encoding tests are timing out.",
+   names: [
+     "android.media.cts.VideoEncoderTest#testGoogH264FlexArbitraryW",
+     "android.media.cts.VideoEncoderTest#testGoogH264SurfArbitraryW"
+   ],
+   bug: 23827982
+},
+{
+  description: "tests not yet ready",
+  names: [
+    "android.telecom.cts.OutgoingCallTest#testStartCallWithSpeakerphoneFalse_SpeakerphoneOffInCall",
+    "android.telecom.cts.OutgoingCallTest#testStartCallWithSpeakerphoneNotProvided_SpeakerphoneOffByDefault"
+  ],
+  bug: 24067587
+},
+{
+  description: "protected broadcast not working",
+  names: [
+   "android.permission2.cts.ProtectedBroadcastsTest#testSendProtectedBroadcasts"
+  ],
+  bug: 23192492
 }
 ]
