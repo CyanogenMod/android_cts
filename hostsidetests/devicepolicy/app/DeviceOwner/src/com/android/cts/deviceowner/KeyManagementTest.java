@@ -47,7 +47,7 @@ import android.content.Context;
 public class KeyManagementTest extends
         ActivityInstrumentationTestCase2<KeyManagementActivity> {
 
-    private static final int KEYCHAIN_TIMEOUT_MS = 8000;
+    private static final int KEYCHAIN_TIMEOUT_MS = 6 * 60 * 1000;
     private DevicePolicyManager mDevicePolicyManager;
 
     public KeyManagementTest() {
