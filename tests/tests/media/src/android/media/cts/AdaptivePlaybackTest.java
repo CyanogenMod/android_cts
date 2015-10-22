@@ -462,7 +462,7 @@ public class AdaptivePlaybackTest extends MediaPlayerTestBase {
                                 warn(mDecoder.getWarnings());
                                 mDecoder.clearWarnings();
                                 mDecoder.flush();
-	                            }
+                                }
                             } finally {
                                 mDecoder.stop();
                             }
@@ -825,6 +825,7 @@ public class AdaptivePlaybackTest extends MediaPlayerTestBase {
         boolean mQueuedEos;
         ArrayList<Long> mTimeStamps;
         ArrayList<String> mWarnings;
+        boolean mConfigured;
 
         public Decoder(String codecName) {
             MediaCodec codec = null;
@@ -839,6 +840,7 @@ public class AdaptivePlaybackTest extends MediaPlayerTestBase {
             mQueuedEos = false;
             mTimeStamps = new ArrayList<Long>();
             mWarnings = new ArrayList<String>();
+            mConfigured = false;
         }
 
         public String getName() {
@@ -877,12 +879,16 @@ public class AdaptivePlaybackTest extends MediaPlayerTestBase {
                   mOutputBuffers.length + "output[" +
                   (mOutputBuffers[0] == null ? null : mOutputBuffers[0].capacity()) + "]");
             mQueuedEos = false;
+            mConfigured = true;
             return true;
         }
 
         public void stop() {
-            Log.i(TAG, "stop");
-            mCodec.stop();
+            if(mConfigured) {
+                Log.i(TAG, "stop");
+                mCodec.stop();
+                mConfigured = false;
+            }
         }
 
         public void flush() {
