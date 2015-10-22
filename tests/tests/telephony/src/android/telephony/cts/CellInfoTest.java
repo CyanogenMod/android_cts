@@ -16,6 +16,7 @@
 package android.telephony.cts;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.telephony.CellInfo;
 import android.telephony.CellInfoGsm;
@@ -41,6 +42,7 @@ public class CellInfoTest extends AndroidTestCase{
     // Maximum and minimum possible RSSI values(in dbm).
     private static final int MAX_RRSI = -10;
     private static final int MIN_RSSI = -150;
+    private PackageManager mPm;
 
     @Override
     protected void setUp() throws Exception {
@@ -48,9 +50,16 @@ public class CellInfoTest extends AndroidTestCase{
         mTelephonyManager =
                 (TelephonyManager)getContext().getSystemService(Context.TELEPHONY_SERVICE);
         mCm = (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        mPm = getContext().getPackageManager();
     }
 
     public void testCellInfo() throws Throwable {
+
+        if(! (mPm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY))) {
+            Log.d(TAG, "Skipping test that requires FEATURE_TELEPHONY");
+            return;
+        }
+
         if (mCm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE) == null) {
             Log.d(TAG, "Skipping test that requires ConnectivityManager.TYPE_MOBILE");
             return;
