@@ -139,6 +139,14 @@ public abstract class BasePrintTest extends UiAutomatorTestCase {
     }
 
     @Override
+    protected void runTest() throws Throwable {
+        // Do nothing if the device does not support printing.
+        if (supportsPrinting()) {
+            super.runTest();
+        }
+    }
+
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         if (!supportsPrinting()) {
@@ -181,25 +189,28 @@ public abstract class BasePrintTest extends UiAutomatorTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        if (supportsPrinting()) {
-            // Done with the activity.
-            getActivity().finish();
-            enableImes();
-
-            // Restore the locale if needed.
-            if (mOldLocale != null) {
-                Resources resources = getInstrumentation().getTargetContext().getResources();
-                DisplayMetrics displayMetrics = resources.getDisplayMetrics();
-                Configuration newConfiguration = new Configuration(resources.getConfiguration());
-                newConfiguration.locale = mOldLocale;
-                mOldLocale = null;
-                resources.updateConfiguration(newConfiguration, displayMetrics);
-            }
-
-            disablePrintServices();
-            // Make sure the spooler is cleaned.
-            clearPrintSpoolerData();
+        if (!supportsPrinting()) {
+            return;
         }
+
+        // Done with the activity.
+        getActivity().finish();
+        enableImes();
+
+        // Restore the locale if needed.
+        if (mOldLocale != null) {
+            Resources resources = getInstrumentation().getTargetContext().getResources();
+            DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+            Configuration newConfiguration = new Configuration(resources.getConfiguration());
+            newConfiguration.locale = mOldLocale;
+            mOldLocale = null;
+            resources.updateConfiguration(newConfiguration, displayMetrics);
+        }
+
+        disablePrintServices();
+        // Make sure the spooler is cleaned.
+        clearPrintSpoolerData();
+
         super.tearDown();
     }
 
