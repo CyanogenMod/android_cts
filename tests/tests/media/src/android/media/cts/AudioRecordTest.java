@@ -696,10 +696,12 @@ public class AudioRecordTest extends CtsAndroidTestCase {
         long firstSampleTime = 0;
 
         // blank final variables: all successful paths will initialize the times.
+        // this must be declared here for visibility as they are set within the try block.
         final long endTime;
         final long startTime;
         final long stopRequestTime;
         final long stopTime;
+        final long coldInputStartTime;
 
         try {
             if (markerPeriodsPerSecond != 0) {
@@ -839,11 +841,21 @@ public class AudioRecordTest extends CtsAndroidTestCase {
 
             // We've read all the frames, now check the record timing.
             endTime = System.currentTimeMillis();
-            //Log.d(TAG, "first sample time " + (firstSampleTime - startTime)
+
+            coldInputStartTime = firstSampleTime - startTime;
+            //Log.d(TAG, "first sample time " + coldInputStartTime
             //        + " test time " + (endTime - firstSampleTime));
-            // Verify recording starts within 200 ms of record.startRecording() (typical 100ms)
+
+            if (coldInputStartTime > 200) {
+                Log.w(TAG, "cold input start time way too long "
+                        + coldInputStartTime + " > 200ms");
+            } else if (coldInputStartTime > 100) {
+                Log.w(TAG, "cold input start time too long "
+                        + coldInputStartTime + " > 100ms");
+            }
+            assertTrue(coldInputStartTime < 5000); // must start within 5 seconds.
+
             // Verify recording completes within 50 ms of expected test time (typical 20ms)
-            assertEquals(0, firstSampleTime - startTime, 200);
             assertEquals(TEST_TIME_MS, endTime - firstSampleTime, auditRecording ? 1000 : 50);
 
             // Even though we've read all the frames we want, the events may not be sent to
@@ -945,7 +957,7 @@ public class AudioRecordTest extends CtsAndroidTestCase {
 
         // report this
         ReportLog log = getReportLog();
-        log.printValue(reportName + ": startRecording lag", firstSampleTime - startTime,
+        log.printValue(reportName + ": startRecording lag", coldInputStartTime,
                 ResultType.LOWER_BETTER, ResultUnit.MS);
         log.printValue(reportName + ": stop execution time", stopTime - stopRequestTime,
                 ResultType.LOWER_BETTER, ResultUnit.MS);
