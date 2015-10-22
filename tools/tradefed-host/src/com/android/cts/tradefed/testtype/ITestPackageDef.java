@@ -72,6 +72,11 @@ public interface ITestPackageDef extends Comparable<ITestPackageDef> {
     public IAbi getAbi();
 
     /**
+     * @return the estimated running time of this test package.
+     */
+    public long getRuntimeHint();
+
+    /**
      * Set the filter to use for tests
      *
      * @param testFilter

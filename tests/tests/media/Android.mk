@@ -51,6 +51,8 @@ LOCAL_PACKAGE_NAME := CtsMediaTestCases
 #LOCAL_SDK_VERSION := current
 LOCAL_JAVA_LIBRARIES += android.test.runner org.apache.http.legacy
 
+cts_runtime_hint := 265
+
 include $(BUILD_CTS_PACKAGE)
 
 include $(call all-makefiles-under,$(LOCAL_PATH))

@@ -33,6 +33,8 @@ LOCAL_PACKAGE_NAME := CtsMediaStressTestCases
 
 LOCAL_SDK_VERSION := current
 
+cts_runtime_hint := 170
+
 include $(BUILD_CTS_PACKAGE)
 
 include $(call all-makefiles-under,$(LOCAL_PATH))
