@@ -114,7 +114,7 @@ public class SensorBatchingFifoTest extends SensorTestCase {
                 sensor,
                 false,
                 sensor.getMinDelay(),
-                Integer.MAX_VALUE);
+                Integer.MAX_VALUE /*maxReportLatencyUs*/);
 
         TestSensorOperation op = TestSensorOperation.createOperation(environment,
                 sensor.getFifoReservedEventCount() * 2);
