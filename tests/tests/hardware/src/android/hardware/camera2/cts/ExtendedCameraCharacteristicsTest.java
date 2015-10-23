@@ -178,9 +178,10 @@ public class ExtendedCameraCharacteristicsTest extends AndroidTestCase {
 
             if (activeArraySize.getWidth() >= FULLHD.getWidth() &&
                     activeArraySize.getHeight() >= FULLHD.getHeight()) {
-                assertArrayContains(String.format(
+                assertArrayContainsAnyOf(String.format(
                         "Required FULLHD size not found for format %x for: ID %s",
-                        ImageFormat.JPEG, mIds[counter]), jpegSizes, FULLHD);
+                        ImageFormat.JPEG, mIds[counter]), jpegSizes,
+                        new Size[] {FULLHD, FULLHD_ALT});
             }
 
             if (activeArraySize.getWidth() >= HD.getWidth() &&
