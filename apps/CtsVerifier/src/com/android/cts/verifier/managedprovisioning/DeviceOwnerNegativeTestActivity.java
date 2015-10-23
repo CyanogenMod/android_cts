@@ -81,12 +81,5 @@ public class DeviceOwnerNegativeTestActivity extends PassFailButtons.TestListAct
 
         setTestListAdapter(adapter);
     }
-
-    /**
-     * Enable Pass Button when the all tests passed.
-     */
-    private void updatePassButton() {
-        getPassButton().setEnabled(mAdapter.allTestsPassed());
-    }
 }
 

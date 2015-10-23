@@ -220,10 +220,6 @@ public class StreamingVideoActivity extends PassFailButtons.TestListActivity {
                 i, null));
     }
 
-    private void updatePassButton() {
-        getPassButton().setEnabled(mAdapter.allTestsPassed());
-    }
-
     /** @returns the appropriate RTSP url, or null in case of failure */
     private String lookupRtspUrl(int itag, String signature) {
         String rtspLookupUri = String.format(RTSP_LOOKUP_URI_TEMPLATE, itag, signature);

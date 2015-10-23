@@ -262,6 +262,10 @@ public class PassFailButtons {
 
         @Override
         public ReportLog getReportLog() { return reportLog; }
+
+        public void updatePassButton() {
+            getPassButton().setEnabled(mAdapter.allTestsPassed());
+        }
     }
 
     private static <T extends android.app.Activity & PassFailActivity>

@@ -126,13 +126,6 @@ public class WifiLockdownTestActivity extends PassFailButtons.TestListActivity {
         });
     }
 
-    /**
-     * Enable Pass Button when all tests passed.
-     */
-    private void updatePassButton() {
-        getPassButton().setEnabled(mAdapter.allTestsPassed());
-    }
-
     private void addTestsToAdapter(final ArrayTestListAdapter adapter) {
         adapter.add(DeviceOwnerPositiveTestActivity.createInteractiveTestItem(this,
                 CONFIG_MODIFIABLE_WHEN_UNLOCKED_TEST_ID,
