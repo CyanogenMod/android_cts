@@ -26,8 +26,11 @@ import android.media.MediaMetadataRetriever;
 import android.test.AndroidTestCase;
 
 import java.io.IOException;
+import android.util.Log;
 
 public class MediaMetadataRetrieverTest extends AndroidTestCase {
+    private static final String LOG_TAG = "MediaMetadataRetrieverTest";
+
     protected Resources mResources;
     protected MediaMetadataRetriever mRetriever;
 
@@ -114,6 +117,13 @@ public class MediaMetadataRetrieverTest extends AndroidTestCase {
 
         assertNull("Writer was unexpectedly present",
                 mRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_WRITER));
+    }
+
+    public void testID3v2EmbeddedPicture() {
+        setDataSourceFd(R.raw.id3v2_3_extended_header_overflow_padding);
+
+        assertEquals("EmbeddedPicture was other than expected null array",
+                null, mRetriever.getEmbeddedPicture());
     }
 
     public void testSetDataSourceNullPath() {
