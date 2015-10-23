@@ -160,6 +160,14 @@ public class MediaUtils {
         return null;
     }
 
+    public static boolean canEncode(MediaFormat format) {
+        if (sMCL.findEncoderForFormat(format) == null) {
+            Log.i(TAG, "no encoder for " + format);
+            return false;
+        }
+        return true;
+    }
+
     public static boolean canDecode(MediaFormat format) {
         if (sMCL.findDecoderForFormat(format) == null) {
             Log.i(TAG, "no decoder for " + format);
@@ -405,6 +413,10 @@ public class MediaUtils {
         MediaFormat format = MediaFormat.createVideoFormat(mime, width, height);
         format.setFloat(MediaFormat.KEY_FRAME_RATE, rate);
         return canDecode(format);
+    }
+
+    public static boolean checkEncoderForFormat(MediaFormat format) {
+        return check(canEncode(format), "no encoder for " + format);
     }
 
     public static boolean checkDecoderForFormat(MediaFormat format) {
