@@ -157,12 +157,12 @@ public class TvProviderPerfTest extends CtsAndroidTestCase {
         // Query a channel
         try (final Cursor cursor = mContentResolver.query(Channels.CONTENT_URI,
                 projection, null, null, null)) {
-            final Uri channelUri = TvContract.buildChannelUri(cursor.getLong(0));
             applyBatchTimes = MeasureTime.measure(QUERY_RUNS, new MeasureRun() {
                 @Override
                 public void run(int i) {
                     assertTrue(cursor.moveToNext());
-                    try (Cursor c = mContentResolver.query(channelUri, null, null, null, null)) {
+                    try (Cursor c = mContentResolver.query(TvContract.buildChannelUri(
+                            cursor.getLong(0)), null, null, null, null)) {
                         while (c.moveToNext()) {
                             // Do nothing. Just iterate all the items.
                         }
@@ -321,12 +321,12 @@ public class TvProviderPerfTest extends CtsAndroidTestCase {
         // Query a program
         try (final Cursor cursor = mContentResolver.query(Programs.CONTENT_URI,
                 projection, null, null, null)) {
-            final Uri programUri = TvContract.buildProgramUri(cursor.getLong(0));
             applyBatchTimes = MeasureTime.measure(QUERY_RUNS, new MeasureRun() {
                 @Override
                 public void run(int i) {
                     assertTrue(cursor.moveToNext());
-                    try (Cursor c = mContentResolver.query(programUri, null, null, null, null)) {
+                    try (Cursor c = mContentResolver.query(TvContract.buildProgramUri(
+                            cursor.getLong(0)), null, null, null, null)) {
                         while (c.moveToNext()) {
                             // Do nothing. Just iterate all the items.
                         }
