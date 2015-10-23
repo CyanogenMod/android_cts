@@ -877,6 +877,8 @@ public class AudioRecordTest extends CtsAndroidTestCase {
             // valid events, issuing right after stop completes. Except for those events,
             // no other events should show up after stop.
             // This behavior may change in the future but we account for it here in testing.
+            final long SLEEP_AFTER_STOP_FOR_EVENTS_MS = 30;
+            Thread.sleep(SLEEP_AFTER_STOP_FOR_EVENTS_MS);
             listener.stop();
 
             // clean up
@@ -1010,10 +1012,10 @@ public class AudioRecordTest extends CtsAndroidTestCase {
                 assertEquals(AudioRecord.SUCCESS,
                         mAudioRecord.setNotificationMarkerPosition(mMarkerPosition));
             } else {
-                // stop() is not sufficient to end all notifications
-                // as is not synchronous with the event handling thread
-                // so we comment out the line below.
-                // fail("onMarkerReached called when not active");
+                // see comment on stop()
+                final long delta = System.currentTimeMillis() - mStopTime;
+                Log.d(TAG, "onMarkerReached called " + delta + " ms after stop");
+                fail("onMarkerReached called when not active");
             }
         }
 
@@ -1022,8 +1024,10 @@ public class AudioRecordTest extends CtsAndroidTestCase {
                 int position = getPosition();
                 mOnPeriodicNotificationCalled.add(position);
             } else {
-                // see above comments about stop
-                // fail("onPeriodicNotification called when not active");
+                // see comment on stop()
+                final long delta = System.currentTimeMillis() - mStopTime;
+                Log.d(TAG, "onPeriodicNotification called " + delta + " ms after stop");
+                fail("onPeriodicNotification called when not active");
             }
         }
 
@@ -1034,7 +1038,10 @@ public class AudioRecordTest extends CtsAndroidTestCase {
         }
 
         public synchronized void stop() {
+            // the listener should be stopped some time after AudioRecord is stopped
+            // as some messages may not yet be posted.
             mIsTestActive = false;
+            mStopTime = System.currentTimeMillis();
         }
 
         public ArrayList<Integer> getMarkerList() {
@@ -1059,6 +1066,7 @@ public class AudioRecordTest extends CtsAndroidTestCase {
         }
 
         private long mStartTime;
+        private long mStopTime;
         private int mSampleRate;
         private boolean mIsTestActive = true;
         private AudioRecord mAudioRecord;
