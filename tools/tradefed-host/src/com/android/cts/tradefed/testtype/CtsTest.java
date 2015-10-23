@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -249,6 +250,20 @@ public class CtsTest implements IDeviceTest, IResumableTest, IShardableTest, IBu
         IAbi getAbi() {
             return mPackageDef.getAbi();
         }
+    }
+
+
+    /**
+     * A {@link Comparator} for sorting {@link TestPackage}s by running time hint.
+     */
+    static class RuntimeHintComparator implements Comparator<TestPackage> {
+
+        @Override
+        public int compare(TestPackage left, TestPackage right) {
+            return Long.compare(left.getPackageDef().getRuntimeHint(),
+                    right.getPackageDef().getRuntimeHint());
+        }
+
     }
 
     /**
@@ -810,6 +825,10 @@ public class CtsTest implements IDeviceTest, IResumableTest, IShardableTest, IBu
             // Filter by shard
             int numTestPackages = testPackageList.size();
             int totalShards = Math.min(mTotalShards, numTestPackages);
+
+            // Sort test packages by running time hint, to force packages with large expected
+            // running times to different shards if possible.
+            Collections.sort(testPackageList, new RuntimeHintComparator());
 
             List<TestPackage> shardTestPackageList = new ArrayList<>();
             for (int i = mShardAssignment; i < numTestPackages; i += totalShards) {

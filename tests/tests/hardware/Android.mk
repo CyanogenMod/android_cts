@@ -57,4 +57,6 @@ LOCAL_SDK_VERSION := current
 
 LOCAL_JAVA_LIBRARIES := android.test.runner
 
+cts_runtime_hint := 120
+
 include $(BUILD_CTS_PACKAGE)

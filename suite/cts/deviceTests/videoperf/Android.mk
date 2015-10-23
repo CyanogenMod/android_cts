@@ -33,5 +33,7 @@ LOCAL_PACKAGE_NAME := CtsDeviceVideoPerf
 
 LOCAL_SDK_VERSION := current
 
+cts_runtime_hint := 50
+
 include $(BUILD_CTS_PACKAGE)
 
