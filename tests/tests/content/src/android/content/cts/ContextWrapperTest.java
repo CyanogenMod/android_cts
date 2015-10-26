@@ -82,7 +82,7 @@ public class ContextWrapperTest extends AndroidTestCase {
     public static final String PERMISSION_GRANTED = "android.content.cts.permission.TEST_GRANTED";
     public static final String PERMISSION_DENIED = "android.content.cts.permission.TEST_DENIED";
 
-    private static final int BROADCAST_TIMEOUT = 10000;
+    private static final int BROADCAST_TIMEOUT = 15000;
 
     private Context mContext;
 
@@ -216,13 +216,13 @@ public class ContextWrapperTest extends AndroidTestCase {
 
         // Test unwanted intent(action = MOCK_ACTION2)
         broadcastReceiver.reset();
-        waitForFilteredIntent(mContextWrapper, broadcastReceiver, MOCK_ACTION2);
+        waitForFilteredIntent(mContextWrapper, MOCK_ACTION2);
         assertFalse(broadcastReceiver.hadReceivedBroadCast1());
         assertFalse(broadcastReceiver.hadReceivedBroadCast2());
 
         // Send wanted intent(action = MOCK_ACTION1)
         broadcastReceiver.reset();
-        waitForFilteredIntent(mContextWrapper, broadcastReceiver, MOCK_ACTION1);
+        waitForFilteredIntent(mContextWrapper, MOCK_ACTION1);
         assertTrue(broadcastReceiver.hadReceivedBroadCast1());
         assertFalse(broadcastReceiver.hadReceivedBroadCast2());
 
@@ -235,13 +235,13 @@ public class ContextWrapperTest extends AndroidTestCase {
 
         // Test unwanted intent(action = MOCK_ACTION2)
         broadcastReceiver2.reset();
-        waitForFilteredIntent(mContextWrapper, broadcastReceiver2, MOCK_ACTION2);
+        waitForFilteredIntent(mContextWrapper, MOCK_ACTION2);
         assertFalse(broadcastReceiver2.hadReceivedBroadCast1());
         assertFalse(broadcastReceiver2.hadReceivedBroadCast2());
 
         // Send wanted intent(action = MOCK_ACTION1), but the receiver is unregistered.
         broadcastReceiver2.reset();
-        waitForFilteredIntent(mContextWrapper, broadcastReceiver2, MOCK_ACTION1);
+        waitForFilteredIntent(mContextWrapper, MOCK_ACTION1);
         assertFalse(broadcastReceiver2.hadReceivedBroadCast1());
         assertFalse(broadcastReceiver2.hadReceivedBroadCast2());
     }
@@ -256,13 +256,13 @@ public class ContextWrapperTest extends AndroidTestCase {
 
         // Test unwanted intent(action = MOCK_ACTION2)
         broadcastReceiver.reset();
-        waitForFilteredIntent(mContextWrapper, broadcastReceiver, MOCK_ACTION2);
+        waitForFilteredIntent(mContextWrapper, MOCK_ACTION2);
         assertFalse(broadcastReceiver.hadReceivedBroadCast1());
         assertFalse(broadcastReceiver.hadReceivedBroadCast2());
 
         // Send wanted intent(action = MOCK_ACTION1)
         broadcastReceiver.reset();
-        waitForFilteredIntent(mContextWrapper, broadcastReceiver, MOCK_ACTION1);
+        waitForFilteredIntent(mContextWrapper, MOCK_ACTION1);
         assertTrue(broadcastReceiver.hadReceivedBroadCast1());
         assertFalse(broadcastReceiver.hadReceivedBroadCast2());
 
@@ -792,8 +792,8 @@ public class ContextWrapperTest extends AndroidTestCase {
         waitForCondition(con);
     }
 
-    private void waitForFilteredIntent(ContextWrapper contextWrapper,
-            final FilteredReceiver receiver, final String action) throws InterruptedException {
+    private void waitForFilteredIntent(ContextWrapper contextWrapper, final String action)
+            throws InterruptedException {
         contextWrapper.sendOrderedBroadcast(new Intent(action), null);
 
         synchronized (mLockObj) {
