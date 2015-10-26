@@ -339,8 +339,7 @@
     <string name="hifi_ultrasound_test_default_false_string">false</string>
     <string name="hifi_ultrasound_test_mic_no_support">
         Device does not support near-ultrasound recording.\n
-        All new phones and tablets MUST support near-ultrasound recording.\n
-        Report FAIL if this is a new device, report PASS if this is an updating device.\n</string>
+        Please report PASS.\n</string>
     <string name="hifi_ultrasound_test_spkr_no_support">
         Device does not support near-ultrasound playback.\n
         If this is your reference device, please use a different reference device.\n</string>
@@ -360,8 +359,7 @@
         If this is your reference device, please use a different reference device.\n</string>
     <string name="hifi_ultrasound_speaker_test_spkr_no_support">
         Device does not support near-ultrasound playback.\n
-        All new phones and tablets MUST support near-ultrasound playback.\n
-        Report FAIL if this is a new device, report PASS if this is an updating device.\n</string>
+        Please report PASS.\n</string>
     <string name="hifi_ultrasound_speaker_test_test_side">
         Please wait for the result on the reference device then report here.</string>
     <string name="hifi_ultrasound_speaker_test_reference_side">
