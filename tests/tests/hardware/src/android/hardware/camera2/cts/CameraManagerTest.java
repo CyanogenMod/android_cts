@@ -534,7 +534,7 @@ public class CameraManagerTest extends AndroidTestCase {
                     java.util.concurrent.TimeUnit.MILLISECONDS);
             assertTrue(String.format("Received unavailability notice for wrong ID " +
                             "(expected %s, got %s)", id, candidateId),
-                    id == candidateId);
+                    id.equals(candidateId));
             assertTrue("Availability events received unexpectedly",
                     availableEventQueue.size() == 0);
 
@@ -549,7 +549,7 @@ public class CameraManagerTest extends AndroidTestCase {
                     java.util.concurrent.TimeUnit.MILLISECONDS);
             assertTrue(String.format("Received availability notice for wrong ID " +
                             "(expected %s, got %s)", id, candidateId),
-                    id == candidateId);
+                    id.equals(candidateId));
             assertTrue("Unavailability events received unexpectedly",
                     unavailableEventQueue.size() == 0);
 
