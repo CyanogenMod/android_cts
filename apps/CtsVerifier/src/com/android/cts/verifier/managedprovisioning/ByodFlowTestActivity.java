@@ -347,6 +347,9 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
         adapter.add(mKeyguardDisabledFeaturesTest);
         adapter.add(mAuthenticationBoundKeyTest);
 
+        /* If there is an application that handles ACTION_IMAGE_CAPTURE, test that it handles it
+         * well.
+         */
         if (canResolveIntent(ByodHelperActivity.getCaptureImageIntent())) {
             // Capture image intent can be resolved in primary profile, so test.
             mCrossProfileImageCaptureSupportTest = new DialogTestListItem(this,
@@ -362,6 +365,9 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
                     .show();
         }
 
+        /* If there is an application that handles ACTION_VIDEO_CAPTURE, test that it handles it
+         * well.
+         */
         if (canResolveIntent(ByodHelperActivity.getCaptureVideoIntent())) {
             // Capture video intent can be resolved in primary profile, so test.
             mCrossProfileVideoCaptureSupportTest = new DialogTestListItem(this,
@@ -409,7 +415,9 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
             adapter.add(mDisableNfcBeamTest);
         }
 
-        /* TODO: reinstate when bug b/20131958 is fixed
+        /* If there is an application that handles RECORD_SOUND_ACTION, test that it handles it
+         * well.
+         */
         if (canResolveIntent(ByodHelperActivity.getCaptureAudioIntent())) {
             // Capture audio intent can be resolved in primary profile, so test.
             mCrossProfileAudioCaptureSupportTest = new DialogTestListItem(this,
@@ -424,7 +432,6 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
                     R.string.provisioning_byod_no_audio_capture_resolver, Toast.LENGTH_SHORT)
                     .show();
         }
-        */
     }
 
     // Return whether the intent can be resolved in the current profile
