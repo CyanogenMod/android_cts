@@ -1730,7 +1730,7 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="device_owner_wifi_lockdown_info">
             Please enter the SSID and auth method of an available WiFi Access Point and press the button to create a
             WiFi configuration. This configuration can be seen on Settings &gt; WiFi. The test cases
-            are going use this config. Please go through test cases in order (from top to bottom).
+            are going to use this config. Please go through test cases in order (from top to bottom).
     </string>
     <string name="switch_wifi_lockdown_off_button">WiFi config lockdown off</string>
     <string name="switch_wifi_lockdown_on_button">WiFi config lockdown on</string>
@@ -1851,6 +1851,18 @@ You should be prompted to select credentials; choose the ones you just installed
     </string>
     <string name="device_owner_user_restriction_set">Set restriction</string>
     <string name="device_owner_settings_go">Go</string>
+
+    <string name="device_owner_disallow_config_vpn">Disallow configuring VPN</string>
+    <string name="device_owner_disallow_config_vpn_info">
+        Please press the Set VPN restriction button to set the VPN restriction.
+        Then press Go to open the VPN page.\n\n
+        Confirm that:\n
+        - You cannot add a new VPN network.\n
+        - You cannot edit, add or remove any existing VPNs.\n
+        \n
+        Use the Back button to return to this page.
+    </string>
+    <string name="device_owner_user_vpn_restriction_set">Set VPN restriction</string>
 
     <!-- Strings for JobScheduler Tests -->
     <string name="js_test_description">This test is mostly automated, but requires some user interaction. You can pass this test once the list items below are checked.</string>
