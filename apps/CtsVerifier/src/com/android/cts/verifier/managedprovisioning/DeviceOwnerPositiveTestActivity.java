@@ -75,6 +75,9 @@ public class DeviceOwnerPositiveTestActivity extends PassFailButtons.TestListAct
             PermissionLockdownTestActivity.class.getName();
     private static final String DISALLOW_CONFIG_BT_ID = "DISALLOW_CONFIG_BT";
     private static final String DISALLOW_CONFIG_WIFI_ID = "DISALLOW_CONFIG_WIFI";
+    private static final String DISALLOW_CONFIG_VPN_ID = "DISALLOW_CONFIG_VPN";
+    //TODO(rgl): This symbol should be available in android.provider.settings
+    private static final String ACTION_VPN_SETTINGS = "android.net.vpn.SETTINGS";
     private static final String REMOVE_DEVICE_OWNER_TEST_ID = "REMOVE_DEVICE_OWNER";
 
     @Override
@@ -165,6 +168,19 @@ public class DeviceOwnerPositiveTestActivity extends PassFailButtons.TestListAct
                                     R.string.device_owner_settings_go,
                                     new Intent(Settings.ACTION_WIFI_SETTINGS))}));
         }
+
+        // DISALLOW_CONFIG_VPN
+        adapter.add(createInteractiveTestItem(this, DISALLOW_CONFIG_VPN_ID,
+                R.string.device_owner_disallow_config_vpn,
+                R.string.device_owner_disallow_config_vpn_info,
+                new ButtonInfo[] {
+                        new ButtonInfo(
+                                R.string.device_owner_user_vpn_restriction_set,
+                                createSetUserRestrictionIntent(
+                                        UserManager.DISALLOW_CONFIG_VPN)),
+                        new ButtonInfo(
+                                R.string.device_owner_settings_go,
+                                new Intent(ACTION_VPN_SETTINGS))}));
 
         // DISALLOW_CONFIG_BLUETOOTH
         if (packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
@@ -326,6 +342,7 @@ public class DeviceOwnerPositiveTestActivity extends PassFailButtons.TestListAct
             dpm.setKeyguardDisabled(admin, false);
             dpm.clearUserRestriction(admin, UserManager.DISALLOW_CONFIG_BLUETOOTH);
             dpm.clearUserRestriction(admin, UserManager.DISALLOW_CONFIG_WIFI);
+            dpm.clearUserRestriction(admin, UserManager.DISALLOW_CONFIG_VPN);
             dpm.clearDeviceOwnerApp(getPackageName());
         }
     }
