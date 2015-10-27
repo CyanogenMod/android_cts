@@ -29,6 +29,11 @@ cts_src_dirs += $(sort $(dir $(LOCAL_GENERATED_SOURCES)))
 cts_src_dirs := $(addprefix -s , $(cts_src_dirs))
 
 cts_library_xml := $(CTS_TESTCASES_OUT)/$(LOCAL_MODULE).xml
+ifeq ($(cts_runtime_hint),)
+$(cts_library_xml): PRIVATE_CTS_RUNTIME_HINT := "0"
+else
+$(cts_library_xml): PRIVATE_CTS_RUNTIME_HINT := $(cts_runtime_hint)
+endif
 $(cts_library_xml): PRIVATE_SRC_DIRS := $(cts_src_dirs)
 $(cts_library_xml): PRIVATE_TEST_PACKAGE := $(LOCAL_CTS_TEST_PACKAGE)
 $(cts_library_xml): PRIVATE_LIBRARY := $(LOCAL_MODULE)
@@ -44,6 +49,7 @@ $(cts_library_xml): $(CTS_EXPECTATIONS) $(CTS_UNSUPPORTED_ABIS) $(CTS_JAVA_TEST_
 						-j $(PRIVATE_JAR_PATH) \
 						-n $(PRIVATE_LIBRARY) \
 						-p $(PRIVATE_TEST_PACKAGE) \
+						-x "runtimeHint->$(PRIVATE_CTS_RUNTIME_HINT)" \
 						-e $(CTS_EXPECTATIONS) \
 						-b $(CTS_UNSUPPORTED_ABIS) \
 						-a $(CTS_TARGET_ARCH) \

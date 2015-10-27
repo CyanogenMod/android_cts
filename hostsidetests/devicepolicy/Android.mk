@@ -26,6 +26,8 @@ LOCAL_JAVA_LIBRARIES := tradefed-prebuilt tools-common-prebuilt cts-tradefed
 
 LOCAL_CTS_TEST_PACKAGE := android.adminhostside
 
+cts_runtime_hint := 70
+
 include $(BUILD_CTS_HOST_JAVA_LIBRARY)
 
 # Build the test APKs using their own makefiles
