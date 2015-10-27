@@ -42,6 +42,8 @@ import java.io.IOException;
  */
 public class VpnTestActivity extends PassFailButtons.Activity {
 
+    public static final String ACTION_VPN = "com.android.cts.verifier.managedprovisioning.VPN";
+
     public static class MyTestVpnService extends VpnService {
         /*
          * MyVpnTestService is just a stub. This class exists because the framework needs a class

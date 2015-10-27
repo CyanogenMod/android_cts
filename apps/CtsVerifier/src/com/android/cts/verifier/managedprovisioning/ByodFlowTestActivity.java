@@ -84,6 +84,7 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
     private TestListItem mAuthenticationBoundKeyTest;
     private DialogTestListItem mEnableLocationModeTest;
     private DialogTestListItem mDisableLocationModeTest;
+    private TestListItem mVpnTest;
 
     public ByodFlowTestActivity() {
         super(R.layout.provisioning_byod,
@@ -303,6 +304,12 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
                 new Intent(AuthenticationBoundKeyTestActivity.ACTION_AUTH_BOUND_KEY_TEST),
                 null);
 
+        mVpnTest = TestListItem.newTest(this,
+                R.string.provisioning_byod_vpn,
+                VpnTestActivity.class.getName(),
+                new Intent(VpnTestActivity.ACTION_VPN),
+                null);
+
         // Test for checking if the required intent filters are set during managed provisioning.
         mIntentFiltersTest = new DialogTestListItem(this,
                 R.string.provisioning_byod_cross_profile_intent_filters,
@@ -348,6 +355,7 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
         adapter.add(mPermissionLockdownTest);
         adapter.add(mKeyguardDisabledFeaturesTest);
         adapter.add(mAuthenticationBoundKeyTest);
+        adapter.add(mVpnTest);
 
         /* If there is an application that handles ACTION_IMAGE_CAPTURE, test that it handles it
          * well.
@@ -552,7 +560,8 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
             WorkNotificationTestActivity.class.getName(),
             WorkStatusTestActivity.class.getName(),
             PermissionLockdownTestActivity.ACTIVITY_ALIAS,
-            AuthenticationBoundKeyTestActivity.class.getName()
+            AuthenticationBoundKeyTestActivity.class.getName(),
+            VpnTestActivity.class.getName()
         };
         for (String component : components) {
             getPackageManager().setComponentEnabledSetting(new ComponentName(this, component),

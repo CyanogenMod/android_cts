@@ -1382,6 +1382,10 @@
 
         <activity android:name=".managedprovisioning.VpnTestActivity"
                 android:label="@string/device_owner_vpn_test">
+            <intent-filter>
+                <action android:name="com.android.cts.verifier.managedprovisioning.VPN" />
+                <category android:name="android.intent.category.DEFAULT"></category>
+            </intent-filter>
         </activity>
 
         <service android:name=".managedprovisioning.VpnTestActivity$MyTestVpnService"
