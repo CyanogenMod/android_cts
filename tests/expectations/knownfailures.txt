@@ -120,6 +120,13 @@
   bug: 17530117
 },
 {
+  description: "The new image reader test is not yet passing on all devices",
+  names: [
+    "android.hardware.camera2.cts.ImageReaderTest#testAllOutputYUVResolutions"
+  ],
+  bug: 18689511
+},
+{
   description: "Current implementation of uninstallAllUserCaCerts does not throw expected security exception, wait for fix from framework",
   names: [
     "android.admin.cts.DevicePolicyManagerTest#testUninstallAllUserCaCerts_failIfNotProfileOwner"
