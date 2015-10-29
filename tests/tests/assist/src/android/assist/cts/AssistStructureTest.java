@@ -80,6 +80,10 @@ public class AssistStructureTest extends AssistTestBase {
     }
 
     public void testAssistStructure() throws Exception {
+        if (mActivityManager.isLowRamDevice()) {
+            Log.d(TAG, "Not running assist tests on low-RAM device.");
+            return;
+        }
         mTestActivity.start3pApp(TEST_CASE_TYPE);
         mTestActivity.startTest(TEST_CASE_TYPE);
         waitForAssistantToBeReady(mReadyLatch);

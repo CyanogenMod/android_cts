@@ -79,6 +79,10 @@ public class LargeViewHierarchyTest extends AssistTestBase {
     }
 
     public void testTextView() throws Exception {
+        if (mActivityManager.isLowRamDevice()) {
+            Log.d(TAG, "Not running assist tests on low-RAM device.");
+            return;
+        }
         mTestActivity.start3pApp(TEST_CASE_TYPE);
         mTestActivity.startTest(TEST_CASE_TYPE);
         waitForAssistantToBeReady(mReadyLatch);

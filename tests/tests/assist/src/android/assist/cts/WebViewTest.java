@@ -90,6 +90,10 @@ public class WebViewTest extends AssistTestBase {
     }
 
     public void testWebView() throws Exception {
+        if (mActivityManager.isLowRamDevice()) {
+            Log.d(TAG, "Not running assist tests on low-RAM device.");
+            return;
+        }
         if (!mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WEBVIEW)) {
             return;
         }

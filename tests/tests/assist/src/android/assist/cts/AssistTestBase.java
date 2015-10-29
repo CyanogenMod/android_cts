@@ -19,6 +19,7 @@ package android.assist.cts;
 import android.assist.cts.TestStartActivity;
 import android.assist.common.Utils;
 
+import android.app.ActivityManager;
 import android.app.assist.AssistContent;
 import android.app.assist.AssistStructure;
 import android.app.assist.AssistStructure.ViewNode;
@@ -57,6 +58,7 @@ import java.util.concurrent.TimeUnit;
 public class AssistTestBase extends ActivityInstrumentationTestCase2<TestStartActivity> {
     private static final String TAG = "AssistTestBase";
 
+    protected ActivityManager mActivityManager;
     protected TestStartActivity mTestActivity;
     protected AssistContent mAssistContent;
     protected AssistStructure mAssistStructure;
@@ -123,6 +125,7 @@ public class AssistTestBase extends ActivityInstrumentationTestCase2<TestStartAc
         intent.putExtra(Utils.TESTCASE_TYPE, testName);
         setActivityIntent(intent);
         mTestActivity = getActivity();
+        mActivityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
     }
 
     /**
