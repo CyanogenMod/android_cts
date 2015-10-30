@@ -75,6 +75,8 @@ public class DngCreatorTest extends Camera2AndroidTestCase {
 
     @Override
     protected void tearDown() throws Exception {
+        RenderScriptSingleton.clearContext();
+
         super.tearDown();
     }
 

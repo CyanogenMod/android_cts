@@ -97,7 +97,6 @@ public class AllocationTest extends AndroidTestCase {
         assertNotNull("Can't connect to camera manager!", mCameraManager);
 
         RenderScriptSingleton.setContext(context);
-        // TODO: call clearContext
     }
 
     @Override
@@ -117,11 +116,7 @@ public class AllocationTest extends AndroidTestCase {
     @Override
     protected void tearDown() throws Exception {
         MaybeNull.close(mCamera);
-
-        // TODO: Clean up RenderScript context in a static test run finished method.
-        // Or alternatively count the # of test methods that are in this test,
-        // once we reach that count, it's time to call the last tear down
-
+        RenderScriptSingleton.clearContext();
         mHandlerThread.quitSafely();
         mHandler = null;
         super.tearDown();
