@@ -399,16 +399,14 @@ public class PassFailButtons {
     private static void setTestResultAndFinish(android.app.Activity activity, String testId,
             String testDetails, ReportLog reportLog, View target) {
         boolean passed;
-        switch (target.getId()) {
-            case R.id.pass_button:
-                passed = true;
-                break;
-            case R.id.fail_button:
-                passed = false;
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown id: " + target.getId());
+        if (target.getId() == R.id.pass_button) {
+            passed = true;
+        } else if (target.getId() == R.id.fail_button) {
+            passed = false;
+        } else {
+            throw new IllegalArgumentException("Unknown id: " + target.getId());
         }
+
         setTestResultAndFinishHelper(activity, testId, testDetails, passed, reportLog);
     }
 
