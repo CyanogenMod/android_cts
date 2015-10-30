@@ -25,7 +25,6 @@ import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.cts.CameraCtsActivity;
-import android.hardware.multiprocess.ErrorLoggingService;
 import android.os.Handler;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;

@@ -222,6 +222,20 @@ class CtsBuilder(object):
       plan.ExcludeTests(package, test_list)
     self.__WritePlan(plan, 'CTS-hardware')
 
+    # CTS - sub plan for camera tests which is public, large
+    plan = tools.TestPlan(packages)
+    plan.Exclude('.*')
+    plan.Include(r'android\.camera$')
+    misc_camera_tests = BuildCtsMiscCameraList()
+    for package, test_list in misc_camera_tests.iteritems():
+      plan.Include(package+'$')
+      plan.IncludeTests(package, test_list)
+    for package, test_list in flaky_tests.iteritems():
+      plan.ExcludeTests(package, test_list)
+    for package, test_list in releasekey_tests.iteritems():
+      plan.ExcludeTests(package, test_list)
+    self.__WritePlan(plan, 'CTS-camera')
+
     # CTS - sub plan for media tests which is public, large
     plan = tools.TestPlan(packages)
     plan.Exclude('.*')
@@ -434,7 +448,7 @@ def BuildCtsFlakyTestList():
   """ Construct a defaultdict that maps package name to a list of tests
       that flaky during dev cycle and cause other subsequent tests to fail. """
   return {
-      'android.hardware' : [
+      'android.camera' : [
           'android.hardware.cts.CameraTest#testVideoSnapshot',
           'android.hardware.cts.CameraGLTest#testCameraToSurfaceTextureMetadata',
           'android.hardware.cts.CameraGLTest#testSetPreviewTextureBothCallbacks',
@@ -505,6 +519,19 @@ def BuildCtsTemporarilyKnownFailureList():
       'com.android.cts.devicepolicy' : [
           'com.android.cts.devicepolicy.MixedDeviceOwnerTest#testPackageInstallUserRestrictions',
           'com.android.cts.devicepolicy.MixedProfileOwnerTest#testPackageInstallUserRestrictions',
+      ],
+      '' : []}
+
+def BuildCtsMiscCameraList():
+  """ Construct a defaultdict that maps package name to a list of tests
+      that are relevant to camera but does not reside in camera test package """
+  return {
+      'android.app' : [
+          'android.app.cts.SystemFeaturesTest#testCameraFeatures',
+      ],
+      'android.permission' : [
+          'android.permission.cts.CameraPermissionTest',
+          'android.permission.cts.Camera2PermissionTest',
       ],
       '' : []}
 

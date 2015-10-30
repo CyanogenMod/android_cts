@@ -23,7 +23,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import com.android.cts.hardware.R;
+import android.camera.cts.R;
 
 public class Camera2SurfaceViewCtsActivity extends Activity implements SurfaceHolder.Callback {
     private final static String TAG = "Camera2SurfaceViewCtsActivity";
