@@ -85,4 +85,41 @@ public class DrawableTestUtils {
         }
         return attrs;
     }
+
+    public static XmlResourceParser getResourceParser(Resources res, int resId)
+            throws XmlPullParserException, IOException {
+        final XmlResourceParser parser = res.getXml(resId);
+        int type;
+        while ((type = parser.next()) != XmlPullParser.START_TAG
+                && type != XmlPullParser.END_DOCUMENT) {
+            // Empty loop
+        }
+        return parser;
+    }
+
+    public static void setResourcesDensity(Resources res, int densityDpi) {
+        final Configuration config = new Configuration();
+        config.setTo(res.getConfiguration());
+        config.densityDpi = densityDpi;
+        res.updateConfiguration(config, null);
+    }
+
+    /**
+     * Implements scaling as used by the Bitmap class. Resulting values are
+     * rounded up (as distinct from resource scaling, which truncates or rounds
+     * to the nearest pixel).
+     *
+     * @param size the pixel size to scale
+     * @param sdensity the source density that corresponds to the size
+     * @param tdensity the target density
+     * @return the pixel size scaled for the target density
+     */
+    public static int scaleBitmapFromDensity(int size, int sdensity, int tdensity) {
+        if (sdensity == 0 || tdensity == 0 || sdensity == tdensity) {
+            return size;
+        }
+
+        // Scale by tdensity / sdensity, rounding up.
+        return ((size * tdensity) + (sdensity >> 1)) / sdensity;
+    }
 }
