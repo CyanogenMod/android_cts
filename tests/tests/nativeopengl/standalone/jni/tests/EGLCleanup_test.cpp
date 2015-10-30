@@ -109,7 +109,7 @@ public:
     }
 
 private:
-    enum { MAX_ITERATIONS = 1000 };
+    enum { MAX_ITERATIONS = 450 };
 
     EGLDisplay mEglDisplay;
     EGLSurface mEglSurface;
