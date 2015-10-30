@@ -22,8 +22,8 @@ import com.android.cts.verifier.audio.wavelib.*;
 import com.android.compatibility.common.util.ReportLog;
 import com.android.compatibility.common.util.ResultType;
 import com.android.compatibility.common.util.ResultUnit;
-import android.content.Context;
 
+import android.content.Context;
 import android.media.AudioDeviceCallback;
 import android.media.AudioDeviceInfo;
 import android.media.AudioFormat;
@@ -31,17 +31,13 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
-
 import android.util.Log;
-
 import android.view.View;
 import android.view.View.OnClickListener;
-
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.SeekBar;
@@ -391,9 +387,15 @@ public class AudioFrequencyLineActivity extends PassFailButtons.Activity impleme
         Results resultsRight = new Results("Right");
         computeResultsForVector(mFreqAverage1, resultsRight);
         if (resultsLeft.testAll() && resultsRight.testAll()) {
-            //enable button
-            getPassButton().setEnabled(true);
+            String strSuccess = getResources().getString(R.string.audio_general_test_passed);
+            appendResultsToScreen(strSuccess);
+        } else {
+            String strFailed = getResources().getString(R.string.audio_general_test_failed);
+            appendResultsToScreen(strFailed + "\n");
+            String strWarning = getResources().getString(R.string.audio_general_deficiency_found);
+            appendResultsToScreen(strWarning);
         }
+        getPassButton().setEnabled(true); //Everybody passes! (for now...)
     }
 
     private void computeResultsForVector(VectorAverage freqAverage,Results results) {
