@@ -2092,6 +2092,10 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="audio_general_headset_port_exists">Does this device have a headset port?</string>
     <string name="audio_general_headset_no">No</string>
     <string name="audio_general_headset_yes">Yes</string>
+    <string name="audio_general_deficiency_found">WARNING: Some results show potential deficiencies on the system.
+    Please consider addressing them for a future release.</string>
+    <string name="audio_general_test_passed">Test Successful</string>
+    <string name="audio_general_test_failed">Test Failed</string>
 
     <!-- Audio Loopback Latency Test -->
     <string name="audio_loopback_test">Audio Loopback Latency Test</string>

@@ -416,8 +416,15 @@ public class AudioFrequencySpeakerActivity extends PassFailButtons.Activity impl
         computeResultsForVector(mFreqAverageRight, resultsRight, false, bandSpecsArray);
         if (resultsLeft.testAll() && resultsRight.testAll() && resultsBase.testAll()) {
             //enable button
-            getPassButton().setEnabled(true);
+            String strSuccess = getResources().getString(R.string.audio_general_test_passed);
+            appendResultsToScreen(strSuccess);
+        } else {
+            String strFailed = getResources().getString(R.string.audio_general_test_failed);
+            appendResultsToScreen(strFailed + "\n");
+            String strWarning = getResources().getString(R.string.audio_general_deficiency_found);
+            appendResultsToScreen(strWarning);
         }
+        getPassButton().setEnabled(true); //Everybody passes! (for now...)
     }
 
     private void computeResultsForVector(VectorAverage freqAverage,Results results, boolean isBase,
