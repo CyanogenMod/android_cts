@@ -102,13 +102,13 @@ public class SensorParameterRangeTest extends SensorTestCase {
                 sensor.getMaximumRange() >= maxRange);
         double actualMinFrequency = SensorCtsHelper.getFrequency(sensor.getMaxDelay(),
                 TimeUnit.MICROSECONDS);
-        assertTrue(String.format("%s Min Frequency actual=%.2f expected=%dHz",
+        assertTrue(String.format("%s Min Frequency actual=%.2f expected=%.2fHz",
                     sensor.getName(), actualMinFrequency, minFrequency), actualMinFrequency <=
                 minFrequency + 0.1);
 
         double actualMaxFrequency = SensorCtsHelper.getFrequency(sensor.getMinDelay(),
                 TimeUnit.MICROSECONDS);
-        assertTrue(String.format("%s Max Frequency actual=%.2f expected=%dHz",
+        assertTrue(String.format("%s Max Frequency actual=%.2f expected=%.2fHz",
                     sensor.getName(), actualMaxFrequency, maxFrequency), actualMaxFrequency >=
                 maxFrequency - 0.1);
     }

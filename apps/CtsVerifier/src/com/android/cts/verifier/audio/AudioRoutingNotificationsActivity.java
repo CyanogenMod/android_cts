@@ -59,19 +59,19 @@ public class AudioRoutingNotificationsActivity extends PassFailButtons.Activity 
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.audio_routingnotification_playBtn:
-                    Log.i(TAG, "audio_routingnotification_playBtn");
                     mAudioPlayer.start();
                     break;
 
                 case R.id.audio_routingnotification_playStopBtn:
-                    Log.i(TAG, "audio_routingnotification_playStopBtn");
                     mAudioPlayer.stop();
                     break;
 
                 case R.id.audio_routingnotification_recordBtn:
+                    mAudioRecorder.start();
                     break;
 
                 case R.id.audio_routingnotification_recordStopBtn:
+                    mAudioRecorder.stop();
                     break;
             }
         }

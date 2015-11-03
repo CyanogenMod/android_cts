@@ -25,11 +25,13 @@ import com.android.tradefed.log.LogUtil.CLog;
  * apps.
  */
 public class LauncherAppsMultiUserTest extends BaseLauncherAppsTest {
+    private static final String FEATURE_LIVE_TV = "android.software.live_tv";
 
     private int mSecondaryUserId;
     private int mSecondaryUserSerialNumber;
 
     private boolean mMultiUserSupported;
+    private boolean mHasLiveTvFeature;
 
     @Override
     protected void setUp() throws Exception {
@@ -37,6 +39,7 @@ public class LauncherAppsMultiUserTest extends BaseLauncherAppsTest {
         // We need multi user to be supported in order to create a secondary user
         // and api level 21 to support LauncherApps
         mMultiUserSupported = getMaxNumberOfUsersSupported() > 1 && getDevice().getApiLevel() >= 21;
+        mHasLiveTvFeature = hasDeviceFeature(FEATURE_LIVE_TV);
 
         if (mMultiUserSupported) {
             removeTestUsers();
@@ -58,7 +61,7 @@ public class LauncherAppsMultiUserTest extends BaseLauncherAppsTest {
     }
 
     public void testGetActivitiesForNonProfileFails() throws Exception {
-        if (!mMultiUserSupported) {
+        if (!mMultiUserSupported || mHasLiveTvFeature) {
             return;
         }
         installApp(SIMPLE_APP_APK);
@@ -73,7 +76,7 @@ public class LauncherAppsMultiUserTest extends BaseLauncherAppsTest {
     }
 
     public void testNoLauncherCallbackPackageAddedSecondaryUser() throws Exception {
-        if (!mMultiUserSupported) {
+        if (!mMultiUserSupported || mHasLiveTvFeature) {
             return;
         }
         startCallbackService();

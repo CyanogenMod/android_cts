@@ -38,21 +38,27 @@ public class SensorCtsHelper {
     private SensorCtsHelper() {}
 
     /**
-     * Get the value of the 95th percentile using nearest rank algorithm.
+     * Get percentiles using nearest rank algorithm.
      *
-     * @throws IllegalArgumentException if the collection is null or empty
+     * @throws IllegalArgumentException if the collection or percentiles is null or empty
      */
-    public static <TValue extends Comparable<? super TValue>> TValue get95PercentileValue(
-            Collection<TValue> collection) {
+    public static <TValue extends Comparable<? super TValue>> List<TValue> getPercentileValue(
+            Collection<TValue> collection, float[] percentiles) {
         validateCollection(collection);
+        if(percentiles == null || percentiles.length == 0) {
+            throw new IllegalStateException("percentiles cannot be null or empty");
+        }
 
         List<TValue> arrayCopy = new ArrayList<TValue>(collection);
         Collections.sort(arrayCopy);
 
-        // zero-based array index
-        int arrayIndex = (int) Math.round(arrayCopy.size() * 0.95 + .5) - 1;
-
-        return arrayCopy.get(arrayIndex);
+        List<TValue> percentileValues = new ArrayList<TValue>();
+        for (float p : percentiles) {
+            // zero-based array index
+            int arrayIndex = (int) Math.round(arrayCopy.size() * p + .5) - 1;
+            percentileValues.add(arrayCopy.get(arrayIndex));
+        }
+        return percentileValues;
     }
 
     /**

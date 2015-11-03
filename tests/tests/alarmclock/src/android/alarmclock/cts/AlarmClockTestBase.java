@@ -70,7 +70,7 @@ public class AlarmClockTestBase extends ActivityInstrumentationTestCase2<TestSta
                 new IntentFilter(Utils.BROADCAST_INTENT + testCaseType.toString()));
     }
 
-    private boolean isIntentAupported(TestcaseType testCaseType) {
+    private boolean isIntentSupported(TestcaseType testCaseType) {
         Intent intent;
         switch (testCaseType) {
           case DISMISS_ALARM:
@@ -102,7 +102,7 @@ public class AlarmClockTestBase extends ActivityInstrumentationTestCase2<TestSta
     protected String runTest(TestcaseType testCaseType) throws Exception {
         Log.i(TAG, "Begin Testing: " + testCaseType);
         // Make sure the corresponding intent is supported by the platform, before testing.
-        if (!isIntentAupported(testCaseType)) return Utils.COMPLETION_RESULT;
+        if (!isIntentSupported(testCaseType)) return Utils.COMPLETION_RESULT;
 
         if (!startTestActivity(testCaseType)) {
             fail("test activity start failed for testcase = " + testCaseType);

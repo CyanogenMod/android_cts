@@ -67,7 +67,7 @@ public class AssistStructureTest extends AssistTestBase {
         }
         mReceiver = new AssistStructureTestBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Utils.ASSIST_STRUCTURE_HASRESUMED);
+        filter.addAction(Utils.APP_3P_HASRESUMED);
         filter.addAction(Utils.ASSIST_RECEIVER_REGISTERED);
         mContext.registerReceiver(mReceiver, filter);
     }
@@ -96,7 +96,7 @@ public class AssistStructureTest extends AssistTestBase {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(Utils.ASSIST_STRUCTURE_HASRESUMED)) {
+            if (action.equals(Utils.APP_3P_HASRESUMED)) {
                 if (mHasResumedLatch != null) {
                     mHasResumedLatch.countDown();
                 }

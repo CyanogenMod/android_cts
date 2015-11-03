@@ -174,6 +174,7 @@ public class VideoEncoderTest extends MediaPlayerTestBase {
         private boolean mSignaledDecoderEOS;
 
         protected boolean mCompleted;
+        protected boolean mEncoderIsActive;
         protected boolean mEncodeOutputFormatUpdated;
         protected final Object mCondition = new Object();
 
@@ -322,6 +323,10 @@ public class VideoEncoderTest extends MediaPlayerTestBase {
                         mCompleted = true;
                         mCondition.notifyAll(); // condition is always satisfied
                     }
+                } else {
+                    synchronized(mCondition) {
+                        mEncoderIsActive = true;
+                    }
                 }
             }
         }
@@ -395,6 +400,11 @@ public class VideoEncoderTest extends MediaPlayerTestBase {
                             break;
                         }
                         if (!haveBuffers()) {
+                            if (mEncoderIsActive) {
+                                mEncoderIsActive = false;
+                                Log.d(TAG, "No more input but still getting output from encoder.");
+                                continue;
+                            }
                             fail("timed out after " + mBuffersToRender.size()
                                     + " decoder output and " + mEncInputBuffers.size()
                                     + " encoder input buffers");
@@ -557,7 +567,6 @@ public class VideoEncoderTest extends MediaPlayerTestBase {
             implements SurfaceTexture.OnFrameAvailableListener {
         private static final String TAG = "SurfaceVideoProcessor";
         private boolean mFrameAvailable;
-        private boolean mEncoderIsActive;
         private boolean mGotDecoderEOS;
         private boolean mSignaledEncoderEOS;
 

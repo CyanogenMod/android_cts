@@ -16,7 +16,7 @@
  -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.android.cts.permission">
+    package="com.android.cts.netlegacy22.permission">
 
     <uses-permission android:name="android.permission.INJECT_EVENTS" />
     <application>
@@ -41,8 +41,8 @@
         relies on hidden APIs.
     -->
     <instrumentation android:name="android.support.test.runner.AndroidJUnitRunner"
-                     android:targetPackage="com.android.cts.permission"
-                     android:label="CTS tests of com.android.cts.permission">
+                     android:targetPackage="com.android.cts.netlegacy22.permission"
+                     android:label="CTS tests of legacy android.net permissions as of API 22">
         <meta-data android:name="listener"
             android:value="com.android.cts.runner.CtsTestRunListener" />
     </instrumentation>

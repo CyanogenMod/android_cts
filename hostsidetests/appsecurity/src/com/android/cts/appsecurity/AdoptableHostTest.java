@@ -294,7 +294,7 @@ public class AdoptableHostTest extends DeviceTestCase implements IAbiReceiver, I
     private LocalVolumeInfo getAdoptionVolume() throws Exception {
         String[] lines = null;
         int attempt = 0;
-        while (attempt++ < 5) {
+        while (attempt++ < 15) {
             lines = getDevice().executeShellCommand("sm list-volumes private").split("\n");
             for (String line : lines) {
                 final LocalVolumeInfo info = new LocalVolumeInfo(line.trim());

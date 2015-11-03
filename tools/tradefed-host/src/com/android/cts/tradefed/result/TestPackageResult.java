@@ -254,12 +254,12 @@ class TestPackageResult extends AbstractXmlPullParser {
             if (perfResult == null) {
                 perfResult = CtsHostStore.removeCtsResult(mDeviceSerial, mAbi, test.toString());
             }
-            if (perfResult != null) {
+            Test result = findTest(test);
+            if (perfResult != null && !result.getResult().equals(CtsTestStatus.FAIL)) {
                 // CTS result is passed in Summary++++Details format.
                 // Extract Summary and Details, and pass them.
                 Matcher m = mCtsLogPattern.matcher(perfResult);
                 if (m.find()) {
-                    Test result = findTest(test);
                     result.setResultStatus(CtsTestStatus.PASS);
                     result.setSummary(m.group(1));
                     result.setDetails(m.group(2));

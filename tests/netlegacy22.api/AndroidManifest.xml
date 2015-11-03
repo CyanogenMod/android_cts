@@ -16,7 +16,7 @@
  -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.android.cts.net.legacy22">
+    package="com.android.cts.netlegacy22.api">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -30,7 +30,7 @@
     </application>
 
     <instrumentation android:name="android.support.test.runner.AndroidJUnitRunner"
-                     android:targetPackage="com.android.cts.net.legacy22"
+                     android:targetPackage="com.android.cts.netlegacy22.api"
                      android:label="CTS tests of legacy android.net APIs as of API 22">
         <meta-data android:name="listener"
             android:value="com.android.cts.runner.CtsTestRunListener" />

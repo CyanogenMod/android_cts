@@ -85,24 +85,58 @@ public class ConnectivityManagerLegacyTest extends AndroidTestCase {
                 ((addr[1] & 0xff) << 8) | (addr[0] & 0xff);
     }
 
-    private void checkSourceAddress(String addrString, int type) throws Exception {
-        DatagramSocket d = new DatagramSocket();
-        d.connect(InetAddress.getByName(addrString), 7);
-        InetAddress localAddress = d.getLocalAddress();
-
+    // Returns a list of all the IP addresses for all the networks of a given legacy type. We can't
+    // just fetch the IP addresses for that type because there is no public getLinkProperties API
+    // that takes a legacy type.
+    private List<InetAddress> getIpAddresses(int type) {
+        ArrayList<InetAddress> addresses = new ArrayList<>();
         Network[] networks = mCm.getAllNetworks();
         for (int i = 0; i < networks.length; i++) {
             NetworkInfo ni = mCm.getNetworkInfo(networks[i]);
             if (ni != null && ni.getType() == type) {
+                // This does not include IP addresses on stacked interfaces (e.g., 464xlat), because
+                // there is no public API that will return them.
                 LinkProperties lp = mCm.getLinkProperties(networks[i]);
                 for (LinkAddress address : lp.getLinkAddresses()) {
-                    if (address.getAddress().equals(localAddress)) {
-                        return;
-                    }
+                    addresses.add(address.getAddress());
                 }
             }
         }
-        fail("Local address " + localAddress + " not assigned to any network of type " + type);
+        return addresses;
+    }
+
+    private boolean hasIPv4(int type) {
+        for (InetAddress address : getIpAddresses(type)) {
+            if (address instanceof Inet4Address) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void checkSourceAddress(String addrString, int type) throws Exception {
+        // The public requestRouteToHost API only supports IPv4, but it will not return failure if
+        // the network does not have an IPv4 address. So don't check that it's working unless we
+        // know that the network has an IPv4 address. Note that it's possible that the network will
+        // have an IPv4 address but we don't know about it, because the IPv4 address might be on a
+        // stacked interface and we wouldn't be able to see it.
+        if (!hasIPv4(type)) {
+            Log.d(TAG, "Not checking source address on network type " + type + ", no IPv4 address");
+            return;
+        }
+
+        DatagramSocket d = new DatagramSocket();
+        d.connect(InetAddress.getByName(addrString), 7);
+        InetAddress localAddress = d.getLocalAddress();
+        String localAddrString = localAddress.getHostAddress();
+
+        Log.d(TAG, "Got source address " + localAddrString + " for destination " + addrString);
+
+        assertTrue(
+                "Local address " + localAddress + " not assigned to any network of type " + type,
+                getIpAddresses(type).contains(localAddress));
+
+        Log.d(TAG, "Source address " + localAddress + " found on network type " + type);
     }
 
     /** Test that hipri can be brought up when Wifi is enabled. */
@@ -127,7 +161,6 @@ public class ConnectivityManagerLegacyTest extends AndroidTestCase {
         assertTrue("Couldn't requestRouteToHost using HIPRI.",
                 mCm.requestRouteToHost(TYPE_MOBILE_HIPRI, ipv4AddrToInt(HOST_ADDRESS1)));
 
-        try { Thread.sleep(1000); } catch(Exception e) {}
         checkSourceAddress(HOST_ADDRESS1, TYPE_MOBILE);
         checkSourceAddress(HOST_ADDRESS2, TYPE_WIFI);
 

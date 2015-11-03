@@ -66,7 +66,7 @@ public class PerformanceTest extends Camera2SurfaceViewTestCase {
     private static final int NUM_MAX_IMAGES = 4;
     private static final int NUM_RESULTS_WAIT = 30;
     private static final int[] REPROCESS_FORMATS = {ImageFormat.YUV_420_888, ImageFormat.PRIVATE};
-    private final int MAX_REPROCESS_IMAGES = 10;
+    private final int MAX_REPROCESS_IMAGES = 6;
     private final int MAX_JPEG_IMAGES = MAX_REPROCESS_IMAGES;
     private final int MAX_INPUT_IMAGES = MAX_REPROCESS_IMAGES;
     // ZSL queue depth should be bigger than the max simultaneous reprocessing capture request

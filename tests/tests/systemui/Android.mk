@@ -12,5 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Build the API tests and the permissions tests using their own makefiles.
-include $(call all-subdir-makefiles)
+LOCAL_PATH:= $(call my-dir)
+
+include $(CLEAR_VARS)
+
+# don't include this package in any target
+LOCAL_MODULE_TAGS := optional
+
+LOCAL_JAVA_LIBRARIES := android.test.runner
+
+LOCAL_STATIC_JAVA_LIBRARIES := ctstestrunner
+
+LOCAL_SRC_FILES := $(call all-java-files-under, src)
+
+LOCAL_PACKAGE_NAME := CtsSystemUiTestCases
+
+include $(BUILD_CTS_PACKAGE)
