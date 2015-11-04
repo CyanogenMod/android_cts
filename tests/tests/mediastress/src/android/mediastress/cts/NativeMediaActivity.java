@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.WindowManager;
 
+import java.io.File;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -84,7 +85,9 @@ public class NativeMediaActivity extends Activity implements OnSurfaceChangedLis
                 Assert.assertTrue(createEngine());
                 Assert.assertTrue(setSurfaceForNative());
                 String fileName = getMediaString();
-                Log.i(TAG, "start playing " + fileName);
+                File f = new File(fileName);
+                Log.i(TAG, "start playing " + fileName + ", exists: " + f.exists());
+                Assert.assertTrue("file '" + fileName + "' does not exist", f.exists());
                 Assert.assertTrue(createMediaPlayer("file://" + fileName));
                 mNativeCreated = true;
                 mNativeWaitQ.add(mNativeCreated);
