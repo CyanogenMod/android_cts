@@ -54,7 +54,7 @@ public class MediaCodecCencPlayer implements MediaTimeProvider {
 
     private boolean mEncryptedAudio;
     private boolean mEncryptedVideo;
-    private boolean mThreadStarted = false;
+    private volatile boolean mThreadStarted = false;
     private byte[] mSessionId;
     private CodecState mAudioTrackState;
     private int mMediaFormatHeight;
@@ -304,7 +304,7 @@ public class MediaCodecCencPlayer implements MediaTimeProvider {
         CodecState state;
         if (isVideo) {
             state = new CodecState((MediaTimeProvider)this, mVideoExtractor,
-                            trackIndex, format, codec, true, false, 
+                            trackIndex, format, codec, true, false,
                             AudioManager.AUDIO_SESSION_ID_GENERATE);
             mVideoCodecStates.put(Integer.valueOf(trackIndex), state);
         } else {
