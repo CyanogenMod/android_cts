@@ -357,8 +357,7 @@
   bug: 18705837
 },
 {
-  description: "The new image reader test is not yet passing on all
-  devices",
+  description: "The new image reader test is not yet passing on all devices",
   names: [
     "android.hardware.camera2.cts.ImageReaderTest#testAllOutputYUVResolutions"
   ],
