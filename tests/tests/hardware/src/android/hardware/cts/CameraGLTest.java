@@ -171,7 +171,7 @@ public class CameraGLTest extends ActivityInstrumentationTestCase2<GLSurfaceView
         if (LOGV) Log.v(TAG, "Shutdown of camera complete.");
     }
 
-    /** The camera preview callback. Stops capture after the first callback */
+    /** The camera preview callback. */
     private final class PreviewCallback
             implements android.hardware.Camera.PreviewCallback {
         public void onPreviewFrame(byte [] data, Camera camera) {
@@ -179,7 +179,6 @@ public class CameraGLTest extends ActivityInstrumentationTestCase2<GLSurfaceView
             assertNotNull(data);
             Size size = camera.getParameters().getPreviewSize();
             assertEquals(size.width * size.height * 3 / 2, data.length);
-            mCamera.stopPreview();
             mPreviewDone.open();
         }
     }
@@ -350,6 +349,7 @@ public class CameraGLTest extends ActivityInstrumentationTestCase2<GLSurfaceView
             mCamera.setPreviewTexture(mSurfaceTexture);
             noTimeout = waitForPreviewDone();
             assertTrue("Timeout waiting for new preview callback!", noTimeout);
+            mCamera.stopPreview();
             terminateMessageLooper();
 
             // Check the order: setPreviewTexture->startPreview.
@@ -359,6 +359,7 @@ public class CameraGLTest extends ActivityInstrumentationTestCase2<GLSurfaceView
             mCamera.startPreview();
             noTimeout = waitForPreviewDone();
             assertTrue("Timeout waiting for new preview callback!", noTimeout);
+            mCamera.stopPreview();
 
             // Check the order: setting preview display to null->startPreview->
             // setPreviewTexture.
@@ -368,6 +369,7 @@ public class CameraGLTest extends ActivityInstrumentationTestCase2<GLSurfaceView
             mCamera.setPreviewTexture(mSurfaceTexture);
             noTimeout = waitForPreviewDone();
             assertTrue("Timeout waiting for new preview callback!", noTimeout);
+            mCamera.stopPreview();
             terminateMessageLooper();
         }
     };
@@ -396,6 +398,7 @@ public class CameraGLTest extends ActivityInstrumentationTestCase2<GLSurfaceView
             assertTrue("Timeout waiting for new frame from SurfaceTexture!", noTimeout);
             noTimeout = waitForPreviewDone();
             assertTrue("Timeout waiting for new preview callback!",noTimeout);
+            mCamera.stopPreview();
 
             mGLView.requestRender();
             terminateMessageLooper();
@@ -413,6 +416,7 @@ public class CameraGLTest extends ActivityInstrumentationTestCase2<GLSurfaceView
             assertTrue("Timeout waiting for new frame from SurfaceTexture!", noTimeout);
             noTimeout = waitForPreviewDone();
             assertTrue("Timeout waiting for new preview callback!", noTimeout);
+            mCamera.stopPreview();
 
             mGLView.requestRender();
 
@@ -424,6 +428,7 @@ public class CameraGLTest extends ActivityInstrumentationTestCase2<GLSurfaceView
             mCamera.setPreviewTexture(mSurfaceTexture);
             noTimeout = waitForPreviewDone();
             assertTrue(noTimeout);
+            mCamera.stopPreview();
             terminateMessageLooper();
         }
     };
