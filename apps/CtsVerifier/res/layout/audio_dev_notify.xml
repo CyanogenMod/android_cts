@@ -24,8 +24,7 @@
       android:layout_height="wrap_content"
       android:scrollbars="vertical"
       android:gravity="bottom"
-      android:id="@+id/info_text"
-      android:text="@string/audio_devices_notification_instructions" />
+      android:id="@+id/info_text"/>
 
   <LinearLayout
       android:layout_width="match_parent"

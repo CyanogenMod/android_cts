@@ -43,9 +43,22 @@ public class ListeningPortsTest extends AndroidTestCase {
 
     static {
         // IPv4 exceptions
-        EXCEPTION_PATTERNS.add("0.0.0.0:5555");   // emulator port
-        EXCEPTION_PATTERNS.add("10.0.2.15:5555"); // net forwarding for emulator
-        EXCEPTION_PATTERNS.add("127.0.0.1:5037"); // adb daemon "smart sockets"
+        // Patterns containing ":" are allowed address port combinations
+        // Pattterns contains " " are allowed address UID combinations
+        // Patterns containing both are allowed address, port, and UID combinations
+        EXCEPTION_PATTERNS.add("0.0.0.0:5555");     // emulator port
+        EXCEPTION_PATTERNS.add("0.0.0.0:9101");     // verified ports
+        EXCEPTION_PATTERNS.add("0.0.0.0:9551");     // verified ports
+        EXCEPTION_PATTERNS.add("0.0.0.0:9552");     // verified ports
+        EXCEPTION_PATTERNS.add("10.0.2.15:5555");   // net forwarding for emulator
+        EXCEPTION_PATTERNS.add("127.0.0.1:5037");   // adb daemon "smart sockets"
+        EXCEPTION_PATTERNS.add("0.0.0.0 1020");     // used by the cast receiver
+        EXCEPTION_PATTERNS.add("0.0.0.0 10000");    // used by the cast receiver
+        EXCEPTION_PATTERNS.add("127.0.0.1 10000");  // used by the cast receiver
+        EXCEPTION_PATTERNS.add(":: 1002");          // used by remote control
+        EXCEPTION_PATTERNS.add(":: 1020");          // used by remote control
+        //no current patterns involve address, port and UID combinations
+        //Example for when necessary: EXCEPTION_PATTERNS.add("0.0.0.0:5555 10000")
     }
 
     /**
@@ -185,9 +198,11 @@ public class ListeningPortsTest extends AndroidTestCase {
         List<ParsedProcEntry> entries = ParsedProcEntry.parse(procFilePath);
         for (ParsedProcEntry entry : entries) {
             String addrPort = entry.localAddress.getHostAddress() + ':' + entry.port;
+            String addrUid = entry.localAddress.getHostAddress() + ' ' + entry.uid;
+            String addrPortUid = addrPort + ' ' + entry.uid;
 
             if (isPortListening(entry.state, isTcp)
-                && !isException(addrPort)
+                && !(isException(addrPort) || isException(addrUid) || isException(addrPortUid))
                 && (!entry.localAddress.isLoopbackAddress() ^ loopback)) {
                 errors += "\nFound port listening on addr="
                         + entry.localAddress.getHostAddress() + ", port="

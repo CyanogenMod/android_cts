@@ -14,6 +14,7 @@ package android.hardware.camera2.cts;
 import static android.hardware.camera2.cts.CameraTestUtils.*;
 import static com.android.ex.camera2.blocking.BlockingSessionCallback.*;
 
+import android.cts.util.MediaUtils;
 import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraCaptureSession;
@@ -151,6 +152,9 @@ public class RecordingTest extends Camera2SurfaceViewTestCase {
      * </p>
      */
     public void testRecordingFromPersistentSurface() throws Exception {
+        if (!MediaUtils.checkCodecForDomain(true /* encoder */, "video")) {
+            return; // skipped
+        }
         mPersistentSurface = MediaCodec.createPersistentInputSurface();
         assertNotNull("Failed to create persistent input surface!", mPersistentSurface);
 

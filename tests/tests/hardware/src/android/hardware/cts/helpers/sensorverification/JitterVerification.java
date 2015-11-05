@@ -16,8 +16,6 @@
 
 package android.hardware.cts.helpers.sensorverification;
 
-import junit.framework.Assert;
-
 import android.content.Context;
 import android.content.pm.PackageManager;
 
@@ -34,6 +32,7 @@ import com.android.cts.util.StatisticsUtils;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import junit.framework.Assert;
 
 /**
  * A {@link ISensorVerification} which verifies that the sensor jitter is in an acceptable range.

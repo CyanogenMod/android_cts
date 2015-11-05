@@ -754,7 +754,7 @@
             android:screenOrientation="locked" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.cts.intent.category.MANUAL_TEST"/>
+                <category android:name="android.cts.intent.category.MANUAL_TEST_disabled"/>
             </intent-filter>
 
             <meta-data
@@ -763,8 +763,6 @@
             <meta-data
                 android:name="test_required_features"
                 android:value="android.hardware.sensor.accelerometer:android.hardware.sensor.gyroscope:android.hardware.sensor.compass:android.hardware.camera.any" />
-            <meta-data android:name="test_excluded_features"
-                    android:value="android.hardware.type.television" />
         </activity>
         <activity
             android:name=".sensors.RVCVRecordActivity"
@@ -1398,6 +1396,13 @@
             </intent-filter>
         </activity-alias>
 
+        <activity android:name=".managedprovisioning.AuthenticationBoundKeyTestActivity">
+            <intent-filter>
+                <action android:name="com.android.cts.verifier.managedprovisioning.action.AUTH_BOUND_KEY_TEST" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".managedprovisioning.ByodFlowTestActivity"
                 android:launchMode="singleTask"
                 android:label="@string/provisioning_byod">
@@ -1703,8 +1708,8 @@
             <meta-data android:name="test_required_features" android:value="android.hardware.microphone" />
         </activity>
 
-        <activity android:name=".audio.AudioDeviceNotificationsActivity"
-                  android:label="@string/audio_devices_notifications_test">
+        <activity android:name=".audio.AudioOutputDeviceNotificationsActivity"
+                  android:label="@string/audio_in_devices_notifications_test">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.cts.intent.category.MANUAL_TEST" />
@@ -1713,18 +1718,37 @@
             <!--
             <meta-data android:name="test_required_features" android:value="android.hardware.microphone" />
             -->
+            <meta-data android:name="test_required_features" android:value="android.hardware.audio.output" />
         </activity>
 
-        <activity android:name=".audio.AudioRoutingNotificationsActivity"
-                  android:label="@string/audio_routingnotifications_test">
+        <activity android:name=".audio.AudioInputDeviceNotificationsActivity"
+                  android:label="@string/audio_in_devices_notifications_test">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.cts.intent.category.MANUAL_TEST" />
             </intent-filter>
             <meta-data android:name="test_category" android:value="@string/test_category_audio" />
-            <!--
             <meta-data android:name="test_required_features" android:value="android.hardware.microphone" />
-            -->
+        </activity>
+
+        <activity android:name=".audio.AudioOutputRoutingNotificationsActivity"
+                  android:label="@string/audio_output_routingnotifications_test">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.cts.intent.category.MANUAL_TEST" />
+            </intent-filter>
+            <meta-data android:name="test_category" android:value="@string/test_category_audio" />
+            <meta-data android:name="test_required_features" android:value="android.hardware.audio.output" />
+        </activity>
+
+        <activity android:name=".audio.AudioInputRoutingNotificationsActivity"
+                  android:label="@string/audio_input_routingnotifications_test">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.cts.intent.category.MANUAL_TEST" />
+            </intent-filter>
+            <meta-data android:name="test_category" android:value="@string/test_category_audio" />
+            <meta-data android:name="test_required_features" android:value="android.hardware.microphone" />
         </activity>
 
         <activity android:name=".audio.AudioLoopbackActivity"
@@ -1735,6 +1759,7 @@
             </intent-filter>
             <meta-data android:name="test_category" android:value="@string/test_category_audio" />
             <meta-data android:name="test_required_features" android:value="android.hardware.microphone" />
+            <meta-data android:name="test_required_features" android:value="android.hardware.audio.output" />
             <meta-data android:name="test_excluded_features" android:value="android.hardware.type.watch" />
             <meta-data android:name="test_excluded_features" android:value="android.hardware.type.television" />
         </activity>

@@ -20,6 +20,7 @@ import android.app.AppOpsManager;
 import android.app.usage.NetworkStatsManager;
 import android.app.usage.NetworkStats;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -39,7 +40,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Scanner;
-import javax.net.ssl.HttpsURLConnection;
+import java.net.HttpURLConnection;
 
 import libcore.io.IoUtils;
 import libcore.io.Streams;
@@ -56,14 +57,21 @@ public class NetworkUsageStatsTest extends InstrumentationTestCase {
         ConnectivityManager.TYPE_MOBILE,
     };
 
-    // Order corresponds to sNetworkTypesToTest
-    private static final int[] sTransportTypesToTest = new int[] {
-        NetworkCapabilities.TRANSPORT_WIFI,
-        NetworkCapabilities.TRANSPORT_CELLULAR,
+    private static final String[] sSystemFeaturesToTest = new String[] {
+        PackageManager.FEATURE_WIFI,
+        PackageManager.FEATURE_TELEPHONY,
+    };
+
+    private static final String[] sFeatureNotConnectedCause = new String[] {
+        " Please make sure you are connected to a WiFi access point.",
+        " Please make sure you have added a SIM card with data plan to your phone, have enabled " +
+                "data over cellular and in case of dual SIM devices, have selected the right SIM " +
+                "for data connection."
     };
 
     private NetworkStatsManager mNsm;
     private ConnectivityManager mCm;
+    private PackageManager mPm;
     private long mStartTime;
     private long mEndTime;
 
@@ -71,62 +79,50 @@ public class NetworkUsageStatsTest extends InstrumentationTestCase {
     private String mWriteSettingsMode;
     private String mUsageStatsMode;
 
-    private void exerciseRemoteHost(int transportType) throws Exception {
+    private void exerciseRemoteHost(Network network) throws Exception {
         final int timeout = 15000;
-        mCm.requestNetwork(new NetworkRequest.Builder()
-            .addTransportType(transportType)
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            .build(), new ConnectivityManager.NetworkCallback() {
-                @Override
-                public void onAvailable(Network network) {
-                    NetworkInfo networkInfo = mCm.getNetworkInfo(network);
-                    if (networkInfo == null) {
-                        Log.w(LOG_TAG, "Network info is null");
-                    } else {
-                        Log.w(LOG_TAG, "Network: " + networkInfo.toString());
-                    }
-                    InputStreamReader in = null;
-                    HttpsURLConnection urlc = null;
-                    String originalKeepAlive = System.getProperty("http.keepAlive");
-                    System.setProperty("http.keepAlive", "false");
-                    try {
-                        urlc = (HttpsURLConnection) network.openConnection(new URL(
-                                "https://www.google.com"));
-                        urlc.setConnectTimeout(timeout);
-                        urlc.setUseCaches(false);
-                        urlc.connect();
-                        boolean ping = urlc.getResponseCode() == 200;
-                        if (ping) {
-                            in = new InputStreamReader(
-                                    (InputStream) urlc.getContent());
-
-                            mBytesRead = 0;
-                            while (in.read() != -1) ++mBytesRead;
-                        }
-                    } catch (Exception e) {
-                        Log.i(LOG_TAG, "Badness during exercising remote server: " + e);
-                    } finally {
-                        if (in != null) {
-                            try {
-                                in.close();
-                            } catch (IOException e) {
-                                // don't care
-                            }
-                        }
-                        if (urlc != null) {
-                            urlc.disconnect();
-                        }
-                        if (originalKeepAlive == null) {
-                            System.clearProperty("http.keepAlive");
-                        } else {
-                            System.setProperty("http.keepAlive", originalKeepAlive);
-                        }
-                    }
-                }
-            });
+        NetworkInfo networkInfo = mCm.getNetworkInfo(network);
+        if (networkInfo == null) {
+            Log.w(LOG_TAG, "Network info is null");
+        } else {
+            Log.w(LOG_TAG, "Network: " + networkInfo.toString());
+        }
+        InputStreamReader in = null;
+        HttpURLConnection urlc = null;
+        String originalKeepAlive = System.getProperty("http.keepAlive");
+        System.setProperty("http.keepAlive", "false");
         try {
-            Thread.sleep(timeout);
-        } catch (InterruptedException e) {
+            urlc = (HttpURLConnection) network.openConnection(new URL(
+                    "http://www.265.com/"));
+            urlc.setConnectTimeout(timeout);
+            urlc.setUseCaches(false);
+            urlc.connect();
+            boolean ping = urlc.getResponseCode() == 200;
+            if (ping) {
+                in = new InputStreamReader(
+                        (InputStream) urlc.getContent());
+
+                mBytesRead = 0;
+                while (in.read() != -1) ++mBytesRead;
+            }
+        } catch (Exception e) {
+            Log.i(LOG_TAG, "Badness during exercising remote server: " + e);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    // don't care
+                }
+            }
+            if (urlc != null) {
+                urlc.disconnect();
+            }
+            if (originalKeepAlive == null) {
+                System.clearProperty("http.keepAlive");
+            } else {
+                System.setProperty("http.keepAlive", originalKeepAlive);
+            }
         }
     }
 
@@ -138,6 +134,8 @@ public class NetworkUsageStatsTest extends InstrumentationTestCase {
 
         mCm = (ConnectivityManager) getInstrumentation().getContext()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        mPm = getInstrumentation().getContext().getPackageManager();
 
         mWriteSettingsMode = getAppOpsMode(AppOpsManager.OPSTR_WRITE_SETTINGS);
         setAppOpsMode(AppOpsManager.OPSTR_WRITE_SETTINGS, "allow");
@@ -192,14 +190,26 @@ public class NetworkUsageStatsTest extends InstrumentationTestCase {
 
     private boolean shouldTestThisNetworkType(int networkTypeIndex, long tolerance)
             throws Exception {
-        NetworkInfo networkInfo = mCm.getNetworkInfo(sNetworkTypesToTest[networkTypeIndex]);
-        if (networkInfo == null || !networkInfo.isAvailable()) {
-            return false;
+        Network[] networks = mCm.getAllNetworks();
+        for (Network network : networks) {
+            NetworkInfo networkInfo = mCm.getNetworkInfo(network);
+            if (networkInfo != null && networkInfo.isConnected() &&
+                    networkInfo.getType() == sNetworkTypesToTest[networkTypeIndex]) {
+                NetworkCapabilities capabilities = mCm.getNetworkCapabilities(network);
+                if (capabilities != null && capabilities.hasCapability(
+                        NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
+                    mStartTime = System.currentTimeMillis() - tolerance;
+                    exerciseRemoteHost(network);
+                    mEndTime = System.currentTimeMillis() + tolerance;
+                    return true;
+                }
+            }
         }
-        mStartTime = System.currentTimeMillis() - tolerance;
-        exerciseRemoteHost(sTransportTypesToTest[networkTypeIndex]);
-        mEndTime = System.currentTimeMillis() + tolerance;
-        return true;
+        assertFalse (sSystemFeaturesToTest[networkTypeIndex] + " is a reported system feature, " +
+                "however no corresponding connected network interface was found. " +
+                sFeatureNotConnectedCause[networkTypeIndex],
+                mPm.hasSystemFeature(sSystemFeaturesToTest[networkTypeIndex]));
+        return false;
     }
 
     private String getSubscriberId(int networkType) {

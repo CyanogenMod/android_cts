@@ -16,6 +16,7 @@
 
 package android.uirendering.cts.testclasses;
 
+import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -163,6 +164,9 @@ public class PathClippingTests extends ActivityTestBase {
 
     @SmallTest
     public void testWebViewClipWithCircle() {
+        if (!getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_WEBVIEW)) {
+            return; // no WebView to run test on
+        }
         createTest()
                 // golden client - draw a simple non-AA circle
                 .addCanvasClient(new CanvasClient() {

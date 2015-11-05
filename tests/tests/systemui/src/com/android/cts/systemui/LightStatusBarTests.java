@@ -174,10 +174,10 @@ public class LightStatusBarTests extends ActivityInstrumentationTestCase2<LightS
 
             // Due to anti-aliasing, there will be deviations from the ideal icon color, but it
             // should still be mostly the same hue.
-            float hueDiff = Math.abs(Color.hue(background) - Color.hue(c));
+            float hueDiff = Math.abs(ColorUtils.hue(background) - ColorUtils.hue(c));
             if (hueDiff < eps || hueDiff > 1 - eps) {
                 // .. it shouldn't be lighter than the original background though.
-                if (Color.brightness(c) > Color.brightness(background)) {
+                if (ColorUtils.brightness(c) > ColorUtils.brightness(background)) {
                     s.sameHueLightPixels++;
                 } else {
                     s.sameHueDarkPixels++;

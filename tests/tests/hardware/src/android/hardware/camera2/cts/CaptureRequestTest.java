@@ -69,7 +69,8 @@ public class CaptureRequestTest extends Camera2SurfaceViewTestCase {
     private static final long EXPOSURE_TIME_BOUNDARY_50HZ_NS = 10000000L; // 10ms
     private static final long EXPOSURE_TIME_BOUNDARY_60HZ_NS = 8333333L; // 8.3ms, Approximation.
     private static final long EXPOSURE_TIME_ERROR_MARGIN_NS = 100000L; // 100us, Approximation.
-    private static final int SENSITIVITY_ERROR_MARGIN = 10; // 10
+    private static final float EXPOSURE_TIME_ERROR_MARGIN_RATE = 0.03f; // 3%, Approximation.
+    private static final float SENSITIVITY_ERROR_MARGIN_RATE = 0.03f; // 3%, Approximation.
     private static final int DEFAULT_NUM_EXPOSURE_TIME_STEPS = 3;
     private static final int DEFAULT_NUM_SENSITIVITY_STEPS = 16;
     private static final int DEFAULT_SENSITIVITY_STEP_SIZE = 100;
@@ -2093,10 +2094,12 @@ public class CaptureRequestTest extends Camera2SurfaceViewTestCase {
      */
     private void validateExposureTime(long request, long result) {
         long expTimeDelta = request - result;
+        long expTimeErrorMargin = (long)(Math.max(EXPOSURE_TIME_ERROR_MARGIN_NS, request
+                * EXPOSURE_TIME_ERROR_MARGIN_RATE));
         // First, round down not up, second, need close enough.
         mCollector.expectTrue("Exposture time is invalid for AE manaul control test, request: "
                 + request + " result: " + result,
-                expTimeDelta < EXPOSURE_TIME_ERROR_MARGIN_NS && expTimeDelta >= 0);
+                expTimeDelta < expTimeErrorMargin && expTimeDelta >= 0);
     }
 
     /**
@@ -2106,11 +2109,12 @@ public class CaptureRequestTest extends Camera2SurfaceViewTestCase {
      * @param result Result sensitivity
      */
     private void validateSensitivity(int request, int result) {
-        int sensitivityDelta = request - result;
+        float sensitivityDelta = (float)(request - result);
+        float sensitivityErrorMargin = request * SENSITIVITY_ERROR_MARGIN_RATE;
         // First, round down not up, second, need close enough.
         mCollector.expectTrue("Sensitivity is invalid for AE manaul control test, request: "
                 + request + " result: " + result,
-                sensitivityDelta < SENSITIVITY_ERROR_MARGIN && sensitivityDelta >= 0);
+                sensitivityDelta < sensitivityErrorMargin && sensitivityDelta >= 0);
     }
 
     /**

@@ -64,6 +64,9 @@ public class AudioFrequencyLineActivity extends PassFailButtons.Activity impleme
     OnBtnClickListener mBtnClickListener = new OnBtnClickListener();
     Context mContext;
 
+    Button mHeadsetPortYes;
+    Button mHeadsetPortNo;
+
     Button mLoopbackPlugReady;
     LinearLayout mLinearLayout;
     Button mTestButton;
@@ -116,6 +119,20 @@ public class AudioFrequencyLineActivity extends PassFailButtons.Activity impleme
                     Log.i(TAG, "audio loopback test");
                     startAudioTest();
                     break;
+                case R.id.audio_general_headset_yes:
+                    Log.i(TAG, "User confirms Headset Port existence");
+                    mLoopbackPlugReady.setEnabled(true);
+                    recordHeasetPortFound(true);
+                    mHeadsetPortYes.setEnabled(false);
+                    mHeadsetPortNo.setEnabled(false);
+                    break;
+                case R.id.audio_general_headset_no:
+                    Log.i(TAG, "User denies Headset Port existence");
+                    recordHeasetPortFound(false);
+                    getPassButton().setEnabled(true);
+                    mHeadsetPortYes.setEnabled(false);
+                    mHeadsetPortNo.setEnabled(false);
+                    break;
             }
         }
     }
@@ -127,8 +144,14 @@ public class AudioFrequencyLineActivity extends PassFailButtons.Activity impleme
 
         mContext = this;
 
+        mHeadsetPortYes = (Button)findViewById(R.id.audio_general_headset_yes);
+        mHeadsetPortYes.setOnClickListener(mBtnClickListener);
+        mHeadsetPortNo = (Button)findViewById(R.id.audio_general_headset_no);
+        mHeadsetPortNo.setOnClickListener(mBtnClickListener);
+
         mLoopbackPlugReady = (Button)findViewById(R.id.audio_frequency_line_plug_ready_btn);
         mLoopbackPlugReady.setOnClickListener(mBtnClickListener);
+        mLoopbackPlugReady.setEnabled(false);
         mLinearLayout = (LinearLayout)findViewById(R.id.audio_frequency_line_layout);
         mTestButton = (Button)findViewById(R.id.audio_frequency_line_test_btn);
         mTestButton.setOnClickListener(mBtnClickListener);
@@ -477,6 +500,14 @@ public class AudioFrequencyLineActivity extends PassFailButtons.Activity impleme
                 ResultUnit.NONE);
 
         Log.v(TAG, "Results Recorded");
+    }
+
+    private void recordHeasetPortFound(boolean found) {
+        getReportLog().addValue(
+                "User Reported Headset Port",
+                found ? 1.0 : 0,
+                ResultType.NEUTRAL,
+                ResultUnit.NONE);
     }
 
     private void startRecording() {
