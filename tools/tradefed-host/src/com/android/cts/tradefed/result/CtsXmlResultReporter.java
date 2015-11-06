@@ -432,6 +432,9 @@ public class CtsXmlResultReporter
         serializer.attribute(ns, "endtime", endTime);
         serializer.attribute(ns, "version", CTS_RESULT_FILE_VERSION);
         serializer.attribute(ns, "suite", mSuiteName);
+        if (mReferenceUrl != null) {
+            serializer.attribute(ns, "referenceUrl", mReferenceUrl);
+        }
         mResults.serialize(serializer, mBuildInfo.getBuildId());
         // TODO: not sure why, but the serializer doesn't like this statement
         //serializer.endTag(ns, RESULT_TAG);
