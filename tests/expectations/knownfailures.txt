@@ -356,6 +356,7 @@
   ],
   bug: 18705837
 },
+{
   description: "Encode Virtual Display is not working on all devices",
   names: [
     "android.media.cts.EncodeVirtualDisplayTest#testEncodeVirtualDisplay"
