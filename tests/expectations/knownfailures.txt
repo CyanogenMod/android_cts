@@ -355,5 +355,11 @@
     "android.hardware.camera2.cts.RecordingTest#testRecordingFramerateLowToHigh"
   ],
   bug: 18705837
+},
+  description: "Encode Virtual Display is not working on all devices",
+  names: [
+    "android.media.cts.EncodeVirtualDisplayTest#testEncodeVirtualDisplay"
+  ],
+  bug: 18705837
 }
 ]
