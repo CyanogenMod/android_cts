@@ -19,6 +19,7 @@ package android.text.method.cts;
 
 import android.cts.util.PollingCheck;
 import android.graphics.Rect;
+import android.os.ParcelFileDescriptor;
 import android.provider.Settings.SettingNotFoundException;
 import android.provider.Settings.System;
 import android.test.ActivityInstrumentationTestCase2;
@@ -30,6 +31,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Scanner;
 
 /**
  * Test {@link PasswordTransformationMethod}.
@@ -97,8 +102,37 @@ public class PasswordTransformationMethodTest extends
         mEditText = (EditText) getActivity().findViewById(EDIT_TXT_ID);
         assertTrue(mEditText.isFocused());
 
+        enableAppOps();
         savePasswordPref();
         switchShowPassword(true);
+    }
+
+    private void enableAppOps() {
+        StringBuilder cmd = new StringBuilder();
+        cmd.append("appops set ");
+        cmd.append(getInstrumentation().getContext().getPackageName());
+        cmd.append(" android:write_settings allow");
+        getInstrumentation().getUiAutomation().executeShellCommand(cmd.toString());
+
+        StringBuilder query = new StringBuilder();
+        query.append("appops get ");
+        query.append(getInstrumentation().getContext().getPackageName());
+        query.append(" android:write_settings");
+        String queryStr = query.toString();
+
+        String result = "No operations.";
+        while (result.contains("No operations")) {
+            ParcelFileDescriptor pfd = getInstrumentation().getUiAutomation().executeShellCommand(
+                                        queryStr);
+            InputStream inputStream = new FileInputStream(pfd.getFileDescriptor());
+            result = convertStreamToString(inputStream);
+        }
+    }
+
+    private String convertStreamToString(InputStream is) {
+        try (Scanner scanner = new Scanner(is).useDelimiter("\\A")) {
+            return scanner.hasNext() ? scanner.next() : "";
+        }
     }
 
     @Override
