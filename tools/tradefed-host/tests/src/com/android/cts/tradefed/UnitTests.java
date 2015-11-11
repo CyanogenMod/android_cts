@@ -22,7 +22,6 @@ import com.android.cts.tradefed.result.TestResultsTest;
 import com.android.cts.tradefed.result.TestSummaryXmlTest;
 import com.android.cts.tradefed.result.TestTest;
 import com.android.cts.tradefed.result.TestLogTest;
-import com.android.cts.tradefed.targetprep.HostPreconditionPreparerTest;
 import com.android.cts.tradefed.testtype.Abi;
 import com.android.cts.tradefed.testtype.CtsTestTest;
 import com.android.cts.tradefed.testtype.DeqpTestRunnerTest;
@@ -60,9 +59,6 @@ public class UnitTests extends TestSuite {
         addTestSuite(TestTest.class);
         addTestSuite(TestLogTest.class);
 
-        // targetprep package
-        addTestSuite(HostPreconditionPreparerTest.class);
-
         // testtype package
         addTestSuite(CtsTestTest.class);
         addTestSuite(DeqpTestRunnerTest.class);
@@ -73,7 +69,6 @@ public class UnitTests extends TestSuite {
         addTestSuite(TestPackageXmlParserTest.class);
         addTestSuite(TestPlanTest.class);
         addTestSuite(WrappedGTestResultParserTest.class);
-
     }
 
     public static Test suite() {
