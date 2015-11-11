@@ -35,7 +35,7 @@
   bug: 11352697
 },
 {
-  names: "android.security.cts.AudioPolicyBinderTest",
+  name: "android.security.cts.AudioPolicyBinderTest",
   bug: 18461670
 },
 {
