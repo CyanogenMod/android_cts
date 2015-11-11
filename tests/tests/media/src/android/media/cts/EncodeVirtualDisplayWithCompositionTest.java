@@ -686,18 +686,18 @@ public class EncodeVirtualDisplayWithCompositionTest extends AndroidTestCase {
             GlWindow w = mTopWindow;
             if (w != null) {
                 w.markTextureUpdated();
-                requestUpdate();
+                requestUpdate(w);
             } else {
                 Log.w(TAG, "top window gone");
             }
         }
 
-        private void requestUpdate() {
+        private void requestUpdate(GlWindow w) {
             Thread compositionThread = mCompositionThread;
             if (compositionThread == null || !compositionThread.isAlive()) {
                 return;
             }
-            Message msg = mHandler.obtainMessage(CompositionHandler.DO_RENDERING);
+            Message msg = mHandler.obtainMessage(CompositionHandler.DO_RENDERING, w);
             mHandler.sendMessage(msg);
         }
 
@@ -811,9 +811,13 @@ public class EncodeVirtualDisplayWithCompositionTest extends AndroidTestCase {
             }
         }
 
-        private void doGlRendering() throws GlException {
+        private void doGlRendering(GlWindow w) throws GlException {
             if (DBG) {
                 Log.i(TAG, "doGlRendering");
+            }
+            if( w != mTopWindow ) {
+                Log.w(TAG, "ignoring previous window frame update");
+                return;
             }
             mTopWindow.updateTexImageIfNecessary();
             GLES20.glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
@@ -880,7 +884,7 @@ public class EncodeVirtualDisplayWithCompositionTest extends AndroidTestCase {
                 try {
                     switch(msg.what) {
                         case DO_RENDERING: {
-                            doGlRendering();
+                            doGlRendering((GlWindow)msg.obj);
                         } break;
                         case DO_RECREATE_WINDOWS: {
                             doRecreateWindows();
