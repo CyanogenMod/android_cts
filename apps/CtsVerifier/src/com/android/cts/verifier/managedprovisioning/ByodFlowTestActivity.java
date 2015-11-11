@@ -82,6 +82,8 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
     private TestListItem mKeyguardDisabledFeaturesTest;
     private DialogTestListItem mDisableNfcBeamTest;
     private TestListItem mAuthenticationBoundKeyTest;
+    private DialogTestListItem mEnableLocationModeTest;
+    private DialogTestListItem mDisableLocationModeTest;
 
     public ByodFlowTestActivity() {
         super(R.layout.provisioning_byod,
@@ -430,6 +432,27 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
             // Capture audio intent cannot be resolved in primary profile, so skip test.
             Toast.makeText(ByodFlowTestActivity.this,
                     R.string.provisioning_byod_no_audio_capture_resolver, Toast.LENGTH_SHORT)
+                    .show();
+        }
+
+        if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS)) {
+            mEnableLocationModeTest = new DialogTestListItem(this,
+                    R.string.provisioning_byod_location_mode_enable,
+                    "BYOD_LocationModeEnableTest",
+                    R.string.provisioning_byod_location_mode_enable_instruction,
+                    new Intent(ByodHelperActivity.ACTION_SET_LOCATION_AND_CHECK_UPDATES));
+            mDisableLocationModeTest = new DialogTestListItem(this,
+                    R.string.provisioning_byod_location_mode_disable,
+                    "BYOD_LocationModeDisableTest",
+                    R.string.provisioning_byod_location_mode_disable_instruction,
+                    new Intent(ByodHelperActivity.ACTION_SET_LOCATION_AND_CHECK_UPDATES));
+
+            adapter.add(mEnableLocationModeTest);
+            adapter.add(mDisableLocationModeTest);
+        } else {
+            // The system does not support GPS feature, so skip test.
+            Toast.makeText(ByodFlowTestActivity.this,
+                    R.string.provisioning_byod_no_gps_location_feature, Toast.LENGTH_SHORT)
                     .show();
         }
     }
