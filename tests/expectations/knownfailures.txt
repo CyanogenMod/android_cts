@@ -262,13 +262,6 @@
   bug: 23008511
 },
 {
-  description: "The focus distance control test is not yet passing on all devices",
-  names: [
-    "android.hardware.camera2.cts.CaptureRequestTest#testFocusDistanceControl"
-  ],
-  bug: 25520851
-},
-{
   description: "Light status bar CTS coming in late",
   names: [
     "com.android.cts.systemui.LightStatusBarTests#testLightStatusBarIcons"
