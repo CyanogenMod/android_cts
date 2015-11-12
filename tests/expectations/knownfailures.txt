@@ -370,13 +370,6 @@
   bug: 25651805
 },
 {
-  description: "log dump protected not working",
-  names: [
-    "android.security.cts.ServicePermissionsTest#testDumpProtected"
-  ],
-  bug: 25666118
-},
-{
   description: "Read from invalid parcel not working",
   names: [
     "android.view.cts.MotionEventTest#testReadFromParcelWithInvalidSampleSize"
