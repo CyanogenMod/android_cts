@@ -1871,6 +1871,9 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="js_start_test_text">Start test</string>
     <string name="js_idle_instructions">Verify the behaviour of the JobScheduler API for when the device is in idle mode. Simply follow the on-screen instructions.</string>
     <string name="js_idle_description_1">Turn the screen off and then back on in order to begin.</string>
+    <string name="js_idle_continue_instruction">
+        Switch off screen and wait for it to turn on to continue.
+    </string>
     <string name="js_idle_item_idle_off">Idle job does not execute when device is not idle.</string>
     <string name="js_idle_item_idle_on">Idle job does execute when device is forced into idle.</string>
 
