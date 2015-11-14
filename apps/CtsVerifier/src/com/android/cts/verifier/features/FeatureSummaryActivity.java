@@ -233,6 +233,7 @@ public class FeatureSummaryActivity extends PassFailButtons.ListActivity {
     public static final Feature[] ALL_MNC_FEATURES = {
             new Feature(PackageManager.FEATURE_MIDI, false),
             new Feature(PackageManager.FEATURE_AUDIO_PRO, false),
+            new Feature(PackageManager.FEATURE_FINGERPRINT, false),
     };
 
     @Override
