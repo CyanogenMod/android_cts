@@ -1876,10 +1876,12 @@ You should be prompted to select credentials; choose the ones you just installed
 
     <string name="js_charging_test">Charging Constraints</string>
     <string name="js_charging_instructions">Verify the behaviour of the JobScheduler API for when the device is on power and unplugged from power. Simply follow the on-screen instructions.</string>
-    <string name="js_charging_description_1">Unplug the device in order to begin.</string>
+    <string name="js_charging_description_1">Plug in the charger if it isn\'t already plugged in.</string>
     <string name="js_charging_off_test">Device not charging will not execute a job with a charging constraint.</string>
     <string name="js_charging_on_test">Device when charging will execute a job with a charging constraint.</string>
-    <string name="js_charging_description_2">After the above test has passed, plug the device back in to continue. If the above failed, you can simply fail this test.</string>
+    <string name="js_charging_description_2">After the above test has passed, remove the charger to continue. If the above failed, you can simply fail this test.</string>
+    <string name="js_charging_description_3">Device is plugged in. Please wait while it get\s into stable charging state.</string>
+    <string name="js_charging_description_4">There seems to be a problem with your charger. Pleasy try again.</string>
 
     <string name="js_connectivity_test">Connectivity Constraints</string>
     <string name="js_connectivity_instructions">Verify the behaviour of the JobScheduler API for when the device has no access to data connectivity. Simply follow the on-screen instructions.</string>
