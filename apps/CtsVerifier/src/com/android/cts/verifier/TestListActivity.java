@@ -19,7 +19,9 @@ package com.android.cts.verifier;
 import android.Manifest;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -33,19 +35,6 @@ import java.io.IOException;
 
 /** Top-level {@link ListActivity} for launching tests and managing results. */
 public class TestListActivity extends AbstractTestListActivity implements View.OnClickListener {
-
-    private static final String [] RUNTIME_PERMISSIONS = {
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.BODY_SENSORS,
-        Manifest.permission.READ_EXTERNAL_STORAGE,
-        Manifest.permission.READ_PHONE_STATE,
-        Manifest.permission.CALL_PHONE,
-        Manifest.permission.WRITE_CONTACTS,
-        Manifest.permission.CAMERA,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        Manifest.permission.RECORD_AUDIO,
-        Manifest.permission.READ_CONTACTS
-    };
     private static final int CTS_VERIFIER_PERMISSION_REQUEST = 1;
 
     private static final String TAG = TestListActivity.class.getSimpleName();
@@ -59,15 +48,25 @@ public class TestListActivity extends AbstractTestListActivity implements View.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        for (String runtimePermission : RUNTIME_PERMISSIONS) {
-            Log.v(TAG, "Checking permissions for: " + runtimePermission);
-            if (checkSelfPermission(runtimePermission) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(RUNTIME_PERMISSIONS, CTS_VERIFIER_PERMISSION_REQUEST);
-                return;
-            }
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(
+                  getApplicationInfo().packageName, PackageManager.GET_PERMISSIONS);
 
+            if (packageInfo.requestedPermissions != null) {
+                for (String permission : packageInfo.requestedPermissions) {
+                    Log.v(TAG, "Checking permissions for: " + permission);
+                    if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                        requestPermissions(packageInfo.requestedPermissions,
+                                CTS_VERIFIER_PERMISSION_REQUEST);
+                        return;
+                    }
+                }
+            }
+            createContinue();
+        } catch (NameNotFoundException e) {
+            Log.e(TAG, "Unable to load package's permissions", e);
+            Toast.makeText(this, R.string.runtime_permissions_error, Toast.LENGTH_SHORT).show();
         }
-        createContinue();
     }
 
     private void createContinue() {
