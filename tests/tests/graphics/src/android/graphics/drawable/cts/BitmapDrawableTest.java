@@ -316,48 +316,29 @@ public class BitmapDrawableTest extends InstrumentationTestCase {
 
         InputStream source = mContext.getResources().openRawResource(R.drawable.size_48x48);
         bitmapDrawable = new BitmapDrawable(source);
-        bitmapDrawable.setTargetDensity(bitmapDrawable.getBitmap().getDensity());
+        bitmapDrawable.setTargetDensity(mContext.getResources().getDisplayMetrics().densityDpi);
         assertEquals(48, bitmapDrawable.getIntrinsicWidth());
         assertEquals(48, bitmapDrawable.getIntrinsicHeight());
     }
 
     @SuppressWarnings("deprecation")
     public void testSetTargetDensity() {
-        int sourceWidth, targetWidth;
-        int sourceHeight, targetHeight;
-        int sourceDensity, targetDensity;
-        BitmapDrawable bitmapDrawable;
-        Bitmap bitmap;
+        BitmapDrawable bitmapDrawable = new BitmapDrawable();
 
-        sourceWidth = 200;
-        sourceHeight = 300;
-        bitmap = Bitmap.createBitmap(sourceWidth, sourceHeight, Config.RGB_565);
+        Bitmap bitmap = Bitmap.createBitmap(200, 300, Config.RGB_565);
         Canvas canvas = new Canvas(bitmap);
         bitmapDrawable = new BitmapDrawable(bitmap);
-        sourceDensity = bitmap.getDensity();
-        targetDensity = canvas.getDensity();
-        bitmapDrawable.setTargetDensity(targetDensity);
-        targetWidth = DrawableTestUtils.scaleBitmapFromDensity(
-                sourceWidth, sourceDensity, targetDensity);
-        targetHeight = DrawableTestUtils.scaleBitmapFromDensity(
-                sourceHeight, sourceDensity, targetDensity);
-        assertEquals(targetWidth, bitmapDrawable.getIntrinsicWidth());
-        assertEquals(targetHeight, bitmapDrawable.getIntrinsicHeight());
+        bitmapDrawable.setTargetDensity(canvas.getDensity());
+        assertEquals(200, bitmapDrawable.getIntrinsicWidth());
+        assertEquals(300, bitmapDrawable.getIntrinsicHeight());
 
-        sourceWidth = 48;
-        sourceHeight = 48;
+        DisplayMetrics disMetrics = new DisplayMetrics();
+        disMetrics = getInstrumentation().getTargetContext().getResources().getDisplayMetrics();
         InputStream source = mContext.getResources().openRawResource(R.drawable.size_48x48);
         bitmapDrawable = new BitmapDrawable(source);
-        bitmap = bitmapDrawable.getBitmap();
-        sourceDensity = bitmap.getDensity();
-        targetDensity = sourceDensity * 2;
-        bitmapDrawable.setTargetDensity(targetDensity);
-        targetWidth = DrawableTestUtils.scaleBitmapFromDensity(
-                sourceWidth, sourceDensity, targetDensity);
-        targetHeight = DrawableTestUtils.scaleBitmapFromDensity(
-                sourceHeight, sourceDensity, targetDensity);
-        assertEquals(targetWidth, bitmapDrawable.getIntrinsicWidth());
-        assertEquals(targetHeight, bitmapDrawable.getIntrinsicHeight());
+        bitmapDrawable.setTargetDensity(disMetrics.densityDpi);
+        assertEquals(48, bitmapDrawable.getIntrinsicWidth());
+        assertEquals(48, bitmapDrawable.getIntrinsicHeight());
     }
 
     @SuppressWarnings("deprecation")

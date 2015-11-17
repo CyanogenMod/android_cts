@@ -311,23 +311,15 @@ public class NinePatchDrawableTest extends InstrumentationTestCase {
     }
 
     public void testInflate() throws XmlPullParserException, IOException {
-        int sourceWidth = 80;
-        int sourceHeight = 120;
-        int[] colors = new int[sourceWidth * sourceHeight];
-        Bitmap bitmap = Bitmap.createBitmap(
-                colors, sourceWidth, sourceHeight, Bitmap.Config.RGB_565);
-        NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(
-                mResources, bitmap, new byte[1000], null, "TESTNAME");
+        final int width = 80;
+        final int height = 120;
+        final int[] COLOR = new int[width * height];
+        Bitmap bitmap = Bitmap.createBitmap(COLOR, width, height, Bitmap.Config.RGB_565);
+        NinePatchDrawable ninePatchDrawable =
+            new NinePatchDrawable(mResources, bitmap, new byte[1000], null, "TESTNAME");
 
-        int sourceDensity = bitmap.getDensity();
-        int targetDensity = mResources.getDisplayMetrics().densityDpi;
-        int targetWidth = DrawableTestUtils.scaleBitmapFromDensity(
-                sourceWidth, sourceDensity, targetDensity);
-        int targetHeight = DrawableTestUtils.scaleBitmapFromDensity(
-                sourceHeight, sourceDensity, targetDensity);
-        assertEquals(targetWidth, ninePatchDrawable.getIntrinsicWidth());
-        assertEquals(targetHeight, ninePatchDrawable.getIntrinsicHeight());
-
+        assertEquals(height, ninePatchDrawable.getIntrinsicHeight());
+        assertEquals(width, ninePatchDrawable.getIntrinsicWidth());
         XmlResourceParser parser = mResources.getXml(R.drawable.ninepatchdrawable);
         int type;
         while ((type = parser.next()) != XmlPullParser.END_DOCUMENT
@@ -337,8 +329,8 @@ public class NinePatchDrawableTest extends InstrumentationTestCase {
         ninePatchDrawable.inflate(mResources, parser, attrs);
 
         assertTrue(ninePatchDrawable.getPaint().isDither());
-        assertTrue(sourceHeight != ninePatchDrawable.getIntrinsicHeight());
-        assertTrue(sourceWidth != ninePatchDrawable.getIntrinsicWidth());
+        assertTrue(height != ninePatchDrawable.getIntrinsicHeight());
+        assertTrue(width != ninePatchDrawable.getIntrinsicWidth());
     }
 
     public void testMutate() {
