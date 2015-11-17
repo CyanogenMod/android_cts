@@ -41,8 +41,11 @@ import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
 
+import com.android.ex.camera2.blocking.BlockingSessionCallback;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static android.hardware.camera2.cts.CameraTestUtils.CAPTURE_RESULT_TIMEOUT_MS;
@@ -275,6 +278,8 @@ public class ImageReaderTest extends Camera2AndroidTestCase {
      * resolution and format supported.
      */
     public void testAllOutputYUVResolutions() throws Exception {
+        Integer[] sessionStates = {BlockingSessionCallback.SESSION_READY,
+                BlockingSessionCallback.SESSION_CONFIGURE_FAILED};
         for (String id : mCameraIds) {
             try {
                 Log.v(TAG, "Testing all YUV image resolutions for camera " + id);
@@ -309,6 +314,7 @@ public class ImageReaderTest extends Camera2AndroidTestCase {
                         ", at least one JPEG output is required.", jpegSizes.length == 0);
 
                 Size maxJpegSize = CameraTestUtils.getMaxSize(jpegSizes);
+                Size maxPreviewSize = mOrderedPreviewSizes.get(0);
 
                 for (int format : supportedYUVFormats) {
                     Size[] targetCaptureSizes =
@@ -342,6 +348,27 @@ public class ImageReaderTest extends Camera2AndroidTestCase {
                             outputSurfaces.add(yuvSurface);
                             outputSurfaces.add(jpegSurface);
                             createSession(outputSurfaces);
+
+                            int state = mCameraSessionListener.getStateWaiter().waitForAnyOfStates(
+                                        Arrays.asList(sessionStates),
+                                        CameraTestUtils.SESSION_CONFIGURE_TIMEOUT_MS);
+
+                            if (state == BlockingSessionCallback.SESSION_CONFIGURE_FAILED) {
+                                if (captureSz.getWidth() > maxPreviewSize.getWidth() ||
+                                        captureSz.getHeight() > maxPreviewSize.getHeight()) {
+                                    Log.v(TAG, "Skip testing {yuv:" + captureSz
+                                            + " ,jpeg:" + maxJpegSize + "} for camera "
+                                            + mCamera.getId() +
+                                            " because full size jpeg + yuv larger than "
+                                            + "max preview size (" + maxPreviewSize
+                                            + ") is not supported");
+                                    continue;
+                                } else {
+                                    fail("Camera " + mCamera.getId() +
+                                            ":session configuration failed for {jpeg: " +
+                                            maxJpegSize + ", yuv: " + captureSz + "}");
+                                }
+                            }
 
                             // Warm up camera preview (mainly to give legacy devices time to do 3A).
                             CaptureRequest.Builder warmupRequest =
