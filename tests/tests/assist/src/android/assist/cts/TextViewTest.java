@@ -79,6 +79,10 @@ public class TextViewTest extends AssistTestBase {
     }
 
     public void testTextView() throws Exception {
+        if (mActivityManager.isLowRamDevice()) {
+            Log.d(TAG, "Not running assist tests on low-RAM device.");
+            return;
+        }
         mTestActivity.start3pApp(TEST_CASE_TYPE);
         scrollTestApp(0, 0, true, false);
 

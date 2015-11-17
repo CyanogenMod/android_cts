@@ -86,6 +86,10 @@ public class FocusChangeTest extends AssistTestBase {
     }
 
     public void testLayerCausesUnderlyingActivityToLoseFocus() throws Exception {
+        if (mActivityManager.isLowRamDevice()) {
+            Log.d(TAG, "Not running assist tests on low-RAM device.");
+            return;
+        }
         mTestActivity.startTest(Utils.FOCUS_CHANGE);
         waitForAssistantToBeReady(mReadyLatch);
         mTestActivity.start3pApp(Utils.FOCUS_CHANGE);
