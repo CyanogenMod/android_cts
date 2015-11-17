@@ -246,7 +246,8 @@ public class BaseTelecomTestWithMockServices extends InstrumentationTestCase {
         mTelecomManager.addNewIncomingCall(TEST_PHONE_ACCOUNT_HANDLE, extras);
 
         try {
-            if (!mInCallCallbacks.lock.tryAcquire(3, TimeUnit.SECONDS)) {
+            if (!mInCallCallbacks.lock.tryAcquire(TestUtils.WAIT_FOR_CALL_ADDED_TIMEOUT_S,
+                        TimeUnit.SECONDS)) {
                 fail("No call added to InCallService.");
             }
         } catch (InterruptedException e) {
@@ -297,7 +298,8 @@ public class BaseTelecomTestWithMockServices extends InstrumentationTestCase {
         placeNewCallWithPhoneAccount(extras, videoState);
 
         try {
-            if (!mInCallCallbacks.lock.tryAcquire(3, TimeUnit.SECONDS)) {
+            if (!mInCallCallbacks.lock.tryAcquire(TestUtils.WAIT_FOR_CALL_ADDED_TIMEOUT_S,
+                        TimeUnit.SECONDS)) {
                 fail("No call added to InCallService.");
             }
         } catch (InterruptedException e) {
