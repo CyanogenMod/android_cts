@@ -70,7 +70,7 @@ public class RenderScriptSingleton {
             sCache.close();
             sCache = null;
 
-            sRS.destroy();
+            sRS.releaseAllContexts();
             sRS = null;
             sContext = null;
         }
