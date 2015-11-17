@@ -22,6 +22,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.provider.Settings;
 import android.util.Log;
 
 /**
@@ -75,6 +76,7 @@ public class DeviceAdminTestReceiver extends DeviceAdminReceiver {
             filter.addAction(
                     PermissionLockdownTestActivity.ACTION_MANAGED_PROFILE_CHECK_PERMISSION_LOCKDOWN);
             filter.addAction(AuthenticationBoundKeyTestActivity.ACTION_AUTH_BOUND_KEY_TEST);
+            filter.addAction(ByodHelperActivity.ACTION_SET_LOCATION_AND_CHECK_UPDATES);
             dpm.addCrossProfileIntentFilter(getWho(context), filter,
                     DevicePolicyManager.FLAG_MANAGED_CAN_ACCESS_PARENT);
 

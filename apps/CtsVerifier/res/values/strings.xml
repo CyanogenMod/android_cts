@@ -1684,6 +1684,27 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="provisioning_button_finish">Finish</string>
     <string name="provisioning_cross_profile_chooser">Choose an app to complete action</string>
 
+    <string name="provisioning_byod_no_gps_location_feature">No GPS feature present. Skip test.</string>
+    <string name="provisioning_byod_location_mode_enable">Enable location</string>
+    <string name="provisioning_byod_location_mode_enable_toast_location_change">Location changed</string>
+    <string name="provisioning_byod_location_mode_enable_instruction">
+        This test verifies that the location updates can be enabled for the managed profile apps.\n
+        1. Press the go button to go to the location settings page, set the location switch enabled.\n
+        2. Move your position a little bit, verify that location updates toast comes up.\n
+        Please wait until the location updates or timeout toast message shows up before going back to the cts-verifier tests.\n
+        3. Go back to the cts-verifier tests using the back button, then mark the test accordingly.\n
+    </string>
+
+    <string name="provisioning_byod_location_mode_disable">Disable location</string>
+    <string name="provisioning_byod_location_mode_time_out_toast">Timeout waiting for gps location change</string>
+    <string name="provisioning_byod_location_mode_disable_instruction">
+        This test verifies that the location updates can be disabled for the managed profile apps.\n
+        1. Press the go button to go to the location settings page, set the location switch disabled.\n
+        2. Move your position a little bit, verify that no location updates toast come up and that the timeout message show up after around 15 seconds. 
+        Please wait until the timeout or location updates toast message shows up before going back to the cts-verifier tests.\n
+        3. Go back to the cts-verifier tests using the back button, then mark the test accordingly.\n
+    </string>
+
     <!-- Strings for DeviceOwnerProvisioningTest -->
     <string name="provisioning_device_owner">Device Owner Provisioning</string>
     <string name="device_owner_provisioning_tests">Device Owner provisioning tests</string>
