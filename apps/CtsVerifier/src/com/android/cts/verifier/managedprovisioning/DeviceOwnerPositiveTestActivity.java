@@ -126,13 +126,6 @@ public class DeviceOwnerPositiveTestActivity extends PassFailButtons.TestListAct
         super.finish();
     }
 
-    /**
-     * Enable Pass Button when all tests passed.
-     */
-    private void updatePassButton() {
-        getPassButton().setEnabled(mAdapter.allTestsPassed());
-    }
-
     private void addTestsToAdapter(final ArrayTestListAdapter adapter) {
         adapter.add(createTestItem(this, CHECK_DEVICE_OWNER_TEST_ID,
                 R.string.device_owner_check_device_owner_test,

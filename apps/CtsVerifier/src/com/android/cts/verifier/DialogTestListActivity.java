@@ -98,11 +98,6 @@ public abstract class DialogTestListActivity extends PassFailButtons.TestListAct
      */
     protected abstract void setupTests(ArrayTestListAdapter adapter);
 
-    // Enable Pass Button when all tests passed.
-    private void updatePassButton() {
-        getPassButton().setEnabled(mAdapter.allTestsPassed());
-    }
-
     public class DefaultTestCallback implements DialogTestListItem.TestCallback {
         final private DialogTestListItem mTest;
 
