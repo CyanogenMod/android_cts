@@ -82,7 +82,7 @@ public class ContextWrapperTest extends AndroidTestCase {
     public static final String PERMISSION_GRANTED = "android.content.cts.permission.TEST_GRANTED";
     public static final String PERMISSION_DENIED = "android.content.cts.permission.TEST_DENIED";
 
-    private static final int BROADCAST_TIMEOUT = 15000;
+    private static final int BROADCAST_TIMEOUT = 10000;
 
     private Context mContext;
 
@@ -157,6 +157,7 @@ public class ContextWrapperTest extends AndroidTestCase {
         registerBroadcastReceiver(lowPriorityReceiver, filterLowPriority);
 
         final Intent broadcastIntent = new Intent(ResultReceiver.MOCK_ACTION);
+        broadcastIntent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
         mContextWrapper.sendOrderedBroadcast(broadcastIntent, null);
         new PollingCheck(BROADCAST_TIMEOUT) {
             @Override
@@ -186,8 +187,10 @@ public class ContextWrapperTest extends AndroidTestCase {
         Bundle bundle = new Bundle();
         bundle.putString(KEY_KEPT, VALUE_KEPT);
         bundle.putString(KEY_REMOVED, VALUE_REMOVED);
-        mContextWrapper.sendOrderedBroadcast(new Intent(ResultReceiver.MOCK_ACTION),
-                null, broadcastReceiver, null, 1, INTIAL_RESULT, bundle);
+        Intent intent = new Intent(ResultReceiver.MOCK_ACTION);
+        intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+        mContextWrapper.sendOrderedBroadcast(intent, null, broadcastReceiver, null, 1,
+                INTIAL_RESULT, bundle);
 
         synchronized (mLockObj) {
             try {
@@ -794,7 +797,7 @@ public class ContextWrapperTest extends AndroidTestCase {
 
     private void waitForFilteredIntent(ContextWrapper contextWrapper, final String action)
             throws InterruptedException {
-        contextWrapper.sendOrderedBroadcast(new Intent(action), null);
+        contextWrapper.sendBroadcast(new Intent(action), null);
 
         synchronized (mLockObj) {
             mLockObj.wait(BROADCAST_TIMEOUT);
@@ -849,7 +852,6 @@ public class ContextWrapperTest extends AndroidTestCase {
 
     private class FilteredReceiver extends BroadcastReceiver {
         private boolean mHadReceivedBroadCast1 = false;
-
         private boolean mHadReceivedBroadCast2 = false;
 
         public void onReceive(Context context, Intent intent) {
