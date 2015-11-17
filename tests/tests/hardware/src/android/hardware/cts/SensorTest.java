@@ -168,8 +168,8 @@ public class SensorTest extends SensorTestCase {
         }
 
         sensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-        // orientation sensor is required if the device can physically implement it
-        if (hasCompass && hasAccelerometer) {
+        // Note: orientation sensor is deprecated.
+        if (sensor != null) {
             assertEquals(Sensor.TYPE_ORIENTATION, sensor.getType());
             assertSensorValues(sensor);
         }
