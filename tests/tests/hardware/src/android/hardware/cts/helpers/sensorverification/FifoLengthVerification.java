@@ -105,7 +105,7 @@ public class FifoLengthVerification extends AbstractSensorVerification {
             // Any event that arrives within before 0.5*expectedReportLatency is considered
             // to be in the same batch of events, else it is considered as the beginning of a new
             // batch.
-            if (timestampDiff < 0.5 * mExpectedReportLatencyUs/1000) {
+            if (timestampDiff < mExpectedReportLatencyUs/1000/2) {
                 batchCount++;
             } else {
                 endofbatch = true;
