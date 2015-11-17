@@ -220,8 +220,12 @@ public class CodecState {
                 mSawInputEOS = true;
                 // FIX-ME: in tunneled mode we currently use input EOS as output EOS indicator
                 // we should stream duration
-                if (mTunneled && !mIsAudio) {
-                    mSawOutputEOS = true;
+                if (mTunneled) {
+                    if (!mIsAudio) {
+                        mSawOutputEOS = true;
+                    } else if (mAudioTrack != null) {
+                        mAudioTrack.stop();
+                    }
                 }
                 return false;
             }
@@ -260,6 +264,10 @@ public class CodecState {
                     index, 0 /* offset */, 0 /* sampleSize */,
                     0 /* sampleTime */, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
 
+            if (mTunneled && mAudioTrack != null) {
+                mAudioTrack.stop();
+            }
+
             mAvailableInputBufferIndices.removeFirst();
         }
 
@@ -271,7 +279,9 @@ public class CodecState {
         // b/9250789
         Log.d(TAG, "CodecState::onOutputFormatChanged " + mime);
 
+        mIsAudio = false;
         if (mime.startsWith("audio/")) {
+            mIsAudio = true;
             int sampleRate =
                 mOutputFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
 
@@ -315,6 +325,9 @@ public class CodecState {
 
             mSawOutputEOS = true;
 
+            if (mAudioTrack != null && !mTunneled) {
+                mAudioTrack.stop();
+            }
             return false;
         }
 
