@@ -1379,17 +1379,6 @@
                 android:label="@string/device_owner_wifi_lockdown_test">
         </activity>
 
-        <activity android:name=".managedprovisioning.VpnTestActivity"
-                android:label="@string/device_owner_vpn_test">
-        </activity>
-
-        <service android:name=".managedprovisioning.VpnTestActivity$MyTestVpnService"
-                android:permission="android.permission.BIND_VPN_SERVICE">
-            <intent-filter>
-                <action android:name="android.net.VpnService"/>
-            </intent-filter>
-        </service>
-
         <activity android:name=".managedprovisioning.PermissionLockdownTestActivity"
                 android:label="@string/device_profile_owner_permission_lockdown_test">
             <intent-filter>
