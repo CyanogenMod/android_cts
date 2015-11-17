@@ -205,13 +205,9 @@ public class ManagedProfileTest extends BaseDevicePolicyTest {
         // Now there's only the browser in the managed profile left
         assertAppLinkResult("testReceivedByBrowserActivityInManaged");
 
-        changeVerificationStatus(USER_OWNER, INTENT_RECEIVER_PKG, "always");
-        changeVerificationStatus(mUserId, INTENT_RECEIVER_PKG, "ask");
-        // We've set the receiver in the primary user to always: only this one should receive the
-        // intent.
-        assertAppLinkResult("testReceivedByAppLinkActivityInPrimary");
 
         changeVerificationStatus(mUserId, INTENT_RECEIVER_PKG, "always");
+        changeVerificationStatus(USER_OWNER, INTENT_RECEIVER_PKG, "always");
         // We have one always in the primary user and one always in the managed profile: the managed
         // profile one should have precedence.
         assertAppLinkResult("testReceivedByAppLinkActivityInManaged");
