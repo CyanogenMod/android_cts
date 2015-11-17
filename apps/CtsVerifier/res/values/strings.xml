@@ -1873,38 +1873,14 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="device_owner_user_restriction_set">Set restriction</string>
     <string name="device_owner_settings_go">Go</string>
 
-    <string name="device_owner_vpn_connection">
-        Vpn connection has been established.\n
-        This is not as expected.\n
-        Mark this test as failed.\n
-    </string>
-    <string name="device_owner_vpn_connection_close_failed">
-        Established vpn connection cannot be closed.\n
-        This is not as expected.\n
-        Mark this test as failed.\n
-    </string>
-    <string name="device_owner_no_vpn_connection">
-        Cannot establish a VPN connection.\n
-        This was expected.\n
-        Mark this test as passed.\n
-    </string>
-    <string name="device_owner_vpn_connection_canceled">
-        Cannot establish a VPN connection.\n
-        Connection canceled by user.\n
-    </string>
-    <string name="device_owner_vpn_test">Check VPN</string>
-    <string name="device_owner_vpn_info_default">Vpn test message</string>
-
     <string name="device_owner_disallow_config_vpn">Disallow configuring VPN</string>
     <string name="device_owner_disallow_config_vpn_info">
         Please press the Set VPN restriction button to set the VPN restriction.
-        Perform tests in order. Mark test as passed if both test cases pass\n\n
-        1. Press Go to open the Vpn settings page.\n
+        Then press Go to open the VPN page.\n\n
         Confirm that:\n
         - You cannot add a new VPN network.\n
-        - You cannot edit, add or remove any existing VPNs.\n\n
-        2. Press Check VPN to check programmatic Vpn test.\n
-        - Check Vpn setup\n\n
+        - You cannot edit, add or remove any existing VPNs.\n
+        \n
         Use the Back button to return to this page.
     </string>
     <string name="device_owner_user_vpn_restriction_set">Set VPN restriction</string>
