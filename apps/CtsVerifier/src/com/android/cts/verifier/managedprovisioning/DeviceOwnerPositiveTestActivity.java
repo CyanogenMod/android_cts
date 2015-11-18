@@ -173,7 +173,10 @@ public class DeviceOwnerPositiveTestActivity extends PassFailButtons.TestListAct
                                         UserManager.DISALLOW_CONFIG_VPN)),
                         new ButtonInfo(
                                 R.string.device_owner_settings_go,
-                                new Intent(ACTION_VPN_SETTINGS))}));
+                                new Intent(ACTION_VPN_SETTINGS)),
+                        new ButtonInfo(
+                                R.string.device_owner_vpn_test,
+                                new Intent(this, VpnTestActivity.class))}));
 
         // DISALLOW_CONFIG_BLUETOOTH
         if (packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
