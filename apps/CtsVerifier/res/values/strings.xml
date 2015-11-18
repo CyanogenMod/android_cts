@@ -1294,6 +1294,7 @@ You should be prompted to select credentials; choose the ones you just installed
     <string name="provisioning_byod_auth_bound_key_set_up">Set up</string>
     <string name="provisioning_byod_lockscreen_bound_key">Lockscreen-bound key test</string>
     <string name="provisioning_byod_fingerprint_bound_key">Fingerprint-bound key test</string>
+    <string name="provisioning_byod_vpn">Vpn test</string>
     <!-- Strings for DeskClock -->
     <string name="deskclock_tests">Alarms and Timers Tests</string>
     <string name="deskclock_tests_info">
