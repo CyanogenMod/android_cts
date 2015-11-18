@@ -69,10 +69,13 @@ public class RobustnessTest extends Camera2AndroidTestCase {
                 Log.i(TAG, "Testing Camera " + id);
                 openDevice(id);
 
+                List<Size> testSizes = CameraTestUtils.getSortedSizesForFormat(id, mCameraManager,
+                        ImageFormat.YUV_420_888, null);
+
                 // Find some size not supported by the camera
                 Size weirdSize = new Size(643, 577);
                 int count = 0;
-                while(mOrderedPreviewSizes.contains(weirdSize)) {
+                while(testSizes.contains(weirdSize)) {
                     // Really, they can't all be supported...
                     weirdSize = new Size(weirdSize.getWidth() + 1, weirdSize.getHeight() + 1);
                     count++;
@@ -126,7 +129,7 @@ public class RobustnessTest extends Camera2AndroidTestCase {
                 Size actualSize = new Size(imageWidth, imageHeight);
 
                 assertTrue("Camera does not contain outputted image resolution " + actualSize,
-                        mOrderedPreviewSizes.contains(actualSize));
+                        testSizes.contains(actualSize));
             } finally {
                 closeDevice(id);
             }
