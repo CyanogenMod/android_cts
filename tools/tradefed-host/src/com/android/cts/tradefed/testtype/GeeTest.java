@@ -47,7 +47,7 @@ public class GeeTest implements IBuildReceiver, IDeviceTest, IRemoteTest {
     private static final String ANDROID_PATH_SEPARATOR = "/";
     private static final String GTEST_FLAG_FILTER = "--gtest_filter=";
 
-    private int mMaxTestTimeMs = 1 * 60 * 1000;
+    private int mMaxTestTimeMs = 1 * 90 * 1000;
 
     private CtsBuildHelper mCtsBuild;
     private ITestDevice mDevice;
