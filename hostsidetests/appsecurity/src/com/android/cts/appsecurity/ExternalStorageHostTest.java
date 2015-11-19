@@ -226,7 +226,9 @@ public class ExternalStorageHostTest extends DeviceTestCase
     }
 
     private void wipePrimaryExternalStorage() throws DeviceNotAvailableException {
-        getDevice().executeShellCommand("rm -rf /sdcard/*");
+        getDevice().executeShellCommand("rm -rf /sdcard/Android");
+        getDevice().executeShellCommand("rm -rf /sdcard/DCIM");
+        getDevice().executeShellCommand("rm -rf /sdcard/MUST_*");
     }
 
     private int[] createUsersForTest() throws DeviceNotAvailableException {
