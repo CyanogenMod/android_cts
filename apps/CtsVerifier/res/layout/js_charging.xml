@@ -29,30 +29,29 @@
                 android:text="@string/js_start_test_text"
                 android:onClick="startTest"
                 android:enabled="false"/>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/js_padding"
-                android:layout_marginBottom="@dimen/js_padding">
-                <ImageView
-                    android:id="@+id/charging_off_test_image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/fs_indeterminate"
-                    android:layout_marginRight="@dimen/js_padding"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/js_charging_off_test"
-                    android:textSize="16dp"/>
-            </LinearLayout>
             <TextView
+                android:id="@+id/js_waiting_for_charging_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/js_padding"
-                android:text="@string/js_charging_description_2"
-                android:textStyle="bold"/>
+                android:text="@string/js_charging_description_3"
+                android:textStyle="bold"
+                android:visibility="gone"/>
+            <com.android.cts.verifier.TimerProgressBar
+                android:id="@+id/js_waiting_for_charging_progress_bar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/js_padding"
+                android:visibility="gone"/>
+            <TextView
+                android:id="@+id/js_problem_with_charger_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/js_padding"
+                android:text="@string/js_charging_description_4"
+                android:textStyle="bold"
+                android:visibility="gone"/>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -68,6 +67,29 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/js_charging_on_test"
+                    android:textSize="16dp"/>
+            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/js_padding"
+                android:text="@string/js_charging_description_2"
+                android:textStyle="bold"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/js_padding"
+                android:layout_marginBottom="@dimen/js_padding">
+                <ImageView
+                    android:id="@+id/charging_off_test_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/fs_indeterminate"
+                    android:layout_marginRight="@dimen/js_padding"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/js_charging_off_test"
                     android:textSize="16dp"/>
             </LinearLayout>
             <include layout="@layout/pass_fail_buttons" />
