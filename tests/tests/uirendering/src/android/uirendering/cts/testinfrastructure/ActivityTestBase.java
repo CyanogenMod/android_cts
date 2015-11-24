@@ -27,6 +27,7 @@ import android.uirendering.cts.differencevisualizers.PassFailVisualizer;
 import android.uirendering.cts.util.BitmapDumper;
 import android.util.Log;
 
+import java.util.concurrent.Semaphore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -87,6 +88,7 @@ public abstract class ActivityTestBase extends
      */
     @Override
     public void tearDown() {
+        final Semaphore available = new Semaphore(0, true);
         if (mTestCaseBuilder != null) {
             List<TestCase> testCases = mTestCaseBuilder.getTestCases();
 
@@ -109,10 +111,17 @@ public abstract class ActivityTestBase extends
             @Override
             public void run() {
                 getActivity().finish();
+                available.release();
             }
         };
 
         getActivity().runOnUiThread(finishRunnable);
+        // Make sure to start case only after the previous one finished
+        try {
+            available.acquire();
+        } catch (InterruptedException exception) {
+            exception.printStackTrace();
+        }
     }
 
     public Bitmap takeScreenshot() {
