@@ -1488,10 +1488,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".managedprovisioning.CrossProfileTestActivity">
+        <activity android:name=".managedprovisioning.HandleIntentActivity"
+                android:enabled="false">
             <intent-filter>
-                <action android:name="com.android.cts.verifier.managedprovisioning.CROSS_PROFILE_TO_PERSONAL" />
-                <action android:name="com.android.cts.verifier.managedprovisioning.CROSS_PROFILE_TO_WORK" />
                 <!-- We need to have at least one activity listening to these intents on the device
                      to test if these are forwarded from the managed profile to the parent or
                      the other way around. -->
@@ -1571,6 +1570,14 @@
                 <data android:scheme="http" />
                 <data android:scheme="geo" />
                 <data android:scheme="market" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".managedprovisioning.CrossProfileTestActivity">
+            <intent-filter>
+                <action android:name="com.android.cts.verifier.managedprovisioning.CROSS_PROFILE_TO_PERSONAL" />
+                <action android:name="com.android.cts.verifier.managedprovisioning.CROSS_PROFILE_TO_WORK" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
