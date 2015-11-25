@@ -50,6 +50,8 @@ public class SensorStats {
             "event_time_synchronization_count";
     public static final String EVENT_TIME_SYNCHRONIZATION_POSITIONS_KEY =
             "event_time_synchronization_positions";
+    public static final String EVENT_COUNT_KEY = "event_count";
+    public static final String WRONG_SENSOR_KEY = "wrong_sensor_observed";
     public static final String FREQUENCY_KEY = "frequency";
     public static final String JITTER_95_PERCENTILE_PERCENT_KEY = "jitter_95_percentile_percent";
     public static final String MEAN_KEY = "mean";
