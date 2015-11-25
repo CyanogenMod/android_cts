@@ -70,7 +70,8 @@ public class RobustnessTest extends Camera2AndroidTestCase {
                 openDevice(id);
 
                 // Find some size not supported by the camera
-                Size weirdSize = new Size(643, 577);
+//              Size weirdSize = new Size(643, 577);
+                Size weirdSize = new Size(351, 277);
                 int count = 0;
                 while(mOrderedPreviewSizes.contains(weirdSize)) {
                     // Really, they can't all be supported...
