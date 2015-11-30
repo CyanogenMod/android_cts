@@ -19,6 +19,8 @@ package com.android.cts.verifier.managedprovisioning;
 import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -105,6 +107,12 @@ public class ByodHelperActivity extends Activity implements DialogCallback, Hand
     // Primary -> managed intent: request to goto the location settings page and listen to updates.
     public static final String ACTION_SET_LOCATION_AND_CHECK_UPDATES =
             "com.android.cts.verifier.managedprovisioning.BYOD_SET_LOCATION_AND_CHECK";
+    public static final String ACTION_NOTIFICATION =
+            "com.android.cts.verifier.managedprovisioning.NOTIFICATION";
+    public static final String ACTION_NOTIFICATION_ON_LOCKSCREEN =
+            "com.android.cts.verifier.managedprovisioning.LOCKSCREEN_NOTIFICATION";
+    public static final String ACTION_CLEAR_NOTIFICATION =
+            "com.android.cts.verifier.managedprovisioning.CLEAR_NOTIFICATION";
 
     public static final int RESULT_FAILED = RESULT_FIRST_USER;
 
@@ -115,6 +123,10 @@ public class ByodHelperActivity extends Activity implements DialogCallback, Hand
     private static final int REQUEST_LOCATION_UPDATE = 5;
 
     private static final String ORIGINAL_SETTINGS_NAME = "original settings";
+
+    private static final int NOTIFICATION_ID = 7;
+
+    private NotificationManager mNotificationManager;
     private Bundle mOriginalSettings;
 
     private static final int MSG_TIMEOUT = 1;
@@ -132,6 +144,17 @@ public class ByodHelperActivity extends Activity implements DialogCallback, Hand
 
     private ArrayList<File> mTempFiles = new ArrayList<File>();
 
+    private void showNotification(int visibility) {
+        final Notification notification = new Notification.Builder(this)
+                .setSmallIcon(R.drawable.icon)
+                .setContentTitle(getString(R.string.provisioning_byod_notification_title))
+                .setVisibility(visibility)
+                .setAutoCancel(true)
+                .build();
+        mNotificationManager.notify(NOTIFICATION_ID, notification);
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -148,6 +171,7 @@ public class ByodHelperActivity extends Activity implements DialogCallback, Hand
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         mHandler = new Handler(this);
         mIsLocationUpdated = false;
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Intent intent = getIntent();
         String action = intent.getAction();
         Log.d(TAG, "ByodHelperActivity.onCreate: " + action);
@@ -166,6 +190,8 @@ public class ByodHelperActivity extends Activity implements DialogCallback, Hand
             // Request to delete work profile.
         } else if (action.equals(ACTION_REMOVE_PROFILE_OWNER)) {
             if (isProfileOwner()) {
+                Log.d(TAG, "Clearing cross profile intents");
+                mDevicePolicyManager.clearCrossProfileIntentFilters(mAdminReceiverComponent);
                 mDevicePolicyManager.wipeData(0);
                 showToast(R.string.provisioning_byod_profile_deleted);
             }
@@ -270,6 +296,15 @@ public class ByodHelperActivity extends Activity implements DialogCallback, Hand
             mLocationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
             return;
+        } else if (action.equals(ACTION_NOTIFICATION)) {
+            showNotification(Notification.VISIBILITY_PUBLIC);
+        } else if (ACTION_NOTIFICATION_ON_LOCKSCREEN.equals(action)) {
+            DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(
+                    Context.DEVICE_POLICY_SERVICE);
+            dpm.lockNow();
+            showNotification(Notification.VISIBILITY_PRIVATE);
+        } else if (ACTION_CLEAR_NOTIFICATION.equals(action)) {
+            mNotificationManager.cancel(NOTIFICATION_ID);
         }
         // This activity has no UI and is only used to respond to CtsVerifier in the primary side.
         finish();

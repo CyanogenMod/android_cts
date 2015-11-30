@@ -97,7 +97,7 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
         super.onCreate(savedInstanceState);
         mAdminReceiverComponent = new ComponentName(this, DeviceAdminTestReceiver.class.getName());
 
-        disableComponent();
+        enableComponent(PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
         mPrepareTestButton.setText(R.string.provisioning_byod_start);
         mPrepareTestButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -160,6 +160,7 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
         // Pass and fail buttons are known to call finish() when clicked, and this is when we want to
         // clean up the provisioned profile.
         requestDeleteProfileOwner();
+        enableComponent(PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
         super.finish();
     }
 
@@ -189,7 +190,7 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
                 R.string.provisioning_byod_work_notification,
                 "BYOD_WorkNotificationBadgedTest",
                 R.string.provisioning_byod_work_notification_instruction,
-                new Intent(WorkNotificationTestActivity.ACTION_WORK_NOTIFICATION),
+                new Intent(ByodHelperActivity.ACTION_NOTIFICATION),
                 R.drawable.ic_corp_icon);
 
         Intent workStatusIcon = new Intent(WorkStatusTestActivity.ACTION_WORK_STATUS_ICON);
@@ -473,11 +474,11 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
     @Override
     protected void clearRemainingState(final DialogTestListItem test) {
         super.clearRemainingState(test);
-        if (WorkNotificationTestActivity.ACTION_WORK_NOTIFICATION.equals(
+        if (ByodHelperActivity.ACTION_NOTIFICATION.equals(
                 test.getManualTestIntent().getAction())) {
             try {
                 startActivity(new Intent(
-                        WorkNotificationTestActivity.ACTION_CLEAR_WORK_NOTIFICATION));
+                        ByodHelperActivity.ACTION_CLEAR_NOTIFICATION));
             } catch (ActivityNotFoundException e) {
                 // User shouldn't run this test before work profile is set up.
             }
@@ -552,12 +553,15 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
                 intentFiltersSet ? TestResult.TEST_RESULT_PASSED : TestResult.TEST_RESULT_FAILED);
     }
 
-    private void disableComponent() {
-        // Disable app components in the current profile, so only the counterpart in the other profile
-        // can respond (via cross-profile intent filter)
+    /**
+     *  Disable or enable app components in the current profile. When they are disabled only the
+     * counterpart in the other profile can respond (via cross-profile intent filter).
+     * @param enabledState {@link PackageManager#COMPONENT_ENABLED_STATE_DISABLED} or
+     *                      {@link PackageManager#COMPONENT_ENABLED_STATE_DEFAULT}
+     */
+    private void enableComponent(final int enabledState) {
         final String[] components = {
             ByodHelperActivity.class.getName(),
-            WorkNotificationTestActivity.class.getName(),
             WorkStatusTestActivity.class.getName(),
             PermissionLockdownTestActivity.ACTIVITY_ALIAS,
             AuthenticationBoundKeyTestActivity.class.getName(),
@@ -565,8 +569,7 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
         };
         for (String component : components) {
             getPackageManager().setComponentEnabledSetting(new ComponentName(this, component),
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                    PackageManager.DONT_KILL_APP);
+                    enabledState, PackageManager.DONT_KILL_APP);
         }
     }
 

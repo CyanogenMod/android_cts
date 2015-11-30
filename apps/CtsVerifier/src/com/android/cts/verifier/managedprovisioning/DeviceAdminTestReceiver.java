@@ -67,10 +67,10 @@ public class DeviceAdminTestReceiver extends DeviceAdminReceiver {
             filter.addAction(ByodHelperActivity.ACTION_TEST_NFC_BEAM);
             filter.addAction(ByodHelperActivity.ACTION_TEST_CROSS_PROFILE_INTENTS_DIALOG);
             filter.addAction(ByodHelperActivity.ACTION_TEST_APP_LINKING_DIALOG);
+            filter.addAction(ByodHelperActivity.ACTION_NOTIFICATION);
+            filter.addAction(ByodHelperActivity.ACTION_NOTIFICATION_ON_LOCKSCREEN);
+            filter.addAction(ByodHelperActivity.ACTION_CLEAR_NOTIFICATION);
             filter.addAction(CrossProfileTestActivity.ACTION_CROSS_PROFILE_TO_WORK);
-            filter.addAction(WorkNotificationTestActivity.ACTION_WORK_NOTIFICATION);
-            filter.addAction(WorkNotificationTestActivity.ACTION_WORK_NOTIFICATION_ON_LOCKSCREEN);
-            filter.addAction(WorkNotificationTestActivity.ACTION_CLEAR_WORK_NOTIFICATION);
             filter.addAction(WorkStatusTestActivity.ACTION_WORK_STATUS_TOAST);
             filter.addAction(WorkStatusTestActivity.ACTION_WORK_STATUS_ICON);
             filter.addAction(
