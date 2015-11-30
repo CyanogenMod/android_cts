@@ -983,6 +983,8 @@ public class StillCaptureTest extends Camera2SurfaceViewTestCase {
         CaptureRequest.Builder stillRequest =
                 mCamera.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
         boolean canSetAeLock = mStaticInfo.isAeLockSupported();
+        boolean canReadSensorSettings = mStaticInfo.isCapabilitySupported(
+                CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_READ_SENSOR_SETTINGS);
 
         if (canSetAeLock) {
             stillRequest.set(CaptureRequest.CONTROL_AE_LOCK, true);
@@ -991,19 +993,20 @@ public class StillCaptureTest extends Camera2SurfaceViewTestCase {
         CaptureResult normalResult;
         CaptureResult compensatedResult;
 
-        // The following variables should only be read under the MANUAL_SENSOR capability guard:
+        boolean canReadExposureValueRange = mStaticInfo.areKeysAvailable(
+                CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE,
+                CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
+        boolean canVerifyExposureValue = canReadSensorSettings && canReadExposureValueRange;
         long minExposureValue = -1;
-        long maxExposureTimeUs = -1;
         long maxExposureValuePreview = -1;
         long maxExposureValueStill = -1;
-        if (mStaticInfo.isCapabilitySupported(
-                CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_MANUAL_SENSOR)) {
+        if (canReadExposureValueRange) {
             // Minimum exposure settings is mostly static while maximum exposure setting depends on
             // frame rate range which in term depends on capture request.
             minExposureValue = mStaticInfo.getSensitivityMinimumOrDefault() *
                     mStaticInfo.getExposureMinimumOrDefault() / 1000;
             long maxSensitivity = mStaticInfo.getSensitivityMaximumOrDefault();
-            maxExposureTimeUs = mStaticInfo.getExposureMaximumOrDefault() / 1000;
+            long maxExposureTimeUs = mStaticInfo.getExposureMaximumOrDefault() / 1000;
             maxExposureValuePreview = getMaxExposureValue(previewRequest, maxExposureTimeUs,
                     maxSensitivity);
             maxExposureValueStill = getMaxExposureValue(stillRequest, maxExposureTimeUs,
@@ -1024,8 +1027,7 @@ public class StillCaptureTest extends Camera2SurfaceViewTestCase {
             normalResult = resultListener.getCaptureResult(WAIT_FOR_RESULT_TIMEOUT_MS);
 
             long normalExposureValue = -1;
-            if (mStaticInfo.isCapabilitySupported(
-                    CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_READ_SENSOR_SETTINGS)) {
+            if (canVerifyExposureValue) {
                 // get and check if current exposure value is valid
                 normalExposureValue = getExposureValue(normalResult);
                 mCollector.expectInRange("Exposure setting out of bound", normalExposureValue,
@@ -1072,8 +1074,7 @@ public class StillCaptureTest extends Camera2SurfaceViewTestCase {
             compensatedResult = resultListener.getCaptureResultForRequest(
                     request, WAIT_FOR_RESULT_TIMEOUT_MS);
 
-            if (mStaticInfo.isCapabilitySupported(
-                    CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_READ_SENSOR_SETTINGS)) {
+            if (canVerifyExposureValue) {
                 // Verify the exposure value compensates as requested
                 long compensatedExposureValue = getExposureValue(compensatedResult);
                 mCollector.expectInRange("Exposure setting out of bound", compensatedExposureValue,
