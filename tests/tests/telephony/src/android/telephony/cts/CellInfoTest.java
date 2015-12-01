@@ -93,39 +93,31 @@ public class CellInfoTest extends AndroidTestCase{
     // Verify lte cell information is within correct range.
     private void verifyLteInfo(CellInfoLte lte) {
         verifyRssiDbm(lte.getCellSignalStrength().getDbm());
-        // Verify LTE neighbor information.
-        if (!lte.isRegistered()) {
-            // Only physical cell id is available for LTE neighbor.
-            int pci = lte.getCellIdentity().getPci();
-            // Physical cell id should be within [0, 503].
-            assertTrue("getPci() out of range [0, 503]", pci >= 0 && pci <= 503);
-        }
+        // Verify LTE physical cell id information.
+        // Only physical cell id is available for LTE neighbor.
+        int pci = lte.getCellIdentity().getPci();
+        // Physical cell id should be within [0, 503].
+        assertTrue("getPci() out of range [0, 503]", pci >= 0 && pci <= 503);
     }
 
     // Verify wcdma cell information is within correct range.
     private void verifyWcdmaInfo(CellInfoWcdma wcdma) {
         verifyRssiDbm(wcdma.getCellSignalStrength().getDbm());
-        // Verify wcdma neighbor.
-        if (!wcdma.isRegistered()) {
-            // For wcdma neighbor, only primary scrambling code is available.
-            // Primary scrambling code should be within [0, 511].
-            int psc = wcdma.getCellIdentity().getPsc();
-            assertTrue("getPsc() out of range [0, 511]", psc >= 0 && psc <= 511);
-        }
+        // Verify wcdma primary scrambling code information.
+        // Primary scrambling code should be within [0, 511].
+        int psc = wcdma.getCellIdentity().getPsc();
+        assertTrue("getPsc() out of range [0, 511]", psc >= 0 && psc <= 511);
     }
 
     // Verify gsm cell information is within correct range.
     private void verifyGsmInfo(CellInfoGsm gsm) {
         verifyRssiDbm(gsm.getCellSignalStrength().getDbm());
-        // Verify gsm neighbor.
-        if (!gsm.isRegistered()) {
-            // lac and cid are available in GSM neighbor information.
-            // Local area code and cellid should be with [0, 65535].
-            int lac = gsm.getCellIdentity().getLac();
-            assertTrue("getLac() out of range [0, 65535]", lac >= 0 && lac <= 65535);
-            int cid = gsm.getCellIdentity().getCid();
-            assertTrue("getCid() out range [0, 65535]", cid >= 0 && cid <= 65535);
-        }
+        // Verify gsm local area code and cellid.
+        // Local area code and cellid should be with [0, 65535].
+        int lac = gsm.getCellIdentity().getLac();
+        assertTrue("getLac() out of range [0, 65535]", lac >= 0 && lac <= 65535);
+        int cid = gsm.getCellIdentity().getCid();
+        assertTrue("getCid() out range [0, 65535]", cid >= 0 && cid <= 65535);
     }
 
     // Rssi(in dbm) should be within [MIN_RSSI, MAX_RSSI].
