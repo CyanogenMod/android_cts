@@ -363,15 +363,41 @@ public class TestSensorOperation extends SensorOperation {
             TestSensorEnvironment environment,
             final long duration,
             final TimeUnit timeUnit) {
+
+        return createFlushOperation(environment, new int[] {(int)timeUnit.toMillis(duration)}, 0);
+    }
+
+    /**
+     * Creates an operation that make a series of flush (by calling
+     * {@link TestSensorManager#requestFlush()}) with predefined interval after registerListener.
+     *
+     * @param environment The test environment.
+     * @param flushIntervalMs intervals between calls to {@link TestSensorManager#requestFlush()}.
+     * @param clearEventIndex the index of interval which
+     *        {@link TestSensorEventListerner#clearEvent} is called (-1 for never).
+     */
+    public static TestSensorOperation createFlushOperation(
+            TestSensorEnvironment environment,
+            final int [] flushIntervalMs,
+            final int    clearEventIndex) {
+
+        Assert.assertTrue(clearEventIndex >= -1 && flushIntervalMs.length > clearEventIndex);
+
         Executor executor = new Executor() {
             @Override
             public void execute(TestSensorManager sensorManager, TestSensorEventListener listener)
                     throws InterruptedException {
                 try {
                     sensorManager.registerListener(listener);
-                    SensorCtsHelper.sleep(duration, timeUnit);
-                    CountDownLatch latch = sensorManager.requestFlush();
-                    listener.waitForFlushComplete(latch, true);
+
+                    int i = 0;
+                    for (int interval: flushIntervalMs) {
+                        SensorCtsHelper.sleep(interval, TimeUnit.MILLISECONDS);
+                        listener.waitForFlushComplete(
+                                sensorManager.requestFlush(),
+                                i <= clearEventIndex);
+                        ++i;
+                    }
                 } finally {
                     sensorManager.unregisterListener();
                 }

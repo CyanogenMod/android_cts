@@ -25,6 +25,8 @@ import android.hardware.cts.helpers.TestSensorEnvironment;
 import android.hardware.cts.helpers.sensoroperations.TestSensorOperation;
 import android.hardware.cts.helpers.sensorverification.FifoLengthVerification;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Checks the minimum Hardware FIFO length for each of the Hardware sensor.
  * Further verifies if the advertised FIFO (Sensor.getFifoMaxEventCount()) is actually allocated
@@ -112,12 +114,19 @@ public class SensorBatchingFifoTest extends SensorTestCase {
         Sensor sensor = mSensorManager.getDefaultSensor(sensorType);
         TestSensorEnvironment environment =  new TestSensorEnvironment(getContext(),
                 sensor,
-                false,
+                false, /* sensorMightHaveMoreListeners */
                 sensor.getMinDelay(),
                 Integer.MAX_VALUE /*maxReportLatencyUs*/);
 
-        TestSensorOperation op = TestSensorOperation.createOperation(environment,
-                sensor.getFifoReservedEventCount() * 2);
+        int preFlushMs = 2000;  // 2 sec to make sure there is sample at the time of flush
+        int postFlushMs = environment.getExpectedSamplingPeriodUs() * 100 /1000;
+        int testFlushMs =
+                environment.getSensor().getFifoReservedEventCount() *
+                environment.getExpectedSamplingPeriodUs() / (int)(1000 / 1.2); // 120%
+
+        TestSensorOperation op = TestSensorOperation.createFlushOperation(
+                environment, new int [] { preFlushMs, testFlushMs, postFlushMs }, -1);
+
         op.addVerification(FifoLengthVerification.getDefault(environment));
         op.execute(getCurrentTestNode());
         op.getStats().log(TAG);
