@@ -31,6 +31,7 @@ import android.hardware.cts.helpers.TestSensorEventListener;
 import android.hardware.cts.helpers.TestSensorManager;
 import android.hardware.cts.helpers.SuspendStateMonitor;
 import android.hardware.cts.helpers.reporting.ISensorTestNode;
+import android.hardware.cts.helpers.sensorverification.EventBasicVerification;
 import android.hardware.cts.helpers.sensorverification.EventGapVerification;
 import android.hardware.cts.helpers.sensorverification.EventOrderingVerification;
 import android.hardware.cts.helpers.sensorverification.EventTimestampSynchronizationVerification;
@@ -145,9 +146,9 @@ public class TestSensorOperation extends SensorOperation {
         for (ISensorVerification verification : mVerifications) {
             failed |= evaluateResults(collectedEvents, verification, sb);
         }
+
         if (failed) {
             trySaveCollectedEvents(parent, listener);
-
             String msg = SensorCtsHelper
                     .formatAssertionMessage("VerifySensorOperation", mEnvironment, sb.toString());
             getStats().addValue(SensorStats.ERROR, msg);
