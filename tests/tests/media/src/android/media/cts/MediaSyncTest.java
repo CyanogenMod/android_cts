@@ -18,6 +18,7 @@ package android.media.cts;
 import com.android.cts.media.R;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
 import android.cts.util.MediaUtils;
@@ -153,6 +154,11 @@ public class MediaSyncTest extends ActivityInstrumentationTestCase2<MediaStubAct
                 mConditionEos.notify();
             }
         }
+    }
+
+    private boolean hasAudioOutput() {
+        return mActivity.getPackageManager()
+            .hasSystemFeature(PackageManager.FEATURE_AUDIO_OUTPUT);
     }
 
     /**
@@ -337,6 +343,12 @@ public class MediaSyncTest extends ActivityInstrumentationTestCase2<MediaStubAct
      * Tests playing back video successfully.
      */
     public void testPlayAudio() throws InterruptedException {
+        if (!hasAudioOutput()) {
+            Log.w(LOG_TAG,"AUDIO_OUTPUT feature not found. This system might not have a valid "
+                    + "audio output HAL");
+            return;
+        }
+
         playAV(INPUT_RESOURCE_ID, 5000 /* lastBufferTimestampMs */,
                true /* audio */, false /* video */, 10000 /* timeOutMs */);
     }
