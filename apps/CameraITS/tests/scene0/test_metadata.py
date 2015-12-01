@@ -72,8 +72,6 @@ def main():
     check('props.has_key("android.scaler.croppingType")')
     check('props["android.scaler.croppingType"] is not None')
     check('props["android.scaler.croppingType"] in [0,1]')
-    if full:
-        check('props["android.scaler.croppingType"] == 1')
 
     assert(not failed)
 
