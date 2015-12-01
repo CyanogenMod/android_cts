@@ -154,11 +154,10 @@ public class WriteExternalStorageTest extends AndroidTestCase {
      * storage.
      */
     public void testPrimaryOtherPackageWriteAccess() throws Exception {
-        deleteContents(Environment.getExternalStorageDirectory());
-
         final File ourCache = getContext().getExternalCacheDir();
         final File otherCache = new File(ourCache.getAbsolutePath()
                 .replace(getContext().getPackageName(), PACKAGE_NONE));
+        deleteContents(otherCache);
 
         assertTrue(otherCache.mkdirs());
         assertDirReadWriteAccess(otherCache);
@@ -237,8 +236,9 @@ public class WriteExternalStorageTest extends AndroidTestCase {
      * Verify that .nomedia is created correctly.
      */
     public void testVerifyNoMediaCreated() throws Exception {
-        deleteContents(Environment.getExternalStorageDirectory());
-
+        for (File file : getAllPackageSpecificPaths(getContext())) {
+            deleteContents(file);
+        }
         final List<File> paths = getAllPackageSpecificPaths(getContext());
 
         // Require that .nomedia was created somewhere above each dir
