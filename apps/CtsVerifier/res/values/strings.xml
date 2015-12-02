@@ -1342,8 +1342,8 @@ You should be prompted to select credentials; choose the ones you just installed
         1. Press the "Create Alarm" button.\n
         2. Verify that you see one alarm with the following information:\n
            Name of alarm: Create Alarm Test. \n
-           Vibrate: on.\n
-           Ringtone: silent.\n
+           Vibrate: on. (if the device supports vibrate).\n
+           Ringtone: silent. (if the device has a speaker).\n
            Time:  01:23. \n
            Repeating on: Monday and Wednesday. \n
     </string>
