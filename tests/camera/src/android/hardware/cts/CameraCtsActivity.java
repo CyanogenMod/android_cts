@@ -21,7 +21,7 @@ import android.os.Bundle;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
-import com.android.cts.hardware.R;
+import android.camera.cts.R;
 
 public class CameraCtsActivity extends Activity {
     private SurfaceView mSurfaceView;

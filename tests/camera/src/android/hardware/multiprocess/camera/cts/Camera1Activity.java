@@ -18,7 +18,6 @@ package android.hardware.multiprocess.camera.cts;
 
 import android.app.Activity;
 import android.hardware.Camera;
-import android.hardware.multiprocess.ErrorLoggingService;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -26,7 +25,7 @@ import android.util.Log;
  * Activity implementing basic access of the Camera1 API.
  *
  * <p />
- * This will log all errors to {@link android.hardware.multiprocess.ErrorLoggingService}.
+ * This will log all errors to {@link android.hardware.multiprocess.camera.cts.ErrorLoggingService}.
  */
 public class Camera1Activity extends Activity {
     private static final String TAG = "Camera1Activity";

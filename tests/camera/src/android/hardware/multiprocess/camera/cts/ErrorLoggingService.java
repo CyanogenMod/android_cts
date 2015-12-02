@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package android.hardware.multiprocess;
+package android.hardware.multiprocess.camera.cts;
 
 import android.app.Service;
 import android.content.ComponentName;

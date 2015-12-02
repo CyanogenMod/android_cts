@@ -21,7 +21,6 @@ import android.content.Context;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
-import android.hardware.multiprocess.ErrorLoggingService;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -30,7 +29,7 @@ import android.util.Log;
  * Activity implementing basic access of the Camera2 API.
  *
  * <p />
- * This will log all errors to {@link android.hardware.multiprocess.ErrorLoggingService}.
+ * This will log all errors to {@link android.hardware.multiprocess.camera.cts.ErrorLoggingService}.
  */
 public class Camera2Activity extends Activity {
     private static final String TAG = "Camera2Activity";

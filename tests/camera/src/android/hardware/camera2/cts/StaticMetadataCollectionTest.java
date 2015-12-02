@@ -18,8 +18,8 @@ package android.hardware.camera2.cts;
 
 import android.content.pm.PackageManager;
 import android.cts.util.DeviceReportLog;
-import android.hardware.camera2.cts.testcases.Camera2SurfaceViewTestCase;
 import android.hardware.camera2.cts.helpers.CameraMetadataGetter;
+import android.hardware.camera2.cts.testcases.Camera2SurfaceViewTestCase;
 import android.util.Log;
 
 import com.android.cts.util.ResultType;

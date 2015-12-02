@@ -23,7 +23,7 @@ import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.WindowManager;
 
-import com.android.cts.hardware.R;
+import android.camera.cts.R;
 
 public class Camera2MultiViewCtsActivity extends Activity {
     private final static String TAG = "Camera2MultiViewCtsActivity";
