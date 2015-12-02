@@ -102,6 +102,7 @@ cts_support_packages := \
     CtsMonkeyApp2 \
     CtsPackageInstallerApp \
     CtsPermissionApp \
+    CtsPreconditionsApp \
     CtsSimpleApp \
     CtsSimplePreMApp \
     CtsSomeAccessibilityServices \
