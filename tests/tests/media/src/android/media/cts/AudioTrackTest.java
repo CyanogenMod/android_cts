@@ -2092,6 +2092,12 @@ public class AudioTrackTest extends CtsAndroidTestCase {
     }
 
     public void testVariableSpeedPlayback() throws Exception {
+        if (!hasAudioOutput()) {
+            Log.w(TAG,"AUDIO_OUTPUT feature not found. This system might not have a valid "
+                    + "audio output HAL");
+            return;
+        }
+
         final String TEST_NAME = "testVariableSpeedPlayback";
         final int TEST_FORMAT = AudioFormat.ENCODING_PCM_FLOAT; // required for test
         final int TEST_MODE = AudioTrack.MODE_STATIC;           // required for test
