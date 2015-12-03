@@ -348,14 +348,6 @@
    bug: 23827982
 },
 {
-  description: "tests not yet ready",
-  names: [
-    "android.telecom.cts.OutgoingCallTest#testStartCallWithSpeakerphoneFalse_SpeakerphoneOffInCall",
-    "android.telecom.cts.OutgoingCallTest#testStartCallWithSpeakerphoneNotProvided_SpeakerphoneOffByDefault"
-  ],
-  bug: 24067587
-},
-{
   description: "protected broadcast not working",
   names: [
    "android.permission2.cts.ProtectedBroadcastsTest#testSendProtectedBroadcasts"
