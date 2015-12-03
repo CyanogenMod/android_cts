@@ -201,6 +201,12 @@ class VideoEncoderDecoderTestResult(_VideoResultBase):
   def _parseFailureLine(self, line):
     """Handles parsing a line from the failure log."""
     self._tryParseMeasuredFrameRate(line)
+    if line.startswith('Raw data: '):
+      for result in self._parseRawData(line):
+        fmt = result['EncOutputFormat']
+        self.size = Size(fmt['width'], fmt['height'])
+        self.codec = result['codec']
+        self.mime = fmt['mime']
 
   def _parseMessage(self, message, array):
     """Handles parsing a message from ValueArrays."""
