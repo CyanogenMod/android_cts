@@ -251,14 +251,14 @@ public class UiAutomationTest extends UiAutomatorTestCase {
         final int frameCount = stats.getFrameCount();
         for (int i = 0; i < frameCount; i++) {
             final long expectedTimeNano = stats.getFramePostedTimeNano(i);
-            assertTrue(expectedTimeNano > lastExpectedTimeNano);
+            assertTrue(expectedTimeNano >= lastExpectedTimeNano);
             lastExpectedTimeNano = expectedTimeNano;
 
             final long presentedTimeNano = stats.getFramePresentedTimeNano(i);
             if (lastPresentedTimeNano == FrameStats.UNDEFINED_TIME_NANO) {
                 assertTrue(presentedTimeNano == FrameStats.UNDEFINED_TIME_NANO);
             } else if (presentedTimeNano != FrameStats.UNDEFINED_TIME_NANO) {
-                assertTrue(presentedTimeNano > lastPresentedTimeNano);
+                assertTrue(presentedTimeNano >= lastPresentedTimeNano);
             }
             lastPresentedTimeNano = presentedTimeNano;
 
@@ -266,7 +266,7 @@ public class UiAutomationTest extends UiAutomatorTestCase {
             if (lastPreparedTimeNano == FrameStats.UNDEFINED_TIME_NANO) {
                 assertTrue(preparedTimeNano == FrameStats.UNDEFINED_TIME_NANO);
             } else if (preparedTimeNano != FrameStats.UNDEFINED_TIME_NANO) {
-                assertTrue(preparedTimeNano > lastPreparedTimeNano);
+                assertTrue(preparedTimeNano >= lastPreparedTimeNano);
             }
             lastPreparedTimeNano = preparedTimeNano;
         }
