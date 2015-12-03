@@ -19,6 +19,8 @@ package android.media.cts;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.cts.util.CtsAndroidTestCase;
 import android.media.AudioFormat;
@@ -280,6 +282,9 @@ public class AudioRecordTest extends CtsAndroidTestCase {
 
     // Audit modes work best with non-blocking mode
     public void testAudioRecordAuditByteBufferResamplerStereoFloat() throws Exception {
+        if (isLowRamDevice()) {
+            return; // skip. FIXME: reenable when AF memory allocation is updated.
+        }
         doTest("AuditByteBufferResamplerStereoFloat",
                 false /*localRecord*/, true /*customHandler*/,
                 2 /*periodsPerSecond*/, 0 /*markerPeriodsPerSecond*/,
@@ -299,6 +304,9 @@ public class AudioRecordTest extends CtsAndroidTestCase {
     // Audit buffers can run out of space with high sample rate,
     // so keep the channels and pcm encoding low
     public void testAudioRecordAuditChannelIndex2() throws Exception {
+        if (isLowRamDevice()) {
+            return; // skip. FIXME: reenable when AF memory allocation is updated.
+        }
         doTest("AuditChannelIndex2", true /*localRecord*/, true /*customHandler*/,
                 2 /*periodsPerSecond*/, 0 /*markerPeriodsPerSecond*/,
                 false /*useByteBuffer*/, false /*blocking*/,
@@ -1069,5 +1077,10 @@ public class AudioRecordTest extends CtsAndroidTestCase {
     private boolean hasMicrophone() {
         return getContext().getPackageManager().hasSystemFeature(
                 PackageManager.FEATURE_MICROPHONE);
+    }
+
+    private boolean isLowRamDevice() {
+        return ((ActivityManager) getContext().getSystemService(Context.ACTIVITY_SERVICE))
+                .isLowRamDevice();
     }
 }
