@@ -186,37 +186,35 @@ public class DeviceSuspendTestActivity
         }
 
         public String runAPWakeUpWhenReportLatencyExpires(Sensor sensor) throws Throwable {
+
+            verifyBatchingSupport(sensor);
+
             int fifoMaxEventCount = sensor.getFifoMaxEventCount();
-            if (fifoMaxEventCount == 0) {
-                throw new SensorTestStateNotSupportedException("Batching not supported.");
-            }
-            int maximumExpectedSamplingPeriodUs = sensor.getMaxDelay();
-            if (maximumExpectedSamplingPeriodUs == 0) {
+            int samplingPeriodUs = sensor.getMaxDelay();
+            if (samplingPeriodUs == 0) {
                 // If maxDelay is not defined, set the value for 5 Hz.
-                maximumExpectedSamplingPeriodUs = 200000;
-            }
-            int fifoBasedReportLatencyUs = fifoMaxEventCount * maximumExpectedSamplingPeriodUs;
-
-            // Ensure that FIFO based report latency is at least 20 seconds, we need at least 10
-            // seconds of time to allow the device to be in suspend state.
-            if (fifoBasedReportLatencyUs < 20000000L) {
-                throw new SensorTestStateNotSupportedException("FIFO too small to test reliably");
+                samplingPeriodUs = 200000;
             }
 
-            final int MAX_REPORT_LATENCY_US = 15000000; // 15 seconds
+            long fifoBasedReportLatencyUs = maxBatchingPeriod(sensor, samplingPeriodUs);
+            verifyBatchingPeriod(fifoBasedReportLatencyUs);
+
+            final long MAX_REPORT_LATENCY_US = TimeUnit.SECONDS.toMicros(15); // 15 seconds
             TestSensorEnvironment environment = new TestSensorEnvironment(
                     this,
                     sensor,
                     false,
-                    maximumExpectedSamplingPeriodUs,
-                    MAX_REPORT_LATENCY_US,
+                    samplingPeriodUs,
+                    (int) MAX_REPORT_LATENCY_US,
                     true /*isDeviceSuspendTest*/);
 
             TestSensorOperation op = TestSensorOperation.createOperation(environment,
                                                                           mDeviceSuspendLock,
                                                                           false);
-            final int ALARM_WAKE_UP_DELAY_MS = MAX_REPORT_LATENCY_US/1000 +
-                (int)TimeUnit.SECONDS.toMillis(10);
+            final long ALARM_WAKE_UP_DELAY_MS =
+                    TimeUnit.MICROSECONDS.toMillis(MAX_REPORT_LATENCY_US) +
+                    TimeUnit.SECONDS.toMillis(10);
+
             op.addVerification(BatchArrivalVerification.getDefault(environment));
             mAlarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                                     SystemClock.elapsedRealtime() + ALARM_WAKE_UP_DELAY_MS,
@@ -231,35 +229,37 @@ public class DeviceSuspendTestActivity
         }
 
         public String runAPWakeUpWhenFIFOFull(Sensor sensor) throws Throwable {
-            int fifoMaxEventCount = sensor.getFifoMaxEventCount();
-            if (fifoMaxEventCount == 0) {
-                throw new SensorTestStateNotSupportedException("Batching not supported.");
-            }
+            verifyBatchingSupport(sensor);
+
             // Try to fill the FIFO at the fastest rate and check if the time is enough to run
             // the manual test.
-            int maximumExpectedSamplingPeriodUs = sensor.getMinDelay();
-            int fifoBasedReportLatencyUs = fifoMaxEventCount * maximumExpectedSamplingPeriodUs;
+            int samplingPeriodUs = sensor.getMinDelay();
 
-            final int MIN_LATENCY_US = (int)TimeUnit.SECONDS.toMicros(20);
+            long fifoBasedReportLatencyUs = maxBatchingPeriod(sensor, samplingPeriodUs);
+
+            final long MIN_LATENCY_US = TimeUnit.SECONDS.toMicros(20);
             // Ensure that FIFO based report latency is at least 20 seconds, we need at least 10
             // seconds of time to allow the device to be in suspend state.
             if (fifoBasedReportLatencyUs < MIN_LATENCY_US) {
-                maximumExpectedSamplingPeriodUs = MIN_LATENCY_US/fifoMaxEventCount;
+                int fifoMaxEventCount = sensor.getFifoMaxEventCount();
+                samplingPeriodUs = (int) MIN_LATENCY_US/fifoMaxEventCount;
                 fifoBasedReportLatencyUs = MIN_LATENCY_US;
             }
 
             final int MAX_REPORT_LATENCY_US = Integer.MAX_VALUE;
-            final int ALARM_WAKE_UP_DELAY_MS = fifoBasedReportLatencyUs/1000 +
-                (int)TimeUnit.SECONDS.toMillis(10);
+            final long ALARM_WAKE_UP_DELAY_MS =
+                    TimeUnit.MICROSECONDS.toMillis(fifoBasedReportLatencyUs) +
+                    TimeUnit.SECONDS.toMillis(10);
+
             TestSensorEnvironment environment = new TestSensorEnvironment(
                     this,
                     sensor,
                     false,
-                    maximumExpectedSamplingPeriodUs,
-                    MAX_REPORT_LATENCY_US,
+                    (int) samplingPeriodUs,
+                    (int) MAX_REPORT_LATENCY_US,
                     true /*isDeviceSuspendTest*/);
 
-           TestSensorOperation op = TestSensorOperation.createOperation(environment,
+            TestSensorOperation op = TestSensorOperation.createOperation(environment,
                                                                         mDeviceSuspendLock,
                                                                         true);
             mAlarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP,
@@ -277,33 +277,26 @@ public class DeviceSuspendTestActivity
 
         public String runAPWakeUpByAlarmNonWakeSensor(Sensor sensor, int maxReportLatencyUs)
             throws  Throwable {
-            int fifoMaxEventCount = sensor.getFifoMaxEventCount();
-            if (fifoMaxEventCount == 0) {
-                throw new SensorTestStateNotSupportedException("Batching not supported.");
-            }
-            int maximumExpectedSamplingPeriodUs = sensor.getMaxDelay();
-            if (maximumExpectedSamplingPeriodUs == 0 ||
-                    maximumExpectedSamplingPeriodUs > 200000) {
-                // If maxDelay is not defined, set the value for 5 Hz.
-                maximumExpectedSamplingPeriodUs = 200000;
-            }
-            int fifoBasedReportLatencyUs = fifoMaxEventCount * maximumExpectedSamplingPeriodUs;
+            verifyBatchingSupport(sensor);
 
-            // Ensure that FIFO based report latency is at least 20 seconds, we need at least 10
-            // seconds of time to allow the device to be in suspend state.
-            if (fifoBasedReportLatencyUs < 20000000L) {
-                throw new SensorTestStateNotSupportedException("FIFO too small to test reliably");
+            int samplingPeriodUs = sensor.getMaxDelay();
+            if (samplingPeriodUs == 0 || samplingPeriodUs > 200000) {
+                // If maxDelay is not defined, set the value for 5 Hz.
+                samplingPeriodUs = 200000;
             }
+
+            long fifoBasedReportLatencyUs = maxBatchingPeriod(sensor, samplingPeriodUs);
+            verifyBatchingPeriod(fifoBasedReportLatencyUs);
 
             TestSensorEnvironment environment = new TestSensorEnvironment(
                     this,
                     sensor,
                     false,
-                    maximumExpectedSamplingPeriodUs,
+                    (int) samplingPeriodUs,
                     maxReportLatencyUs,
                     true /*isDeviceSuspendTest*/);
 
-            final int ALARM_WAKE_UP_DELAY_MS = 20000;
+            final long ALARM_WAKE_UP_DELAY_MS = 20000;
             TestSensorOperation op = TestSensorOperation.createOperation(environment,
                                                                          mDeviceSuspendLock,
                                                                          true);
@@ -318,4 +311,27 @@ public class DeviceSuspendTestActivity
             }
             return null;
         }
+
+        private void verifyBatchingSupport(Sensor sensor)
+                throws SensorTestStateNotSupportedException {
+            int fifoMaxEventCount = sensor.getFifoMaxEventCount();
+            if (fifoMaxEventCount == 0) {
+                throw new SensorTestStateNotSupportedException("Batching not supported.");
+            }
+        }
+
+        private void verifyBatchingPeriod(long periodUs)
+                throws SensorTestStateNotSupportedException {
+            // Ensure that FIFO based report latency is at least 20 seconds, we need at least 10
+            // seconds of time to allow the device to be in suspend state.
+            if (periodUs < TimeUnit.SECONDS.toMicros(20)) {
+                throw new SensorTestStateNotSupportedException("FIFO too small to test reliably");
+            }
+        }
+
+        private long maxBatchingPeriod (Sensor sensor, long samplePeriod) {
+            long fifoMaxEventCount = sensor.getFifoMaxEventCount();
+            return fifoMaxEventCount * samplePeriod;
+        }
+
 }
