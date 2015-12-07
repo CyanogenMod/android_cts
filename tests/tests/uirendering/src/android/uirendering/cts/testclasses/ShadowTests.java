@@ -27,10 +27,10 @@ import android.uirendering.cts.testinfrastructure.ActivityTestBase;
 public class ShadowTests extends ActivityTestBase {
     @SmallTest
     public void testShadowLayout() {
-        int shadowColorValue = 0xDB;
+        int shadowColorValue = 0xD7;
         // Android TV theme overrides shadow opacity to be darker.
         if (getActivity().getOnTv()) {
-            shadowColorValue = 0xBB;
+            shadowColorValue = 0xB7;
         }
         // Use a higher threshold (30) than default value (20);
         SamplePointVerifier verifier = new SamplePointVerifier(
