@@ -76,9 +76,9 @@ def main():
         matplotlib.pyplot.savefig("%s_plot_means.png" % (NAME))
 
         for val in black_means:
-            assert(val < 0.025)
+            assert(val < 0.035)
         for val in white_means:
-            assert(val > 0.975)
+            assert(val > 0.965)
 
 if __name__ == '__main__':
     main()
