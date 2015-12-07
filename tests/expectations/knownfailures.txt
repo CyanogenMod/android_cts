@@ -143,13 +143,6 @@
   bug: 18091590
 },
 {
-  description: "Test is too flaky on some devices",
-  names: [
-    "android.jobscheduler.cts.ConnectivityConstraintTest#testConnectivityConstraintExecutes_withMobile"
-  ],
-  bug: 21262226
-},
-{
   description: "these tests require a good test scene, so they fail if run in random conditions",
   names: [
     "android.hardware.camera2.cts.AllocationTest#testBlackWhite",
