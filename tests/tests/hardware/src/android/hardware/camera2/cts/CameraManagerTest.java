@@ -149,7 +149,8 @@ public class CameraManagerTest extends AndroidTestCase {
             assertNotNull("Can't get lens facing info", lensFacing);
             if (lensFacing == CameraCharacteristics.LENS_FACING_FRONT) {
                 assertTrue("System doesn't have front camera feature",
-                        mPackageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT));
+                        mPackageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT) ||
+                        mPackageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_EXTERNAL));
             } else if (lensFacing == CameraCharacteristics.LENS_FACING_BACK) {
                 assertTrue("System doesn't have back camera feature",
                         mPackageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA));
@@ -534,7 +535,7 @@ public class CameraManagerTest extends AndroidTestCase {
                     java.util.concurrent.TimeUnit.MILLISECONDS);
             assertTrue(String.format("Received unavailability notice for wrong ID " +
                             "(expected %s, got %s)", id, candidateId),
-                    id == candidateId);
+                    id.equals(candidateId));
             assertTrue("Availability events received unexpectedly",
                     availableEventQueue.size() == 0);
 
@@ -549,7 +550,7 @@ public class CameraManagerTest extends AndroidTestCase {
                     java.util.concurrent.TimeUnit.MILLISECONDS);
             assertTrue(String.format("Received availability notice for wrong ID " +
                             "(expected %s, got %s)", id, candidateId),
-                    id == candidateId);
+                    id.equals(candidateId));
             assertTrue("Unavailability events received unexpectedly",
                     unavailableEventQueue.size() == 0);
 

@@ -16,6 +16,7 @@
 
 package android.media.cts;
 
+import android.cts.util.MediaUtils;
 import android.graphics.ImageFormat;
 import android.media.Image;
 import android.media.MediaCodec;
@@ -284,6 +285,10 @@ public class EncodeDecodeTest extends AndroidTestCase {
 
         @Override
         public void run() {
+            if (mTest.shouldSkip()) {
+                return;
+            }
+
             InputSurface inputSurface = null;
             try {
                 if (!mUsePersistentInput) {
@@ -339,6 +344,22 @@ public class EncodeDecodeTest extends AndroidTestCase {
         mAllowBT709 = allowBT709;
     }
 
+    private boolean shouldSkip() {
+        if (!MediaUtils.hasEncoder(mMimeType)) {
+            return true;
+        }
+
+        MediaFormat format = MediaFormat.createVideoFormat(mMimeType, mWidth, mHeight);
+        format.setInteger(MediaFormat.KEY_BIT_RATE, mBitRate);
+        format.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE);
+        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, IFRAME_INTERVAL);
+        if (!MediaUtils.checkEncoderForFormat(format)) {
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Tests encoding and subsequently decoding video from frames generated into a buffer.
      * <p>
@@ -348,6 +369,10 @@ public class EncodeDecodeTest extends AndroidTestCase {
      * See http://b.android.com/37769 for a discussion of input format pitfalls.
      */
     private void encodeDecodeVideoFromBuffer(boolean toSurface) throws Exception {
+        if (shouldSkip()) {
+            return;
+        }
+
         MediaCodec encoder = null;
         MediaCodec decoder = null;
 

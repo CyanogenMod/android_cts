@@ -66,6 +66,7 @@ class TestPackageDef implements ITestPackageDef {
     private String mRunTimeArgs = null;
     private String mTestPackageName = null;
     private String mDigest = null;
+    private long mRuntimeHint = 0;
     private IAbi mAbi = null;
     private List<ITargetPreparer> mPreparers = null;
 
@@ -131,6 +132,18 @@ class TestPackageDef implements ITestPackageDef {
 
     void setName(String name) {
         mName = name;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getRuntimeHint() {
+        return mRuntimeHint;
+    }
+
+    void setRuntimeHint(long runtimeHint) {
+        mRuntimeHint = runtimeHint;
     }
 
     /**

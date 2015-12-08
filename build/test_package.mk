@@ -39,6 +39,11 @@ PRIVATE_CTS_TEST_PACKAGE_NAME_ := com.android.cts.$(notdir $(LOCAL_PATH))
 else
 PRIVATE_CTS_TEST_PACKAGE_NAME_ := android.$(notdir $(LOCAL_PATH))
 endif
+ifeq ($(cts_runtime_hint),)
+$(cts_package_xml): PRIVATE_CTS_RUNTIME_HINT := "0"
+else
+$(cts_package_xml): PRIVATE_CTS_RUNTIME_HINT := $(cts_runtime_hint)
+endif
 $(cts_package_xml): PRIVATE_TEST_PACKAGE := $(PRIVATE_CTS_TEST_PACKAGE_NAME_)
 $(cts_package_xml): PRIVATE_MANIFEST := $(LOCAL_PATH)/AndroidManifest.xml
 $(cts_package_xml): PRIVATE_TEST_TYPE := $(if $(LOCAL_CTS_TEST_RUNNER),$(LOCAL_CTS_TEST_RUNNER),'')
@@ -56,9 +61,13 @@ $(cts_package_xml): $(CTS_EXPECTATIONS) $(CTS_UNSUPPORTED_ABIS) $(CTS_JAVA_TEST_
 						-i "$(PRIVATE_INSTRUMENTATION)" \
 						-n $(PRIVATE_PACKAGE) \
 						-p $(PRIVATE_TEST_PACKAGE) \
+						-x "runtimeHint->$(PRIVATE_CTS_RUNTIME_HINT)" \
 						-e $(CTS_EXPECTATIONS) \
 						-b $(CTS_UNSUPPORTED_ABIS) \
 						-a $(CTS_TARGET_ARCH) \
 						-o $@
 # Have the module name depend on the cts files; so the cts files get generated when you run mm/mmm/mma/mmma.
 $(my_register_name) : $(cts_package_xml) $(cts_module_test_config)
+
+# Make sure we clear cts_runtime_hint, so other parents will use the default if they do not set cts_runtime_hint.
+cts_runtime_hint :=

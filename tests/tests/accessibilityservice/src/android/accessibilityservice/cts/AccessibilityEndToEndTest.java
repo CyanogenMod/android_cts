@@ -332,6 +332,9 @@ public class AccessibilityEndToEndTest extends
                 .setTicker(message)
                 .setContentTitle("")
                 .setContentText("")
+                // Mark the notification as "interruptive" by specifying a vibration pattern. This
+                // ensures it's announced properly on watch-type devices.
+                .setVibrate(new long[] {})
                 .build();
 
         // create and populate the expected event

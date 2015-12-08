@@ -794,7 +794,7 @@ public class ImageReaderTest extends Camera2AndroidTestCase {
                                     getValueNotNull(result, CaptureResult.SENSOR_EXPOSURE_TIME),
                                     TEST_EXPOSURE_TIME_NS),
                             exposureTimeDiff < EXPOSURE_TIME_ERROR_MARGIN_NS &&
-                            exposureTimeDiff > 0);
+                            exposureTimeDiff >= 0);
 
                     mCollector.expectTrue(
                             String.format("Long processing frame %d format %d size %s " +

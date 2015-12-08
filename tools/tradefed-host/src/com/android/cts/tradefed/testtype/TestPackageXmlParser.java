@@ -86,6 +86,10 @@ public class TestPackageXmlParser extends AbstractXmlParser {
                 final String targetNameSpace = attributes.getValue("targetNameSpace");
                 final String runTimeArgs = attributes.getValue("runtimeArgs");
                 final String testType = getTestType(attributes);
+                long runTimeHint = 0;
+                if (attributes.getValue("runtimeHint") != null) {
+                    runTimeHint = Long.parseLong(attributes.getValue("runtimeHint"));
+                }
 
                 for (String abiName : AbiUtils.getAbisSupportedByCts()) {
                     Abi abi = new Abi(abiName, AbiUtils.getBitness(abiName));
@@ -102,6 +106,7 @@ public class TestPackageXmlParser extends AbstractXmlParser {
                     }
                     packageDef.setTargetBinaryName(targetBinaryName);
                     packageDef.setTargetNameSpace(targetNameSpace);
+                    packageDef.setRuntimeHint(runTimeHint);
                     packageDef.setAbi(abi);
                     mPackageDefs.put(abiName, packageDef);
                 }

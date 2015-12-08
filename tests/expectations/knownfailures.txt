@@ -310,7 +310,8 @@
   description: "ConnectivityConstraintTest job scheduler not working.",
   names: [
      "android.jobscheduler.cts.ConnectivityConstraintTest#testConnectivityConstraintExecutes_withWifi",
-     "android.jobscheduler.cts.ConnectivityConstraintTest#testUnmeteredConstraintExecutes_withWifi"
+     "android.jobscheduler.cts.ConnectivityConstraintTest#testUnmeteredConstraintExecutes_withWifi",
+     "android.jobscheduler.cts.ConnectivityConstraintTest#testConnectivityConstraintExecutes_withMobile"
   ],
   bug: 21262226
 },

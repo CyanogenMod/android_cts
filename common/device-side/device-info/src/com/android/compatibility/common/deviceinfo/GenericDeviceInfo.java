@@ -68,6 +68,8 @@ public class GenericDeviceInfo extends DeviceInfoActivity {
     public static final String BUILD_SERIAL = "build_serial";
     public static final String BUILD_VERSION_RELEASE = "build_version_release";
     public static final String BUILD_VERSION_SDK = "build_version_sdk";
+    public static final String BUILD_VERSION_BASE_OS = "build_version_base_os";
+    public static final String BUILD_VERSION_SECURITY_PATH = "build_version_security_patch";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,5 +95,7 @@ public class GenericDeviceInfo extends DeviceInfoActivity {
         addResult(BUILD_SERIAL, Build.SERIAL);
         addResult(BUILD_VERSION_RELEASE, Build.VERSION.RELEASE);
         addResult(BUILD_VERSION_SDK, Build.VERSION.SDK);
+        addResult(BUILD_VERSION_BASE_OS, Build.VERSION.BASE_OS);
+        addResult(BUILD_VERSION_SECURITY_PATH, Build.VERSION.SECURITY_PATCH);
     }
 }
