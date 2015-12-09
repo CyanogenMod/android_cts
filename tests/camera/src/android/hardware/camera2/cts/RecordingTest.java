@@ -599,6 +599,7 @@ public class RecordingTest extends Camera2SurfaceViewTestCase {
         List<Range<Integer> > fpsRanges = Arrays.asList(
                 mStaticInfo.getAeAvailableTargetFpsRangesChecked());
         int cameraId = Integer.valueOf(mCamera.getId());
+        int maxVideoFrameRate = -1;
         for (int profileId : camcorderProfileList) {
             if (!CamcorderProfile.hasProfile(cameraId, profileId) ||
                     allowedUnsupported(cameraId, profileId)) {
@@ -608,6 +609,9 @@ public class RecordingTest extends Camera2SurfaceViewTestCase {
             CamcorderProfile profile = CamcorderProfile.get(cameraId, profileId);
             Size videoSz = new Size(profile.videoFrameWidth, profile.videoFrameHeight);
             Range<Integer> fpsRange = new Range(profile.videoFrameRate, profile.videoFrameRate);
+            if (maxVideoFrameRate < profile.videoFrameRate) {
+                maxVideoFrameRate = profile.videoFrameRate;
+            }
             if (mStaticInfo.isHardwareLevelLegacy() &&
                     (videoSz.getWidth() > maxPreviewSize.getWidth() ||
                      videoSz.getHeight() > maxPreviewSize.getHeight())) {
@@ -657,6 +661,11 @@ public class RecordingTest extends Camera2SurfaceViewTestCase {
 
             // Validation.
             validateRecording(videoSz, durationMs);
+        }
+        if (maxVideoFrameRate != -1) {
+            // At least one CamcorderProfile is present, check FPS
+            assertTrue("At least one CamcorderProfile must support >= 24 FPS",
+                    maxVideoFrameRate >= 24);
         }
     }
 
