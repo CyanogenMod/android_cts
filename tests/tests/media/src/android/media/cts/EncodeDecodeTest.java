@@ -390,6 +390,12 @@ public class EncodeDecodeTest extends AndroidTestCase {
                 return;
             }
             if (VERBOSE) Log.d(TAG, "found codec: " + codec);
+            
+            String codec_decoder = mcl.findDecoderForFormat(format);
+            if (codec_decoder == null) {
+                Log.e(TAG, "Unable to find an appropriate codec for " + format);
+                return;
+            }
 
             // Create a MediaCodec for the desired codec, then configure it as an encoder with
             // our desired properties.
@@ -411,7 +417,7 @@ public class EncodeDecodeTest extends AndroidTestCase {
 
             // Create a MediaCodec for the decoder, just based on the MIME type.  The various
             // format details will be passed through the csd-0 meta-data later on.
-            decoder = MediaCodec.createDecoderByType(mMimeType);
+            decoder = MediaCodec.createByCodecName(codec_decoder);
             if (VERBOSE) Log.d(TAG, "got decoder: " + decoder.getName());
 
             doEncodeDecodeVideoFromBuffer(encoder, colorFormat, decoder, toSurface);
@@ -472,7 +478,12 @@ public class EncodeDecodeTest extends AndroidTestCase {
 
             // Create a MediaCodec for the decoder, just based on the MIME type.  The various
             // format details will be passed through the csd-0 meta-data later on.
-            decoder = MediaCodec.createDecoderByType(mMimeType);
+            String codec_decoder = mcl.findDecoderForFormat(format);
+            if (codec_decoder == null) {
+                Log.e(TAG, "Unable to find an appropriate codec for " + format);
+                return;
+            }
+            decoder = MediaCodec.createByCodecName(codec_decoder);
             if (VERBOSE) Log.d(TAG, "got decoder: " + decoder.getName());
             decoder.configure(format, outputSurface.getSurface(), null, 0);
             decoder.start();
