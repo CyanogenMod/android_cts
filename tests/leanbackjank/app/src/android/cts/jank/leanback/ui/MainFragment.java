@@ -42,11 +42,47 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+class ScrollPatternGenerator {
+    private int currentRow;
+    private int topRow;
+    private int bottomRow;
+    private enum ScrollDirection {DOWN, UP};
+    private ScrollDirection direction;
+
+    public ScrollPatternGenerator(int topRow, int bottomRow) {
+        this.topRow = topRow;
+        this.bottomRow = bottomRow;
+        assert(topRow < bottomRow);
+        direction = ScrollDirection.DOWN;
+        currentRow = topRow;
+    }
+
+    public int next() {
+        if (currentRow == bottomRow) {
+            direction = ScrollDirection.UP;
+        } else if (currentRow == topRow) {
+            direction = ScrollDirection.DOWN;
+        }
+        if (direction == ScrollDirection.DOWN) {
+            currentRow++;
+        } else {
+            currentRow--;
+        }
+        return currentRow;
+    }
+}
+
 /**
  * Main class to show BrowseFragment with header and rows of videos
  */
 public class MainFragment extends BrowseFragment {
     private static final int NUM_ROWS = 20;
+
+    // Minimum number of rows that should show above / below the cursor by auto scroll.
+    // This is intended to avoid that the work load fluctuates largely when # of cards in the
+    // display lowers when the cursor is positioned near the top or bottom of the list.
+    private static final int MARGIN_ROWS = 4;
+
     private final Handler mHandler = new Handler();
     private Timer mAutoScrollTimer;
     private int mAutoScrollCount;
@@ -54,6 +90,7 @@ public class MainFragment extends BrowseFragment {
     private ArrayObjectAdapter mRowsAdapter;
     private DisplayMetrics mMetrics;
     private BackgroundManager mBackgroundManager;
+    private ScrollPatternGenerator scrollPatternGenerator;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -71,6 +108,8 @@ public class MainFragment extends BrowseFragment {
             if (scrollInterval != 0 && scrollCount != 0) {
                 startAutoScrollTimer(initialDelay, scrollInterval, scrollCount);
             }
+            scrollPatternGenerator =
+                    new ScrollPatternGenerator(MARGIN_ROWS, NUM_ROWS - 1 - MARGIN_ROWS);
         }
     }
 
@@ -167,11 +206,7 @@ public class MainFragment extends BrowseFragment {
                       mAutoScrollTimer.cancel();
                       return;
                     }
-                    if (mAutoScrollCount % 2 == 0) {
-                      setSelectedPosition(NUM_ROWS - 1);
-                    } else {
-                      setSelectedPosition(0);
-                    }
+                    setSelectedPosition(scrollPatternGenerator.next());
                     mAutoScrollCount--;
                 }
             });
