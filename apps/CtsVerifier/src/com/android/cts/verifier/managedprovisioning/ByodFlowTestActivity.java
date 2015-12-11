@@ -526,11 +526,15 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
 
     private void checkIntentFilters() {
         try {
+            // Enable component HandleIntentActivity before intent filters are checked.
+            setHandleIntentActivityEnabledSetting(PackageManager.COMPONENT_ENABLED_STATE_ENABLED);
             // We disable the ByodHelperActivity in the primary profile. So, this intent
             // will be handled by the ByodHelperActivity in the managed profile.
             Intent intent = new Intent(ByodHelperActivity.ACTION_CHECK_INTENT_FILTERS);
             startActivityForResult(intent, REQUEST_INTENT_FILTERS_STATUS);
         } catch (ActivityNotFoundException e) {
+            // Disable component HandleIntentActivity if intent filters check fails.
+            setHandleIntentActivityEnabledSetting(PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
             Log.d(TAG, "checkIntentFilters: ActivityNotFoundException", e);
             setTestResult(mIntentFiltersTest, TestResult.TEST_RESULT_FAILED);
             showToast(R.string.provisioning_byod_no_activity);
@@ -538,6 +542,8 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
     }
 
     private void handleIntentFiltersStatus(int resultCode) {
+        // Disable component HandleIntentActivity after intent filters are checked.
+        setHandleIntentActivityEnabledSetting(PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
         // we use the resultCode from ByodHelperActivity in the managed profile to know if certain
         // intents fired from the managed profile are forwarded.
         final boolean intentFiltersSetForManagedIntents = (resultCode == RESULT_OK);
@@ -571,6 +577,12 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
             getPackageManager().setComponentEnabledSetting(new ComponentName(this, component),
                     enabledState, PackageManager.DONT_KILL_APP);
         }
+    }
+
+    private void setHandleIntentActivityEnabledSetting(final int enableState) {
+        getPackageManager().setComponentEnabledSetting(
+            new ComponentName(ByodFlowTestActivity.this, HandleIntentActivity.class.getName()),
+            enableState, PackageManager.DONT_KILL_APP);
     }
 
 }
