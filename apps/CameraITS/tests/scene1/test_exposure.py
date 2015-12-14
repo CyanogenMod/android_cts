@@ -54,7 +54,7 @@ def main():
         m = 1
         while s*m < sens_range[1] and e/m > expt_range[0]:
             mults.append(m)
-            req = its.objects.manual_capture_request(s*m, e/m, True)
+            req = its.objects.manual_capture_request(s*m, e/m, True, props)
             cap = cam.do_capture(req)
             img = its.image.convert_capture_to_rgb_image(cap)
             its.image.write_image(img, "%s_mult=%02d.jpg" % (NAME, m))
