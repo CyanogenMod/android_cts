@@ -81,6 +81,7 @@ public class Camera2SurfaceViewTestCase extends
     protected static final float FRAME_DURATION_ERROR_MARGIN = 0.005f; // 0.5 percent error margin.
     protected static final int NUM_RESULTS_WAIT_TIMEOUT = 100;
     protected static final int NUM_FRAMES_WAITED_FOR_UNKNOWN_LATENCY = 8;
+    protected static final int MIN_FRAME_DURATION_ERROR_MARGIN = 100; // ns
 
     protected Context mContext;
     protected CameraManager mCameraManager;
@@ -694,7 +695,7 @@ public class Camera2SurfaceViewTestCase extends
                 }
                 continue;
             }
-            if (minDuration <= frameDurationRange[0]) {
+            if (minDuration <= (frameDurationRange[0] + MIN_FRAME_DURATION_ERROR_MARGIN)) {
                 return size;
             }
         }
