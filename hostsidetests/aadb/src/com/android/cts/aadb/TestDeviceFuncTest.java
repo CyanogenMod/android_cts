@@ -86,7 +86,8 @@ public class TestDeviceFuncTest extends DeviceTestCase {
      * Verify that a simple {@link TestDevice#executeShellCommand(String)} command is successful.
      */
     private void assertSimpleShellCommand() throws DeviceNotAvailableException {
-        final String output = mTestDevice.executeShellCommand("ls");
+    	// Check for expected contents of device's root directory
+        final String output = mTestDevice.executeShellCommand("ls /");
         assertTrue(output.contains("data"));
         assertTrue(output.contains("system"));
     }
