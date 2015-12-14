@@ -30,6 +30,7 @@ import android.content.res.TypedArray;
 import android.cts.util.PollingCheck;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
@@ -377,7 +378,7 @@ public class DialogTest extends ActivityInstrumentationTestCase2<DialogStubActiv
 
         long now = SystemClock.uptimeMillis();
         MotionEvent touchMotionEvent = MotionEvent.obtain(now, now, MotionEvent.ACTION_DOWN,
-                1, 100, 0);
+                1, getStatusBarHeight(), 0);
         mInstrumentation.sendPointerSync(touchMotionEvent);
 
         new PollingCheck(TEST_TIMEOUT) {
@@ -400,7 +401,7 @@ public class DialogTest extends ActivityInstrumentationTestCase2<DialogStubActiv
             d.setCanceledOnTouchOutside(true);
 
             touchMotionEvent = MotionEvent.obtain(now, now + 1, MotionEvent.ACTION_DOWN,
-                    1, 100, 0);
+                    1, getStatusBarHeight(), 0);
             mInstrumentation.sendPointerSync(touchMotionEvent);
 
             new PollingCheck(TEST_TIMEOUT) {
@@ -415,6 +416,13 @@ public class DialogTest extends ActivityInstrumentationTestCase2<DialogStubActiv
             assertMotionEventEquals(touchMotionEvent, d.onTouchEvent);
             assertFalse(d.isShowing());
         }
+    }
+
+    private int getStatusBarHeight() {
+        final Rect rect = new Rect();
+        Window window = mActivity.getWindow();
+        window.getDecorView().getWindowVisibleDisplayFrame(rect);
+        return rect.top;
     }
 
     public void testTrackballEvent() {
