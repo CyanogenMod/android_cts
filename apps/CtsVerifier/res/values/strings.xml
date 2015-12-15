@@ -375,6 +375,21 @@
         (for example, outside, or near a window)
         and then press OK to run the automated tests.</string>
 
+    <!-- Strings for net.ConnectivityScreenOffTestActivity -->
+    <string name="network_screen_off_test">Network Connectivity Screen Off Test</string>
+    <string name="network_screen_off_test_instructions">
+        This test verifies that IPv6 network connectivity continues to work
+        when the screen is off.\n\n
+
+        1. Join a Wi-Fi network with IPv6 Internet access.\n
+        2. If the device has battery power, disconnect all power connectors.\n
+        3. Turn the screen off.\n
+        4. Wait until the screen turns on (it will take at least two minutes).\n
+        5. If necessary, unlock the device.\n
+        6. Please mark the test according to the result status indicated.\n
+    </string>
+    <string name="network_screen_off_test_start">Start</string>
+
     <!-- Strings for NfcTestActivity -->
     <string name="nfc_test">NFC Test</string>
     <string name="nfc_test_info">The Peer-to-Peer Data Exchange tests require two devices with

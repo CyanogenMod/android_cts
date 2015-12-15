@@ -436,6 +436,17 @@
             <meta-data android:name="test_required_features" android:value="android.hardware.location.gps" />
         </activity>
 
+        <activity android:name=".net.ConnectivityScreenOffTestActivity"
+                android:label="@string/network_screen_off_test"
+                android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.cts.intent.category.MANUAL_TEST" />
+            </intent-filter>
+            <meta-data android:name="test_category" android:value="@string/test_category_networking" />
+            <meta-data android:name="test_required_features" android:value="android.hardware.wifi" />
+        </activity>
+
         <activity android:name=".nfc.NfcTestActivity"
                 android:label="@string/nfc_test"
                 android:configChanges="keyboardHidden|orientation|screenSize">
