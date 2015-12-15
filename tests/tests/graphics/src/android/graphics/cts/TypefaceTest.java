@@ -190,6 +190,6 @@ public class TypefaceTest extends AndroidTestCase {
         float widthDefaultTypeface = p.measureText(testString);
         p.setTypeface(typeface);
         float widthCustomTypeface = p.measureText(testString);
-        assertEquals(widthDefaultTypeface, widthCustomTypeface, 0.01f);
+        assertEquals(widthDefaultTypeface, widthCustomTypeface, 1.0f);
     }
 }
