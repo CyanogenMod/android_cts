@@ -25,6 +25,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.SystemProperties;
 import android.os.UserManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -69,7 +70,7 @@ public class GenericDeviceInfo extends DeviceInfoActivity {
     public static final String BUILD_VERSION_RELEASE = "build_version_release";
     public static final String BUILD_VERSION_SDK = "build_version_sdk";
     public static final String BUILD_VERSION_BASE_OS = "build_version_base_os";
-    public static final String BUILD_VERSION_SECURITY_PATH = "build_version_security_patch";
+    public static final String BUILD_VERSION_SECURITY_PATCH = "build_version_security_patch";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,13 +90,27 @@ public class GenericDeviceInfo extends DeviceInfoActivity {
         addResult(BUILD_FINGERPRINT, Build.FINGERPRINT);
         addResult(BUILD_ABI, Build.CPU_ABI);
         addResult(BUILD_ABI2, Build.CPU_ABI2);
-        addResult(BUILD_ABIS, TextUtils.join(",", Build.SUPPORTED_ABIS));
-        addResult(BUILD_ABIS_32, TextUtils.join(",", Build.SUPPORTED_32_BIT_ABIS));
-        addResult(BUILD_ABIS_64, TextUtils.join(",", Build.SUPPORTED_64_BIT_ABIS));
         addResult(BUILD_SERIAL, Build.SERIAL);
         addResult(BUILD_VERSION_RELEASE, Build.VERSION.RELEASE);
         addResult(BUILD_VERSION_SDK, Build.VERSION.SDK);
-        addResult(BUILD_VERSION_BASE_OS, Build.VERSION.BASE_OS);
-        addResult(BUILD_VERSION_SECURITY_PATH, Build.VERSION.SECURITY_PATCH);
+
+         // Collect build fields available in API level 21
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            addResult(BUILD_ABIS, TextUtils.join(",", Build.SUPPORTED_ABIS));
+            addResult(BUILD_ABIS_32, TextUtils.join(",", Build.SUPPORTED_32_BIT_ABIS));
+            addResult(BUILD_ABIS_64, TextUtils.join(",", Build.SUPPORTED_64_BIT_ABIS));
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            addResult(BUILD_VERSION_BASE_OS, Build.VERSION.BASE_OS);
+            addResult(BUILD_VERSION_SECURITY_PATCH, Build.VERSION.SECURITY_PATCH);
+        } else {
+            // Access system properties directly because Build.Version.BASE_OS and
+            // Build.Version.SECURITY_PATCH are not defined pre-M.
+            addResult(BUILD_VERSION_BASE_OS,
+                    SystemProperties.get("ro.build.version.base_os", ""));
+            addResult(BUILD_VERSION_SECURITY_PATCH,
+                    SystemProperties.get("ro.build.version.security_patch", ""));
+        }
     }
 }
