@@ -367,5 +367,12 @@
     "android.view.cts.MotionEventTest#testReadFromParcelWithInvalidSampleSize"
   ],
   bug: 25652250
+},
+{
+  description: "Wired headset tests are no longer a requirement per CDD",
+  names: [
+    "android.telecom.cts.WiredHeadsetTest"
+  ],
+  bug: 26149528
 }
 ]
