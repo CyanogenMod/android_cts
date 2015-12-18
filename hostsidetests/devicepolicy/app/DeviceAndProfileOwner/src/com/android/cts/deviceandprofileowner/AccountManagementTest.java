@@ -24,6 +24,7 @@ import android.accounts.OperationCanceledException;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.UserManager;
 
 import java.io.IOException;
 
@@ -51,13 +52,19 @@ public class AccountManagementTest extends BaseDeviceAdminTest {
         super.setUp();
         mAccountManager = (AccountManager) mContext.getSystemService(Context.ACCOUNT_SERVICE);
         clearAllAccountManagementDisabled();
+        mDevicePolicyManager.clearUserRestriction(ADMIN_RECEIVER_COMPONENT,
+                UserManager.DISALLOW_MODIFY_ACCOUNTS);
         AccountUtilsTest.removeAllAccountsForType(mAccountManager, ACCOUNT_TYPE_1);
+        AccountUtilsTest.removeAllAccountsForType(mAccountManager, ACCOUNT_TYPE_2);
     }
 
     @Override
     protected void tearDown() throws Exception {
         clearAllAccountManagementDisabled();
+        mDevicePolicyManager.clearUserRestriction(ADMIN_RECEIVER_COMPONENT,
+                UserManager.DISALLOW_MODIFY_ACCOUNTS);
         AccountUtilsTest.removeAllAccountsForType(mAccountManager, ACCOUNT_TYPE_1);
+        AccountUtilsTest.removeAllAccountsForType(mAccountManager, ACCOUNT_TYPE_2);
         super.tearDown();
     }
 
@@ -152,6 +159,66 @@ public class AccountManagementTest extends BaseDeviceAdminTest {
                 true);
         assertEquals(1, mDevicePolicyManager.getAccountTypesWithManagementDisabled().length);
         assertTrue(mAccountManager.removeAccount(ACCOUNT_1, null, null).getResult());
+
+        // Make sure the removal actually succeeds.
+        assertEquals(0, mAccountManager.getAccountsByType(ACCOUNT_TYPE_1).length);
+    }
+
+    public void testUserRestriction_addAccount() throws AuthenticatorException, IOException,
+            OperationCanceledException {
+        // Test for restriction on addAccount()
+        mDevicePolicyManager.addUserRestriction(ADMIN_RECEIVER_COMPONENT,
+                UserManager.DISALLOW_MODIFY_ACCOUNTS);
+
+        assertEquals(0, mAccountManager.getAccountsByType(ACCOUNT_TYPE_1).length);
+        // Management is disabled, adding account should fail.
+        try {
+            mAccountManager.addAccount(ACCOUNT_TYPE_1, null, null, null, null, null, null)
+                    .getResult();
+            fail("Expected OperationCanceledException is not thrown.");
+        } catch (OperationCanceledException e) {
+            // Expected
+        }
+        assertEquals(0, mAccountManager.getAccountsByType(ACCOUNT_TYPE_1).length);
+
+        // Management is re-enabled, adding account should succeed.
+        mDevicePolicyManager.clearUserRestriction(ADMIN_RECEIVER_COMPONENT,
+                UserManager.DISALLOW_MODIFY_ACCOUNTS);
+        assertEquals(0, mDevicePolicyManager.getAccountTypesWithManagementDisabled().length);
+        Bundle result = mAccountManager.addAccount(ACCOUNT_TYPE_1,
+                null, null, null, null, null, null).getResult();
+
+        // Normally the expected result of addAccount() is AccountManager returning
+        // an intent to start the authenticator activity for adding new accounts.
+        // But MockAccountAuthenticator returns a new account straightway.
+        assertEquals(ACCOUNT_TYPE_1, result.getString(AccountManager.KEY_ACCOUNT_TYPE));
+    }
+
+    public void testUserRestriction_removeAccount() throws AuthenticatorException,
+            IOException, OperationCanceledException {
+        // Test for restriction on removeAccount()
+        mDevicePolicyManager.addUserRestriction(ADMIN_RECEIVER_COMPONENT,
+                UserManager.DISALLOW_MODIFY_ACCOUNTS);
+
+        assertEquals(0, mAccountManager.getAccountsByType(ACCOUNT_TYPE_1).length);
+        // First prepare some accounts by manually adding them,
+        // setAccountManagementDisabled(true) should not stop addAccountExplicitly().
+        assertTrue(mAccountManager.addAccountExplicitly(ACCOUNT_0, "password", null));
+        assertEquals(1, mAccountManager.getAccountsByType(ACCOUNT_TYPE_1).length);
+
+        // Removing account should fail, as we just disabled it.
+        try {
+            mAccountManager.removeAccount(ACCOUNT_0, null, null).getResult();
+            fail("Expected OperationCanceledException is not thrown.");
+        } catch (OperationCanceledException e) {
+            // Expected
+        }
+        assertEquals(1, mAccountManager.getAccountsByType(ACCOUNT_TYPE_1).length);
+
+        // Re-enable management, so we can successfully remove account this time.
+        mDevicePolicyManager.clearUserRestriction(ADMIN_RECEIVER_COMPONENT,
+                UserManager.DISALLOW_MODIFY_ACCOUNTS);
+        assertTrue(mAccountManager.removeAccount(ACCOUNT_0, null, null).getResult());
 
         // Make sure the removal actually succeeds.
         assertEquals(0, mAccountManager.getAccountsByType(ACCOUNT_TYPE_1).length);
