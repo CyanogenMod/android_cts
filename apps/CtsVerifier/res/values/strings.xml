@@ -2076,7 +2076,7 @@ You should be prompted to select credentials; choose the ones you just installed
     Pause the playback and then resume it.
     </string>
     <string name="tv_time_shift_test_verify_resume_after_pause">
-    The playback should be resumed after pause.
+    The playback should resume after pause.
     </string>
     <string name="tv_time_shift_test_verify_position_tracking">
     The playback position tracking should be activated.
@@ -2086,10 +2086,10 @@ You should be prompted to select credentials; choose the ones you just installed
     Rewind the playback and in a few seconds fast-forward it.
     </string>
     <string name="tv_time_shift_test_verify_rewind">
-    The playback should be rewinded.
+    The playback should rewind.
     </string>
     <string name="tv_time_shift_test_verify_fast_forward">
-    The playback should be fast-forwarded.
+    The playback should fast-forward.
     </string>
     <string name="tv_time_shift_test_seek">
     Press the \"Launch TV app\" button. Verify that the playback control is available.
@@ -2104,8 +2104,8 @@ You should be prompted to select credentials; choose the ones you just installed
 
     <string name="tv_app_link_test">TV app app-link test</string>
     <string name="tv_app_link_test_info">
-    Verify that the bundled TV app supports linking to channel apps. If TV input service provides
-    links for its specific channels, TV app should show the links in a proper format.
+    Verify that the bundled TV app supports linking to channel apps. If a TV input service provides
+    links for its specific channels, the TV app should show the links in a proper format.
     </string>
     <string name="tv_app_link_test_select_app_link">
     Select the \"Launch TV app\" button, then check if you can see a menu with \"Cts App-Link Text\"
@@ -2116,7 +2116,7 @@ You should be prompted to select credentials; choose the ones you just installed
     </string>
     <string name="tv_input_link_test_verify_link_interface">
     Do you see the app-link card similar to the image on the left?\n
-    1) You should see the poster art image, but the color could be differ.\n
+    1) You should see the poster art image, but the color may be different.\n
     2) You should see the text \"Cts App-Link Text\".\n
     </string>
 
