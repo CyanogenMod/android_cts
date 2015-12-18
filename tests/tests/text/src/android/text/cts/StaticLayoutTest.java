@@ -59,6 +59,10 @@ public class StaticLayoutTest extends AndroidTestCase {
     private StaticLayout mDefaultLayout;
     private TextPaint mDefaultPaint;
 
+    private class TestingTextPaint extends TextPaint {
+        // need to have a subclass to insure measurement happens in Java and not C++
+    }
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -974,5 +978,19 @@ public class StaticLayoutTest extends AndroidTestCase {
             assertEquals(testLabel, 5, layout.getOffsetToRightOf(6));
             assertEquals(testLabel, 6, layout.getOffsetToRightOf(7));
         }
+    }
+
+    public void testVeryLargeString() {
+        final int MAX_COUNT = 1 << 21;
+        final int WORD_SIZE = 32;
+        char[] longText = new char[MAX_COUNT];
+        for (int n = 0; n < MAX_COUNT; n++) {
+            longText[n] = (n % WORD_SIZE) == 0 ? ' ' : 'm';
+        }
+        String longTextString = new String(longText);
+        TextPaint paint = new TestingTextPaint();
+        StaticLayout layout = new StaticLayout(longTextString, paint, DEFAULT_OUTER_WIDTH,
+                DEFAULT_ALIGN, SPACE_MULTI, SPACE_ADD, true);
+        assertNotNull(layout);
     }
 }
