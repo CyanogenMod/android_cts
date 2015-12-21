@@ -125,6 +125,7 @@ public class ProgressDialogTest extends ActivityInstrumentationTestCase2<MockAct
 
                 dialog.setOnCancelListener(cL);
                 dialog.onBackPressed();
+                dialog.dismiss();
             }
         });
         mInstrumentation.waitForIdleSync();
@@ -160,6 +161,7 @@ public class ProgressDialogTest extends ActivityInstrumentationTestCase2<MockAct
                 dialog = ProgressDialog.show(mContext, TITLE, MESSAGE, true, false, cL);
 
                 dialog.onBackPressed();
+                dialog.dismiss();
             }
         });
         mInstrumentation.waitForIdleSync();
