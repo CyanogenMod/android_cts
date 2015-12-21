@@ -111,8 +111,13 @@ public class WifiLockdownTestActivity extends PassFailButtons.TestListActivity {
                 if (checkedRadioId == -1) {
                     checkedRadioId = NONE;
                 }
-                int netId = mConfigCreator.addNetwork(ssidEditor.getText().toString(), false,
-                        convertKeyManagement(checkedRadioId), "defaultpassword");
+                int netId;
+                try {
+                    netId = mConfigCreator.addNetwork(ssidEditor.getText().toString(), false,
+                            convertKeyManagement(checkedRadioId), "defaultpassword");
+                } catch (InterruptedException e) {
+                    netId = -1;
+                }
                 if (netId == -1) {
                     new AlertDialog.Builder(
                             WifiLockdownTestActivity.this)
