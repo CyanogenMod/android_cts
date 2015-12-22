@@ -34,6 +34,7 @@ $(api_xml_description) : $(api_text_description) $(APICHECK)
 cts-test-coverage-report := $(coverage_out)/test-coverage.html
 cts-verifier-coverage-report := $(coverage_out)/verifier-coverage.html
 cts-combined-coverage-report := $(coverage_out)/combined-coverage.html
+cts-combined-xml-coverage-report := $(coverage_out)/combined-coverage.xml
 
 cts_api_coverage_dependencies := $(cts_api_coverage_exe) $(dexdeps_exe) $(api_xml_description) $(ACP)
 
@@ -49,6 +50,10 @@ $(cts-combined-coverage-report) : CtsVerifier $(cts_api_coverage_dependencies) $
 	$(call generate-coverage-report,"CTS Combined API Coverage Report",\
 			$(CTS_COVERAGE_TEST_CASE_LIST) CtsVerifier,cts-combined-apks,html,combined-coverage.html)
 
+$(cts-combined-xml-coverage-report) : CtsVerifier $(cts_api_coverage_dependencies) $(CTS_COVERAGE_TEST_CASE_LIST) $(cts_api_coverage_dependencies)
+	$(call generate-coverage-report,"CTS Combined API XML Coverage Report",\
+			$(CTS_COVERAGE_TEST_CASE_LIST) CtsVerifier,cts-combined-apks,html,combined-coverage.xml)
+
 .PHONY: cts-test-coverage
 cts-test-coverage : $(cts-test-coverage-report)
 
@@ -58,11 +63,15 @@ cts-verifier-coverage : $(cts-verifier-coverage-report)
 .PHONY: cts-combined-coverage
 cts-combined-coverage : $(cts-combined-coverage-report)
 
+.PHONY: cts-combined-xml-coverage
+cts-combined-xml-coverage : $(cts-combined-xml-coverage-report)
+
 # Put the test coverage report in the dist dir if "cts" is among the build goals.
 ifneq ($(filter cts, $(MAKECMDGOALS)),)
   $(call dist-for-goals, cts, $(cts-test-coverage-report):cts-test-coverage-report.html)
   $(call dist-for-goals, cts, $(cts-verifier-coverage-report):cts-verifier-coverage-report.html)
   $(call dist-for-goals, cts, $(cts-combined-coverage-report):cts-combined-coverage-report.html)
+  $(call dist-for-goals, cts, $(cts-combined-xml-coverage-report):cts-combined-xml-coverage-report.xml)
 endif
 
 # Arguments;
