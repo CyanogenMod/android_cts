@@ -17,6 +17,8 @@
 package android.tests.getinfo;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.MemoryInfo;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
@@ -156,6 +158,12 @@ public class DeviceInfoInstrument extends Instrumentation implements DeviceInfoC
 
         // Encrypted
         addResult(ENCRYPTED, getEncrypted());
+
+        // Memory Info
+        addResult(IS_LOW_RAM_DEVICE, isLowRamDevice());
+        addResult(MEMORY_CLASS, getMemoryClass());
+        addResult(LARGE_MEMORY_CLASS, getLargeMemoryClass());
+        addResult(TOTAL_MEMORY, getTotalMemory());
 
         finish(Activity.RESULT_OK, mResults);
     }
@@ -426,5 +434,32 @@ public class DeviceInfoInstrument extends Instrumentation implements DeviceInfoC
         }
 
         return 0;
+    }
+
+    private String isLowRamDevice() {
+        ActivityManager activityManager = (ActivityManager) getContext()
+                .getSystemService(Context.ACTIVITY_SERVICE);
+        return activityManager.isLowRamDevice() ? "true" : "false";
+    }
+
+    private String getMemoryClass() {
+        ActivityManager activityManager = (ActivityManager) getContext()
+                .getSystemService(Context.ACTIVITY_SERVICE);
+        return String.valueOf(activityManager.getMemoryClass());
+    }
+
+    private String getLargeMemoryClass() {
+        ActivityManager activityManager = (ActivityManager) getContext()
+                .getSystemService(Context.ACTIVITY_SERVICE);
+        return String.valueOf(activityManager.getLargeMemoryClass());
+    }
+
+    private String getTotalMemory() {
+        ActivityManager activityManager = (ActivityManager) getContext()
+                .getSystemService(Context.ACTIVITY_SERVICE);
+        
+        MemoryInfo memoryInfo = new MemoryInfo();
+        activityManager.getMemoryInfo(memoryInfo);
+        return String.valueOf(memoryInfo.totalMem);
     }
 }
