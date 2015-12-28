@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class BasicInCallServiceTest extends InstrumentationTestCase {
 
-    private static final Uri TEST_NUMBER = Uri.fromParts("tel", "7", null);
+    private static final Uri TEST_NUMBER = Uri.fromParts("tel", "555-1234", null);
 
     private Context mContext;
     private String mPreviousDefaultDialer = null;
