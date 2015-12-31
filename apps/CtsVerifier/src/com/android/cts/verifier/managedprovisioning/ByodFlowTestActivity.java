@@ -85,6 +85,7 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
     private DialogTestListItem mEnableLocationModeTest;
     private DialogTestListItem mDisableLocationModeTest;
     private TestListItem mVpnTest;
+    private TestListItem mDisallowAppsControlTest;
 
     public ByodFlowTestActivity() {
         super(R.layout.provisioning_byod,
@@ -311,6 +312,11 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
                 new Intent(VpnTestActivity.ACTION_VPN),
                 null);
 
+        mDisallowAppsControlTest = TestListItem.newTest(this,
+                R.string.provisioning_byod_disallow_apps_control,
+                DisallowAppsControlActivity.class.getName(),
+                new Intent(this, DisallowAppsControlActivity.class), null);
+
         // Test for checking if the required intent filters are set during managed provisioning.
         mIntentFiltersTest = new DialogTestListItem(this,
                 R.string.provisioning_byod_cross_profile_intent_filters,
@@ -357,6 +363,9 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
         adapter.add(mKeyguardDisabledFeaturesTest);
         adapter.add(mAuthenticationBoundKeyTest);
         adapter.add(mVpnTest);
+        if (canResolveIntent(new Intent(Settings.ACTION_APPLICATION_SETTINGS))) {
+            adapter.add(mDisallowAppsControlTest);
+        }
 
         /* If there is an application that handles ACTION_IMAGE_CAPTURE, test that it handles it
          * well.

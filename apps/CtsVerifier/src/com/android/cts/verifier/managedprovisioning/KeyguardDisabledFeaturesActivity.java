@@ -71,11 +71,11 @@ public class KeyguardDisabledFeaturesActivity extends DialogTestListActivity {
                 }
             });
     }
-    
-    protected ComponentName getAdminComponent() { 
+
+    protected ComponentName getAdminComponent() {
         return DeviceAdminTestReceiver.getReceiverComponentName();
     }
-    
+
     protected String getTestIdPrefix() {
         return "BYOD_";
     }
@@ -99,14 +99,14 @@ public class KeyguardDisabledFeaturesActivity extends DialogTestListActivity {
                         .putExtra(ByodHelperActivity.EXTRA_PARAMETER_1, flags);
         startActivity(setKeyguardDisabledFeaturesIntent);
     }
-    
+
     protected void setupDisableTrustAgentsTest(ArrayTestListAdapter adapter) {
         adapter.add(new DialogTestListItem(this, R.string.provisioning_byod_disable_trust_agents,
                 getTestIdPrefix() + "DisableTrustAgentsTest",
                 R.string.provisioning_byod_disable_trust_agents_instruction,
                 new Intent(Settings.ACTION_SECURITY_SETTINGS)));
     }
-    
+
     protected void setupDisableUnredactedWorkNotification(ArrayTestListAdapter adapter) {
         adapter.add(new DialogTestListItemWithIcon(this,
                 R.string.provisioning_byod_disable_unredacted_notifications,
@@ -115,7 +115,7 @@ public class KeyguardDisabledFeaturesActivity extends DialogTestListActivity {
                 new Intent(ByodHelperActivity.ACTION_NOTIFICATION_ON_LOCKSCREEN),
                 R.drawable.ic_corp_icon));
     }
-    
+
     protected void setupFingerprintTests(ArrayTestListAdapter adapter) {
         FingerprintManager fpm = (FingerprintManager) getSystemService(Context.FINGERPRINT_SERVICE);
         if (fpm.isHardwareDetected()) {
@@ -136,7 +136,6 @@ public class KeyguardDisabledFeaturesActivity extends DialogTestListActivity {
         setupDisableTrustAgentsTest(adapter);
         setupDisableUnredactedWorkNotification(adapter);
         setupFingerprintTests(adapter);
-        
     }
 
     @Override
