@@ -34,6 +34,7 @@ $(api_xml_description) : $(api_text_description) $(APICHECK)
 cts-test-coverage-report := $(coverage_out)/test-coverage.html
 cts-verifier-coverage-report := $(coverage_out)/verifier-coverage.html
 cts-combined-coverage-report := $(coverage_out)/combined-coverage.html
+cts-combined-xml-coverage-report := $(coverage_out)/combined-coverage.xml
 
 cts_api_coverage_dependencies := $(cts_api_coverage_exe) $(dexdeps_exe) $(api_xml_description)
 
@@ -64,6 +65,15 @@ $(cts-combined-coverage-report) : $(cts_coverage_test_cases_dependencies) $(cts_
 	$(call generate-coverage-report,"CTS Combined API Coverage Report",\
 			$(PRIVATE_TEST_CASES_APKS),html)
 
+cts_coverage_test_cases_dependencies := $(foreach c, $(CTS_COVERAGE_TEST_CASE_LIST) CtsVerifier, $(call intermediates-dir-for,APPS,$(c))/package.apk)
+$(cts-combined-xml-coverage-report): PRIVATE_TEST_CASES_APKS := $(cts_coverage_test_cases_dependencies)
+$(cts-combined-xml-coverage-report): PRIVATE_CTS_API_COVERAGE_EXE := $(cts_api_coverage_exe)
+$(cts-combined-xml-coverage-report): PRIVATE_DEXDEPS_EXE := $(dexdeps_exe)
+$(cts-combined-xml-coverage-report): PRIVATE_API_XML_DESC := $(api_xml_description)
+$(cts-combined-xml-coverage-report) : $(cts_coverage_test_cases_dependencies) $(cts_api_coverage_dependencies) | $(ACP)
+	$(call generate-coverage-report,"CTS Combined API Coverage Report - XML",\
+			$(PRIVATE_TEST_CASES_APKS),xml)
+
 .PHONY: cts-test-coverage
 cts-test-coverage : $(cts-test-coverage-report)
 
@@ -73,11 +83,15 @@ cts-verifier-coverage : $(cts-verifier-coverage-report)
 .PHONY: cts-combined-coverage
 cts-combined-coverage : $(cts-combined-coverage-report)
 
+.PHONY: cts-combined-xml-coverage
+cts-combined-xml-coverage : $(cts-combined-xml-coverage-report)
+
 # Put the test coverage report in the dist dir if "cts" is among the build goals.
 ifneq ($(filter cts, $(MAKECMDGOALS)),)
   $(call dist-for-goals, cts, $(cts-test-coverage-report):cts-test-coverage-report.html)
   $(call dist-for-goals, cts, $(cts-verifier-coverage-report):cts-verifier-coverage-report.html)
   $(call dist-for-goals, cts, $(cts-combined-coverage-report):cts-combined-coverage-report.html)
+  $(call dist-for-goals, cts, $(cts-combined-xml-coverage-report):cts-combined-coverage-report.xml)
 endif
 
 # Arguments;
@@ -94,6 +108,7 @@ endef
 cts_api_coverage_dependencies :=
 cts_coverage_test_cases_dependencies :=
 cts-combined-coverage-report :=
+cts-combined-xml-coverage-report :=
 cts-verifier-coverage-report :=
 cts-test-coverage-report :=
 api_xml_description :=
