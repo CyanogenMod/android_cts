@@ -38,8 +38,8 @@ cts-combined-xml-coverage-report := $(coverage_out)/combined-coverage.xml
 
 cts_api_coverage_dependencies := $(cts_api_coverage_exe) $(dexdeps_exe) $(api_xml_description)
 
-cts_coverage_test_cases_dependencies := $(foreach c, $(CTS_COVERAGE_TEST_CASE_LIST), $(call intermediates-dir-for,APPS,$(c))/package.apk)
-$(cts-test-coverage-report): PRIVATE_TEST_CASES_APKS := $(cts_coverage_test_cases_dependencies)
+cts_coverage_test_cases_dependencies := $(CTS_TEST_CASES)
+$(cts-test-coverage-report): PRIVATE_TEST_CASES_APKS := $(wildcard $(CTS_TESTCASES_OUT)/*.apk) $(wildcard $(CTS_TESTCASES_OUT)/*.jar)
 $(cts-test-coverage-report): PRIVATE_CTS_API_COVERAGE_EXE := $(cts_api_coverage_exe)
 $(cts-test-coverage-report): PRIVATE_DEXDEPS_EXE := $(dexdeps_exe)
 $(cts-test-coverage-report): PRIVATE_API_XML_DESC := $(api_xml_description)
@@ -56,8 +56,8 @@ $(cts-verifier-coverage-report) : $(cts_coverage_test_cases_dependencies) $(cts_
 	$(call generate-coverage-report,"CTS Verifier API Coverage Report",\
 			$(PRIVATE_TEST_CASES_APKS),html)
 
-cts_coverage_test_cases_dependencies := $(foreach c, $(CTS_COVERAGE_TEST_CASE_LIST) CtsVerifier, $(call intermediates-dir-for,APPS,$(c))/package.apk)
-$(cts-combined-coverage-report): PRIVATE_TEST_CASES_APKS := $(cts_coverage_test_cases_dependencies)
+cts_coverage_test_cases_dependencies := $(CTS_TEST_CASES)
+$(cts-combined-coverage-report): PRIVATE_TEST_CASES_APKS := $(call intermediates-dir-for,APPS,CtsVerifier)/package.apk $(wildcard $(CTS_TESTCASES_OUT)/*.apk) $(wildcard $(CTS_TESTCASES_OUT)/*.jar)
 $(cts-combined-coverage-report): PRIVATE_CTS_API_COVERAGE_EXE := $(cts_api_coverage_exe)
 $(cts-combined-coverage-report): PRIVATE_DEXDEPS_EXE := $(dexdeps_exe)
 $(cts-combined-coverage-report): PRIVATE_API_XML_DESC := $(api_xml_description)
@@ -65,8 +65,8 @@ $(cts-combined-coverage-report) : $(cts_coverage_test_cases_dependencies) $(cts_
 	$(call generate-coverage-report,"CTS Combined API Coverage Report",\
 			$(PRIVATE_TEST_CASES_APKS),html)
 
-cts_coverage_test_cases_dependencies := $(foreach c, $(CTS_COVERAGE_TEST_CASE_LIST) CtsVerifier, $(call intermediates-dir-for,APPS,$(c))/package.apk)
-$(cts-combined-xml-coverage-report): PRIVATE_TEST_CASES_APKS := $(cts_coverage_test_cases_dependencies)
+cts_coverage_test_cases_dependencies := $(CTS_TEST_CASES)
+$(cts-combined-xml-coverage-report): PRIVATE_TEST_CASES_APKS := $(call intermediates-dir-for,APPS,CtsVerifier)/package.apk $(wildcard $(CTS_TESTCASES_OUT)/*.apk) $(wildcard $(CTS_TESTCASES_OUT)/*.jar)
 $(cts-combined-xml-coverage-report): PRIVATE_CTS_API_COVERAGE_EXE := $(cts_api_coverage_exe)
 $(cts-combined-xml-coverage-report): PRIVATE_DEXDEPS_EXE := $(dexdeps_exe)
 $(cts-combined-xml-coverage-report): PRIVATE_API_XML_DESC := $(api_xml_description)
