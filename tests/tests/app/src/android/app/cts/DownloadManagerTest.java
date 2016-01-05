@@ -22,6 +22,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.cts.util.PollingCheck;
 import android.database.Cursor;
 import android.net.Uri;
@@ -30,6 +31,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.test.AndroidTestCase;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.webkit.cts.CtsTestServer;
 
 import java.io.File;
@@ -37,6 +39,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 public class DownloadManagerTest extends AndroidTestCase {
+    private static final String TAG = "DownloadManagerTest";
 
     /**
      * According to the CDD Section 7.6.1, the DownloadManager implementation must be able to
@@ -115,6 +118,11 @@ public class DownloadManagerTest extends AndroidTestCase {
     }
 
     public void testDownloadManagerSupportsHttpWithExternalWebServer() throws Exception {
+        if (!hasInternetConnection()) {
+            Log.i(TAG, "testDownloadManagerSupportsHttpWithExternalWebServer() ignored on device without Internet");
+            return;
+        }
+
         // As a result of testDownloadManagerSupportsHttpsWithExternalWebServer relying on an
         // external resource https://www.example.com this test uses http://www.example.com to help
         // disambiguate errors from testDownloadManagerSupportsHttpsWithExternalWebServer.
@@ -141,6 +149,11 @@ public class DownloadManagerTest extends AndroidTestCase {
     }
 
     public void testDownloadManagerSupportsHttpsWithExternalWebServer() throws Exception {
+        if (!hasInternetConnection()) {
+            Log.i(TAG, "testDownloadManagerSupportsHttpsWithExternalWebServer() ignored on device without Internet");
+            return;
+        }
+
         // For HTTPS, DownloadManager trusts only SSL server certs issued by CAs trusted by the
         // system. Unfortunately, this means that it cannot trust the mock web server's SSL cert.
         // Until this is resolved (e.g., by making it possible to specify additional CA certs to
@@ -458,5 +471,12 @@ public class DownloadManagerTest extends AndroidTestCase {
                 cursor.close();
             }
         }
+    }
+
+    private boolean hasInternetConnection() {
+        // TODO: expand this to include devices with ethernet
+        final PackageManager pm = getContext().getPackageManager();
+        return pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)
+                || pm.hasSystemFeature(PackageManager.FEATURE_WIFI);
     }
 }
