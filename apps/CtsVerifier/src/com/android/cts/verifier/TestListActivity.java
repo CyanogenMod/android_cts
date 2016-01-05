@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.PermissionInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -49,12 +50,22 @@ public class TestListActivity extends AbstractTestListActivity implements View.O
         super.onCreate(savedInstanceState);
 
         try {
-            PackageInfo packageInfo = getPackageManager().getPackageInfo(
-                  getApplicationInfo().packageName, PackageManager.GET_PERMISSIONS);
+            PackageManager pm = getPackageManager();
+            PackageInfo packageInfo = pm.getPackageInfo(
+                    getApplicationInfo().packageName, PackageManager.GET_PERMISSIONS);
 
             if (packageInfo.requestedPermissions != null) {
                 for (String permission : packageInfo.requestedPermissions) {
                     Log.v(TAG, "Checking permissions for: " + permission);
+                    try {
+                        PermissionInfo info = pm.getPermissionInfo(permission, 0);
+                        if ((info.protectionLevel & PermissionInfo.PROTECTION_DANGEROUS) == 0) {
+                            continue;
+                        }
+                    } catch (NameNotFoundException e) {
+                        Log.v(TAG, "Checking permissions for: " + permission + "not found");
+                        continue;
+                    }
                     if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
                         requestPermissions(packageInfo.requestedPermissions,
                                 CTS_VERIFIER_PERMISSION_REQUEST);
