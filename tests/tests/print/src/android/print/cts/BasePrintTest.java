@@ -52,6 +52,7 @@ import android.printservice.PrintService;
 import android.support.test.uiautomator.UiAutomatorTestCase;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObjectNotFoundException;
+import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
 import android.util.DisplayMetrics;
 
@@ -297,6 +298,12 @@ public abstract class BasePrintTest extends UiAutomatorTestCase {
                     "com.android.printspooler:id/destination_spinner"));
             destinationSpinner.click();
             UiObject printerOption = new UiObject(new UiSelector().text(printerName));
+            if (!printerOption.exists()) {
+                // Scroll through the spinner
+                UiScrollable printerSpinner = new UiScrollable(new UiSelector().scrollable(true));
+                printerSpinner.setAsVerticalList();
+                printerOption = printerSpinner.getChildByText(new UiSelector().text(printerName), printerName);
+            }
             printerOption.click();
         } catch (UiObjectNotFoundException e) {
             dumpWindowHierarchy();
