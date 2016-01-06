@@ -192,4 +192,15 @@ public class TypefaceTest extends AndroidTestCase {
         float widthCustomTypeface = p.measureText(testString);
         assertEquals(widthDefaultTypeface, widthCustomTypeface, 1.0f);
     }
+
+    public void testInvalidCmapFont2() {
+        Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), "bombfont2.ttf");
+        assertNotNull(typeface);
+        Paint p = new Paint();
+        final String testString = "abcde";
+        float widthDefaultTypeface = p.measureText(testString);
+        p.setTypeface(typeface);
+        float widthCustomTypeface = p.measureText(testString);
+        assertEquals(widthDefaultTypeface, widthCustomTypeface, 1.0f);
+    }
 }
