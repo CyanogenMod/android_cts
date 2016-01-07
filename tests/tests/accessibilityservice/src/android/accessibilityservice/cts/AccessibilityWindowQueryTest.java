@@ -30,6 +30,7 @@ import android.graphics.Rect;
 import android.os.SystemClock;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.view.Gravity;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -729,6 +730,7 @@ public class AccessibilityWindowQueryTest
                     public void run() {
                         WindowManager.LayoutParams params = new WindowManager.LayoutParams();
                         params.gravity = Gravity.TOP;
+                        params.y = getStatusBarHeight();
                         params.width = WindowManager.LayoutParams.MATCH_PARENT;
                         params.height = WindowManager.LayoutParams.WRAP_CONTENT;
                         params.flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
@@ -781,6 +783,13 @@ public class AccessibilityWindowQueryTest
                 return event.getEventType() == AccessibilityEvent.TYPE_WINDOWS_CHANGED;
             }
         }, TIMEOUT_ASYNC_PROCESSING);
+    }
+
+    private int getStatusBarHeight() {
+        final Rect rect = new Rect();
+        Window window = getActivity().getWindow();
+        window.getDecorView().getWindowVisibleDisplayFrame(rect);
+        return rect.top;
     }
 
     private void setAccessInteractiveWindowsFlag () {
