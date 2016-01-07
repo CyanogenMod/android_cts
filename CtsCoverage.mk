@@ -17,12 +17,6 @@
 # Makefile for producing CTS coverage reports.
 # Run "make cts-test-coverage" in the $ANDROID_BUILD_TOP directory.
 
-include cts/CtsTestCaseList.mk
-
-cts_testcases_out_apk := $(wildcard $(CTS_TESTCASES_OUT)/*.apk)
-cts_testcases_out_jar := $(wildcard $(CTS_TESTCASES_OUT)/*.jar)
-cts_verifier_apk := $(call intermediates-dir-for,APPS,CtsVerifier)/package.apk
-
 cts_api_coverage_exe := $(HOST_OUT_EXECUTABLES)/cts-api-coverage
 dexdeps_exe := $(HOST_OUT_EXECUTABLES)/dexdeps
 
@@ -42,41 +36,40 @@ cts-combined-xml-coverage-report := $(coverage_out)/combined-coverage.xml
 
 cts_api_coverage_dependencies := $(cts_api_coverage_exe) $(dexdeps_exe) $(api_xml_description)
 
-cts_coverage_test_cases_dependencies := $(cts_testcases_out_apk) $(cts_testcases_out_jar)
-$(cts-test-coverage-report): PRIVATE_TEST_CASES_APKS := $(cts_coverage_test_cases_dependencies)
+android_cts_zip := $(HOST_OUT)/cts/android-cts.zip
+cts_verifier_apk := $(call intermediates-dir-for,APPS,CtsVerifier)/package.apk
+
+$(cts-test-coverage-report): PRIVATE_TEST_CASES := $(CTS_TESTCASES_OUT)
 $(cts-test-coverage-report): PRIVATE_CTS_API_COVERAGE_EXE := $(cts_api_coverage_exe)
 $(cts-test-coverage-report): PRIVATE_DEXDEPS_EXE := $(dexdeps_exe)
 $(cts-test-coverage-report): PRIVATE_API_XML_DESC := $(api_xml_description)
-$(cts-test-coverage-report) : $(cts_coverage_test_cases_dependencies) $(cts_api_coverage_dependencies) | $(ACP)
+$(cts-test-coverage-report) : $(android_cts_zip) $(cts_api_coverage_dependencies) | $(ACP)
 	$(call generate-coverage-report,"CTS Tests API Coverage Report",\
-			$(PRIVATE_TEST_CASES_APKS),html)
+			$(PRIVATE_TEST_CASES),html)
 
-cts_coverage_test_cases_dependencies := $(cts_verifier_apk)
-$(cts-verifier-coverage-report): PRIVATE_TEST_CASES_APKS := $(cts_coverage_test_cases_dependencies)
+$(cts-verifier-coverage-report): PRIVATE_TEST_CASES := $(cts_verifier_apk)
 $(cts-verifier-coverage-report): PRIVATE_CTS_API_COVERAGE_EXE := $(cts_api_coverage_exe)
 $(cts-verifier-coverage-report): PRIVATE_DEXDEPS_EXE := $(dexdeps_exe)
 $(cts-verifier-coverage-report): PRIVATE_API_XML_DESC := $(api_xml_description)
-$(cts-verifier-coverage-report) : $(cts_coverage_test_cases_dependencies) $(cts_api_coverage_dependencies) | $(ACP)
+$(cts-verifier-coverage-report) : $(cts_verifier_apk) $(cts_api_coverage_dependencies) | $(ACP)
 	$(call generate-coverage-report,"CTS Verifier API Coverage Report",\
-			$(PRIVATE_TEST_CASES_APKS),html)
+			$(PRIVATE_TEST_CASES),html)
 
-cts_coverage_test_cases_dependencies := $(cts_testcases_out_apk) $(cts_testcases_out_jar) $(cts_verifier)
-$(cts-combined-coverage-report): PRIVATE_TEST_CASES_APKS := $(cts_coverage_test_cases_dependencies)
+$(cts-combined-coverage-report): PRIVATE_TEST_CASES := $(foreach c, $(cts_verifier_apk) $(CTS_TESTCASES_OUT), $(c))
 $(cts-combined-coverage-report): PRIVATE_CTS_API_COVERAGE_EXE := $(cts_api_coverage_exe)
 $(cts-combined-coverage-report): PRIVATE_DEXDEPS_EXE := $(dexdeps_exe)
 $(cts-combined-coverage-report): PRIVATE_API_XML_DESC := $(api_xml_description)
-$(cts-combined-coverage-report) : $(cts_coverage_test_cases_dependencies) $(cts_api_coverage_dependencies) | $(ACP)
+$(cts-combined-coverage-report) : $(android_cts_zip) $(cts_verifier_apk) $(cts_api_coverage_dependencies) | $(ACP)
 	$(call generate-coverage-report,"CTS Combined API Coverage Report",\
-			$(PRIVATE_TEST_CASES_APKS),html)
+			$(PRIVATE_TEST_CASES),html)
 
-cts_coverage_test_cases_dependencies := $(cts_testcases_out_apk) $(cts_testcases_out_jar) $(cts_verifier)
-$(cts-combined-xml-coverage-report): PRIVATE_TEST_CASES_APKS := $(cts_coverage_test_cases_dependencies)
+$(cts-combined-xml-coverage-report): PRIVATE_TEST_CASES := $(foreach c, $(cts_verifier_apk) $(CTS_TESTCASES_OUT), $(c))
 $(cts-combined-xml-coverage-report): PRIVATE_CTS_API_COVERAGE_EXE := $(cts_api_coverage_exe)
 $(cts-combined-xml-coverage-report): PRIVATE_DEXDEPS_EXE := $(dexdeps_exe)
 $(cts-combined-xml-coverage-report): PRIVATE_API_XML_DESC := $(api_xml_description)
-$(cts-combined-xml-coverage-report) : $(cts_coverage_test_cases_dependencies) $(cts_api_coverage_dependencies) | $(ACP)
+$(cts-combined-xml-coverage-report) : $(android_cts_zip) $(cts_verifier_apk) $(cts_api_coverage_dependencies) | $(ACP)
 	$(call generate-coverage-report,"CTS Combined API Coverage Report - XML",\
-			$(PRIVATE_TEST_CASES_APKS),xml)
+			$(PRIVATE_TEST_CASES),xml)
 
 .PHONY: cts-test-coverage
 cts-test-coverage : $(cts-test-coverage-report)
@@ -110,7 +103,6 @@ endef
 
 # Reset temp vars
 cts_api_coverage_dependencies :=
-cts_coverage_test_cases_dependencies :=
 cts-combined-coverage-report :=
 cts-combined-xml-coverage-report :=
 cts-verifier-coverage-report :=
@@ -120,6 +112,5 @@ api_text_description :=
 coverage_out :=
 dexdeps_exe :=
 cts_api_coverage_exe :=
-cts_testcases_out_apk :=
-cts_testcases_out_jar :=
 cts_verifier_apk :=
+android_cts_zip :=
