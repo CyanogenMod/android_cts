@@ -19,6 +19,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="android.netsecpolicy.usescleartext.false.cts">
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-library android:name="org.apache.http.legacy"/>
+
     <application android:usesCleartextTraffic="false">
     </application>
 </manifest>

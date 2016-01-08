@@ -24,7 +24,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := ctstestrunner \
     ctstestserver \
     org.apache.http.legacy
 
-LOCAL_SRC_FILES := $(call all-java-files-under, src ../src)
+LOCAL_SRC_FILES := $(call all-java-files-under, src common)
 
 LOCAL_PACKAGE_NAME := CtsNetSecPolicyUsesCleartextTrafficFalseTestCases
 
