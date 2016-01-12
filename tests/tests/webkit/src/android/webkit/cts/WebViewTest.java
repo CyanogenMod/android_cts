@@ -2122,6 +2122,10 @@ public class WebViewTest extends ActivityInstrumentationTestCase2<WebViewCtsActi
         if (!NullWebViewUtils.isWebViewAvailable()) {
             return;
         }
+
+        // It is needed to make test pass on some devices.
+        mOnUiThread.setLayoutToMatchParent();
+
         DisplayMetrics metrics = mOnUiThread.getDisplayMetrics();
         final int dimension = 2 * Math.max(metrics.widthPixels, metrics.heightPixels);
         String p = "<p style=\"height:" + dimension + "px;width:" + dimension + "px\">&nbsp;</p>";
