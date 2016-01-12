@@ -43,6 +43,8 @@ import com.android.cts.security.R;
 public class StagefrightTest extends InstrumentationTestCase {
     static final String TAG = "StagefrightTest";
 
+    private final long TIMEOUT_NS = 10000000000L;  // 10 seconds.
+
     public StagefrightTest() {
     }
 
@@ -94,6 +96,10 @@ public class StagefrightTest extends InstrumentationTestCase {
         doStagefrightTest(R.raw.cve_2015_6598);
     }
 
+    public void testStagefright_bug_26366256() throws Exception {
+        doStagefrightTest(R.raw.bug_26366256);
+    }
+
     private void doStagefrightTest(final int rid) throws Exception {
         class MediaPlayerCrashListener
                 implements MediaPlayer.OnErrorListener,
@@ -124,7 +130,9 @@ public class StagefrightTest extends InstrumentationTestCase {
 
             public int waitForError() throws InterruptedException {
                 lock.lock();
-                condition.await();
+                if (condition.awaitNanos(TIMEOUT_NS) <= 0) {
+                    Log.d(TAG, "timed out on waiting for error");
+                }
                 lock.unlock();
                 return what;
             }
