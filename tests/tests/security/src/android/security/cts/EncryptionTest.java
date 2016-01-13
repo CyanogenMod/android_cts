@@ -76,8 +76,9 @@ public class EncryptionTest extends AndroidTestCase {
     public void testConfig() throws Exception {
         if (cpuHasAes()) {
             // If CPU has AES CE, it must be enabled in kernel
-            assertTrue(crypto + " is missing xts-aes-ce",
-                hasKernelCrypto("xts-aes-ce"));
+            assertTrue(crypto + " is missing xts-aes-ce or xts-aes-aesni",
+                hasKernelCrypto("xts-aes-ce") ||
+                hasKernelCrypto("xts-aes-aesni"));
         } else if (cpuHasNeon()) {
             // Otherwise, if CPU has NEON, it must be enabled
             assertTrue(crypto + " is missing xts-aes-neon (or xts-aes-neonbs)",
