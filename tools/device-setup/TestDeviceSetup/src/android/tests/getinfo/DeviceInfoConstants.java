@@ -76,6 +76,4 @@ public interface DeviceInfoConstants {
     public static final String MEMORY_CLASS = "memory_class";
     public static final String LARGE_MEMORY_CLASS = "large_memory_class";
     public static final String TOTAL_MEMORY = "total_memory";
-    public static final String REFERENCE_BUILD_FINGERPRINT =
-            "reference_build_fingerprint";
 }
