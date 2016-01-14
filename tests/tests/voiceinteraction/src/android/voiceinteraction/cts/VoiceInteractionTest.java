@@ -43,6 +43,8 @@ public class VoiceInteractionTest extends ActivityInstrumentationTestCase2<TestS
     private TestResultsReceiver mReceiver;
     private Bundle mResults;
     private final CountDownLatch mLatch = new CountDownLatch(1);
+    protected boolean mHasFeature;
+    protected static final String FEATURE_VOICE_RECOGNIZERS = "android.software.voice_recognizers";
 
     public VoiceInteractionTest() {
         super(TestStartActivity.class);
@@ -53,13 +55,16 @@ public class VoiceInteractionTest extends ActivityInstrumentationTestCase2<TestS
         super.setUp();
         startTestActivity();
         mContext = getInstrumentation().getTargetContext();
-        mReceiver = new TestResultsReceiver();
-        mContext.registerReceiver(mReceiver, new IntentFilter(Utils.BROADCAST_INTENT));
+        mHasFeature = mContext.getPackageManager().hasSystemFeature(FEATURE_VOICE_RECOGNIZERS);
+        if (mHasFeature) {
+            mReceiver = new TestResultsReceiver();
+            mContext.registerReceiver(mReceiver, new IntentFilter(Utils.BROADCAST_INTENT));
+        }
     }
 
     @Override
     protected void tearDown() throws Exception {
-        if (mReceiver != null) {
+        if (mHasFeature && mReceiver != null) {
             try {
                 mContext.unregisterReceiver(mReceiver);
             } catch (IllegalArgumentException e) {
@@ -82,6 +87,10 @@ public class VoiceInteractionTest extends ActivityInstrumentationTestCase2<TestS
     }
 
     public void testAll() throws Exception {
+        if (!mHasFeature) {
+            Log.i(TAG, "The device doesn't support feature: " + FEATURE_VOICE_RECOGNIZERS);
+            return;
+        }
         if (!mLatch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
             fail("Failed to receive broadcast in " + TIMEOUT_MS + "msec");
             return;
