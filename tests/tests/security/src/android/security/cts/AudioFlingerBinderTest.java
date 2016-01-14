@@ -40,6 +40,14 @@ public class AudioFlingerBinderTest extends TestCase {
         assertTrue(native_test_setMasterVolume());
     }
 
+    /**
+     * Checks that IAudioFlinger::createEffect() does not leak information on the server side.
+     */
+    public void test_createEffect() throws Exception {
+        assertTrue(native_test_createEffect());
+    }
+
     private static native boolean native_test_setMasterMute();
     private static native boolean native_test_setMasterVolume();
+    private static native boolean native_test_createEffect();
 }
