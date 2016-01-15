@@ -17,6 +17,7 @@
 package android.graphics.cts;
 
 
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
@@ -179,5 +180,16 @@ public class TypefaceTest extends AndroidTestCase {
         is.close();
         fOutput.close();
         return (file.getPath());
+    }
+
+    public void testInvalidCmapFont() {
+        Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), "bombfont.ttf");
+        assertNotNull(typeface);
+        Paint p = new Paint();
+        final String testString = "abcde";
+        float widthDefaultTypeface = p.measureText(testString);
+        p.setTypeface(typeface);
+        float widthCustomTypeface = p.measureText(testString);
+        assertEquals(widthDefaultTypeface, widthCustomTypeface, 0.01f);
     }
 }
