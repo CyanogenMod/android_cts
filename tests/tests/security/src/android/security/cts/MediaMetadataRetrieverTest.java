@@ -20,7 +20,6 @@ import com.android.cts.security.R;
 
 import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
-import android.cts.util.MediaUtils;
 import android.media.MediaMetadataRetriever;
 import android.test.AndroidTestCase;
 
