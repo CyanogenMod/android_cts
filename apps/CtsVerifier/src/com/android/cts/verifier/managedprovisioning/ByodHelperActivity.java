@@ -114,6 +114,14 @@ public class ByodHelperActivity extends Activity implements DialogCallback, Hand
     public static final String ACTION_CLEAR_NOTIFICATION =
             "com.android.cts.verifier.managedprovisioning.CLEAR_NOTIFICATION";
 
+    // Primary -> managed intent: set a user restriction
+    public static final String ACTION_SET_USER_RESTRICTION =
+            "com.android.cts.verifier.managedprovisioning.BYOD_SET_USER_RESTRICTION";
+
+    // Primary -> managed intent: reset a user restriction
+    public static final String ACTION_CLEAR_USER_RESTRICTION =
+            "com.android.cts.verifier.managedprovisioning.BYOD_CLEAR_USER_RESTRICTION";
+
     public static final int RESULT_FAILED = RESULT_FIRST_USER;
 
     private static final int REQUEST_INSTALL_PACKAGE = 1;
@@ -280,6 +288,18 @@ public class ByodHelperActivity extends Activity implements DialogCallback, Hand
             Intent toSend = new Intent(Intent.ACTION_VIEW);
             toSend.setData(Uri.parse("http://com.android.cts.verifier"));
             sendIntentInsideChooser(toSend);
+        } else if (action.equals(ACTION_SET_USER_RESTRICTION)) {
+            final String restriction = intent.getStringExtra(EXTRA_PARAMETER_1);
+            if (restriction != null) {
+                mDevicePolicyManager.addUserRestriction(
+                        DeviceAdminTestReceiver.getReceiverComponentName(), restriction);
+            }
+        } else if (action.equals(ACTION_CLEAR_USER_RESTRICTION)) {
+            final String restriction = intent.getStringExtra(EXTRA_PARAMETER_1);
+            if (restriction != null) {
+                mDevicePolicyManager.clearUserRestriction(
+                        DeviceAdminTestReceiver.getReceiverComponentName(), restriction);
+            }
         } else if (action.equals(ACTION_SET_LOCATION_AND_CHECK_UPDATES)) {
             // Grant the locaiton permission to the provile owner on cts-verifier.
             // The permission state does not have to be reverted at the end since the profile onwer

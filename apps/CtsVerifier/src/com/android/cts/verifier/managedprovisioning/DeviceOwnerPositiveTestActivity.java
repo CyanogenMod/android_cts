@@ -76,6 +76,7 @@ public class DeviceOwnerPositiveTestActivity extends PassFailButtons.TestListAct
     private static final String DISALLOW_CONFIG_BT_ID = "DISALLOW_CONFIG_BT";
     private static final String DISALLOW_CONFIG_WIFI_ID = "DISALLOW_CONFIG_WIFI";
     private static final String DISALLOW_CONFIG_VPN_ID = "DISALLOW_CONFIG_VPN";
+    private static final String DISALLOW_USB_FILE_TRANSFER_ID = "DISALLOW_USB_FILE_TRANSFER";
     //TODO(rgl): This symbol should be available in android.provider.settings
     private static final String ACTION_VPN_SETTINGS = "android.net.vpn.SETTINGS";
     private static final String REMOVE_DEVICE_OWNER_TEST_ID = "REMOVE_DEVICE_OWNER";
@@ -192,6 +193,17 @@ public class DeviceOwnerPositiveTestActivity extends PassFailButtons.TestListAct
                                     R.string.device_owner_settings_go,
                                     new Intent(Settings.ACTION_BLUETOOTH_SETTINGS))}));
         }
+
+        // DISALLOW_USB_FILE_TRANSFER
+        adapter.add(createInteractiveTestItem(this, DISALLOW_USB_FILE_TRANSFER_ID,
+                R.string.device_owner_disallow_usb_file_transfer_test,
+                R.string.device_owner_disallow_usb_file_transfer_test_info,
+                new ButtonInfo[] {
+                        new ButtonInfo(
+                                R.string.device_owner_user_restriction_set,
+                                createSetUserRestrictionIntent(
+                                        UserManager.DISALLOW_USB_FILE_TRANSFER)),
+                }));
 
         // setStatusBarDisabled
         adapter.add(createInteractiveTestItem(this, DISABLE_STATUS_BAR_TEST_ID,

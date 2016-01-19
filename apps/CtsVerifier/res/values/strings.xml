@@ -1572,6 +1572,38 @@ You should be prompted to select credentials; choose the ones you just installed
         Verify that the notification is badged (see sample badge below). Then mark this test accordingly.
     </string>
     <string name="provisioning_byod_notification_title">This is a notification</string>
+
+    <string name="provisioning_byod_disallow_apps_control">Disallow apps control</string>
+    <string name="provisioning_byod_disallow_apps_control_info">
+        This test exercises Disallow Apps Control. Follow instructions above.
+    </string>
+    <string name="provisioning_byod_disallow_apps_control_instruction">
+        Please press the \"Prepare test\" button to disallow apps control for managed apps.\n
+        Then please press through the following verification steps.\n
+        Note: After leaving the screen disallow apps control restriction will be cleared.
+    </string>
+    <string name="provisioning_byod_disallow_apps_control_prepare_button">Prepare test</string>
+    <string name="provisioning_byod_disabled_uninstall_button">Disabled uninstall button</string>
+    <string name="provisioning_byod_disabled_uninstall_button_instruction">
+        Please press the Go button to go to Settings > Apps. Choose a managed app. Check if the button that says
+        either \"Uninstall\" or \"Disable\" is greyed out and disabled, i.e. nothing happens when you tap on it.
+        Then please press Back and mark the test as \"Pass\" or \"Fail\".
+    </string>
+    <string name="provisioning_byod_disabled_force_stop_button">Disabled force stop button</string>
+    <string name="provisioning_byod_disabled_force_stop_button_instruction">
+        Please press the Go button to go to Settings > Apps. Choose a managed app. Check if the button that says
+        \"Force stop\" is greyed out and disabled, i.e. nothing happens when you tap on it.
+        Then please press Back and mark the test as \"Pass\" or \"Fail\".
+    </string>
+    <string name="provisioning_byod_disabled_app_storage_buttons">Disabled app storage buttons</string>
+    <string name="provisioning_byod_disabled_app_storage_buttons_instruction">
+        Please press the Go button to go to Settings > Apps. Choose a managed (badged) app. Select \"Storage\". Check that the buttons
+        \"Clear Data\" and \"Clear Cache\" are disabled, i.e. nothing happens when you tap on them.
+        Note: if an app has no data then tapping the clear data button has no effect anyway. Make sure you have selected
+        the badged version of app with non-zero app data. Badged \"Settings\" may be a good candidate.
+        Then please press Back and mark the test as \"Pass\" or \"Fail\".
+    </string>
+
     <string name="provisioning_byod_work_status_icon">Work status icon is displayed</string>
     <string name="provisioning_byod_work_status_icon_instruction">
         Verify that the current status bar does not have a work status icon (see sample icon below).
@@ -1862,6 +1894,15 @@ You should be prompted to select credentials; choose the ones you just installed
     </string>
     <string name="device_owner_permission_lockdown_test_info">
         This test checks if the permissions state in settings UI is locked down according to the state set by the device owner.
+    </string>
+    <string name="device_owner_disallow_usb_file_transfer_test">Disallow USB file transfer</string>
+    <string name="device_owner_disallow_usb_file_transfer_test_info">
+            Please press below button to set the \"disallow USB file transfer\" restriction.
+            Next, connect your device to your desktop computer through USB, open the USB notification from the status bar
+            and check that the \"Transfer files (MTP)\" and \"Transfer photos (PTP)\" options are not present. Also, check
+            that you can download files from your phone to the desktop computer. The test is successful if the files from
+            your phone are not and cannot be downloaded through USB.\n
+            Please mark the test accordingly.
     </string>
     <string name="profile_owner_permission_lockdown_test_info">
         <b>
