@@ -34,7 +34,7 @@ public class CtsDeviceLeanback extends CtsJankTestBase {
     private static final int SCROLL_INTERVAL_MILLIS = 200;
     private static final int PRE_SCROLL_DELAY_MILLIS = 0;
     private static final int PRE_SCROLL_IDLE_TIME = 2 * MILLIS_PER_SECOND;
-    private static final int SAMPLING_DURATION_SECONDS = 3;
+    private static final int SAMPLING_DURATION_SECONDS = 2;
     private static final int SAMPLING_DURATION_MILLIS =
             SAMPLING_DURATION_SECONDS * MILLIS_PER_SECOND;
     private final static String APP_PACKAGE = "android.cts.jank.leanback";
@@ -88,8 +88,8 @@ public class CtsDeviceLeanback extends CtsJankTestBase {
         super.tearDown();
     }
 
-    // Requires at least 30 fps on average to pass the test.
-    @JankTest(expectedFrames = 30 * SAMPLING_DURATION_SECONDS, defaultIterationCount = 2)
+    // Requires at least 50 fps on average to pass the test.
+    @JankTest(expectedFrames = 50 * SAMPLING_DURATION_SECONDS, defaultIterationCount = 2)
     @GfxMonitor(processName = APP_PACKAGE)
     @WindowContentFrameStatsMonitor
     public void testScrollingByTimer() {
