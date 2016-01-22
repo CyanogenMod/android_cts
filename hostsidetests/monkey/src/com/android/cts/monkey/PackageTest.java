@@ -31,22 +31,22 @@ public class PackageTest extends AbstractMonkeyTest {
 
     public void testSinglePackage() throws Exception {
         String out = mDevice.executeShellCommand(MONKEY_CMD + " -v -p " + PKGS[0] + " 5000");
-        out = truncateError(out);
-        assertTrue("Monkey not found in: " + out, ALLOW_MONKEY.matcher(out).find());
-        assertFalse("Chimp found in: " + out, ALLOW_CHIMP.matcher(out).find());
+        String error = truncateError(out);
+        assertTrue("Monkey not found in: " + error, ALLOW_MONKEY.matcher(out).find());
+        assertFalse("Chimp found in: " + error, ALLOW_CHIMP.matcher(out).find());
 
         out = mDevice.executeShellCommand(MONKEY_CMD + " -v -p " + PKGS[1] + " 5000");
-        out = truncateError(out);
-        assertFalse("Monkey found in: " + out, ALLOW_MONKEY.matcher(out).find());
-        assertTrue("Chimp not found in: " + out, ALLOW_CHIMP.matcher(out).find());
+        error = truncateError(out);
+        assertFalse("Monkey found in: " + error, ALLOW_MONKEY.matcher(out).find());
+        assertTrue("Chimp not found in: " + error, ALLOW_CHIMP.matcher(out).find());
     }
 
     public void testMultiplePackages() throws Exception {
         String out = mDevice.executeShellCommand(MONKEY_CMD + " -v -p " + PKGS[0]
                 + " -p " + PKGS[1] + " 5000");
-        out = truncateError(out);
-        assertTrue("Monkey not found in: " + out, ALLOW_MONKEY.matcher(out).find());
-        assertTrue("Chimp not found in: " + out, ALLOW_CHIMP.matcher(out).find());
+        String error = truncateError(out);
+        assertTrue("Monkey not found in: " + error, ALLOW_MONKEY.matcher(out).find());
+        assertTrue("Chimp not found in: " + error, ALLOW_CHIMP.matcher(out).find());
     }
 
     private static final String truncateError(String input) {
