@@ -42,7 +42,7 @@ public class OpenCVLibrary {
         if (isLoaded())  return;
 
         // Load the library through loader
-        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, context,
+        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, context,
                 new BaseLoaderCallback(context) {
                     @Override
                     public void onManagerConnected(int status) {

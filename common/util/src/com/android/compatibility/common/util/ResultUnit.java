@@ -37,7 +37,9 @@ public enum ResultUnit {
     /** tell how many times it did happen. */
     COUNT,
     /** unit for benchmarking with generic score. */
-    SCORE;
+    SCORE,
+    /** radian */
+    RADIAN;
 
     /**
      * Return string used in the XML report
