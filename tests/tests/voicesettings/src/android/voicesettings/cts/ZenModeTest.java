@@ -40,6 +40,10 @@ public class ZenModeTest extends VoiceSettingsTestBase {
     }
 
     public void testAll() throws Exception {
+        if (!mHasFeature) {
+            Log.i(TAG, "The device doesn't support feature: " + FEATURE_VOICE_RECOGNIZERS);
+            return;
+        }
         if (!isIntentSupported(ACTION_VOICE_CONTROL_DO_NOT_DISTURB_MODE)) {
             Log.e(TAG, "Voice intent for Zen Mode NOT supported. existing the test");
             return;

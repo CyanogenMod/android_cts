@@ -35,6 +35,10 @@ public class AirplaneModeTest extends VoiceSettingsTestBase {
     }
 
     public void testAll() throws Exception {
+        if (!mHasFeature) {
+            Log.i(TAG, "The device doesn't support feature: " + FEATURE_VOICE_RECOGNIZERS);
+            return;
+        }
         if (!isIntentSupported(ACTION_VOICE_CONTROL_AIRPLANE_MODE)) {
             Log.e(TAG, "Voice intent for Airplane Mode NOT supported. existing the test");
             return;

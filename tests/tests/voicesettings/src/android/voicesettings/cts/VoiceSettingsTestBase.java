@@ -41,6 +41,8 @@ public class VoiceSettingsTestBase extends ActivityInstrumentationTestCase2<Test
     private ActivityDoneReceiver mActivityDoneReceiver = null;
     private TestStartActivity mActivity;
     private Utils.TestcaseType mTestCaseType;
+    protected boolean mHasFeature;
+    protected static final String FEATURE_VOICE_RECOGNIZERS = "android.software.voice_recognizers";
 
     public VoiceSettingsTestBase() {
         super(TestStartActivity.class);
@@ -50,11 +52,12 @@ public class VoiceSettingsTestBase extends ActivityInstrumentationTestCase2<Test
     protected void setUp() throws Exception {
         super.setUp();
         mContext = getInstrumentation().getTargetContext();
+        mHasFeature = mContext.getPackageManager().hasSystemFeature(FEATURE_VOICE_RECOGNIZERS);
     }
 
     @Override
     protected void tearDown() throws Exception {
-        if (mActivityDoneReceiver != null) {
+        if (mHasFeature && mActivityDoneReceiver != null) {
             try {
                 mContext.unregisterReceiver(mActivityDoneReceiver);
             } catch (IllegalArgumentException e) {
