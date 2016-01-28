@@ -209,7 +209,9 @@ public class ExtendedCameraCharacteristicsTest extends AndroidTestCase {
             ArrayList<Size> yuvSizesList = new ArrayList<>(Arrays.asList(yuvSizes));
             ArrayList<Size> privateSizesList = new ArrayList<>(Arrays.asList(privateSizes));
 
-            CamcorderProfile maxVideoProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+            int cameraId = Integer.valueOf(mIds[counter]);
+            CamcorderProfile maxVideoProfile = CamcorderProfile.get(
+                    cameraId, CamcorderProfile.QUALITY_HIGH);
             Size maxVideoSize = new Size(
                     maxVideoProfile.videoFrameWidth, maxVideoProfile.videoFrameHeight);
 
