@@ -652,7 +652,7 @@ public class PerformanceTest extends Camera2SurfaceViewTestCase {
         // 2. Create camera output ImageReaders.
         // YUV/Opaque output, camera should support output with input size/format
         mCameraZslImageListener = new SimpleImageReaderListener(
-                /*asyncMode*/true, MAX_ZSL_IMAGES / 2);
+                /*asyncMode*/true, MAX_ZSL_IMAGES - MAX_REPROCESS_IMAGES);
         mCameraZslReader = CameraTestUtils.makeImageReader(
                 maxInputSize, inputFormat, MAX_ZSL_IMAGES, mCameraZslImageListener, mHandler);
         // Jpeg reprocess output
