@@ -529,6 +529,7 @@ public class FileSystemPermissionTest extends AndroidTestCase {
                     "/data/misc/bluetooth",
                     "/data/misc/dhcp",
                     "/data/misc/lockscreen",
+                    "/data/misc/sensor",
                     "/data/misc/webwidgets",
                     "/data/misc/webwidgets/chess",
                     "/data/misc/widgets",
