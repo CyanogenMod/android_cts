@@ -21,7 +21,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.DeadObjectException;
+import android.os.RemoteException;
 import android.os.IBinder;
 import android.security.cts.activity.ISecureRandomService;
 import android.security.cts.activity.SecureRandomService;
@@ -144,7 +144,13 @@ public class ClonedSecureRandomTest extends AndroidTestCase {
                 }
             }, 0);
 
-            pid = mSecureRandomService.getRandomBytesAndPid(output);
+            try {
+                pid = mSecureRandomService.getRandomBytesAndPid(output);
+            } catch (RemoteException e) {
+                // The process died before we could query. Try again.
+                continue;
+            }
+
             getContext().unbindService(mServiceConnection);
 
             /*
