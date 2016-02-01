@@ -101,6 +101,7 @@ public class SmsManagerTest extends AndroidTestCase {
                     "311230",   // C SPire Wireless + Celluar South
                     "310600",    // Cellcom
                     "31000",     // Republic Wireless US
+                    "310260",    // Republic Wireless US
                     "310026",     // T-Mobile US
                     "330120", // OpenMobile communication
                     // Verizon
@@ -142,6 +143,7 @@ public class SmsManagerTest extends AndroidTestCase {
                     "45005",    // SKT Mobility
                     "45002",     // SKT Mobility
                     "45006",    // LGT
+                    "310260",   // Republic Wireless US
                     // Verizon
                     "310004",
                     "310012",
