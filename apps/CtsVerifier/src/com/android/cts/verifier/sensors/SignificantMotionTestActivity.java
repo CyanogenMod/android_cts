@@ -296,7 +296,9 @@ public class SignificantMotionTestActivity extends SensorCtsVerifierTestActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mScreenManipulator.close();
+        if (mScreenManipulator != null){
+            mScreenManipulator.close();
+        }
     }
 
     /**
