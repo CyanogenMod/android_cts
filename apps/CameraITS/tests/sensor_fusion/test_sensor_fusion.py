@@ -115,7 +115,7 @@ def main():
     plot_rotations(cam_rots, gyro_rots)
 
     # Pass/fail based on the offset and also the correlation distance.
-    dist = scipy.spatial.distance.correlation(cam_rots,gyro_rots)
+    dist = scipy.spatial.distance.correlation(cam_rots, gyro_rots)
     print "Best correlation of %f at shift of %.2fms"%(dist, offset*SEC_TO_MSEC)
     assert(dist < THRESH_MAX_CORR_DIST)
     assert(abs(offset) < THRESH_MAX_SHIFT_MS*MSEC_TO_SEC)
@@ -141,7 +141,7 @@ def get_best_alignment_offset(cam_times, cam_rots, gyro_events):
     for shift in candidates:
         times = cam_times + shift*MSEC_TO_NSEC
         gyro_rots = get_gyro_rotations(gyro_events, times)
-        dists.append(scipy.spatial.distance.correlation(cam_rots,gyro_rots))
+        dists.append(scipy.spatial.distance.correlation(cam_rots, gyro_rots))
     best_corr_dist = min(dists)
     best_shift = candidates[dists.index(best_corr_dist)]
 
@@ -181,9 +181,10 @@ def plot_rotations(cam_rots, gyro_rots):
         gyro_rots: Array of N-1 gyro rotation measurements (rad).
     """
     # For the plot, scale the rotations to be in degrees.
+    scale = 360/(2*math.pi)
     fig = matplotlib.pyplot.figure()
-    cam_rots = cam_rots * (360/(2*math.pi))
-    gyro_rots = gyro_rots * (360/(2*math.pi))
+    cam_rots = cam_rots * scale
+    gyro_rots = gyro_rots * scale
     pylab.plot(range(len(cam_rots)), cam_rots, 'r', label="camera")
     pylab.plot(range(len(gyro_rots)), gyro_rots, 'b', label="gyro")
     pylab.legend()
@@ -196,8 +197,7 @@ def get_gyro_rotations(gyro_events, cam_times):
     """Get the rotation values of the gyro.
 
     Integrates the gyro data between each camera frame to compute an angular
-    displacement. Uses simple Euler approximation to implement the
-    integration.
+    displacement.
 
     Args:
         gyro_events: List of gyro event objects.
@@ -219,20 +219,16 @@ def get_gyro_rotations(gyro_events, cam_times):
         sgyro = 0
         # Integrate samples within the window.
         for igyro in range(igyrowindow0, igyrowindow1):
-            vgyro0 = all_rots[igyro]
-            vgyro1 = all_rots[igyro+1]
+            vgyro = all_rots[igyro+1]
             tgyro0 = all_times[igyro]
             tgyro1 = all_times[igyro+1]
-            vgyro = 0.5 * (vgyro0 + vgyro1)
             deltatgyro = (tgyro1 - tgyro0) * NSEC_TO_SEC
             sgyro += vgyro * deltatgyro
         # Handle the fractional intervals at the sides of the window.
         for side,igyro in enumerate([igyrowindow0-1, igyrowindow1]):
-            vgyro0 = all_rots[igyro]
-            vgyro1 = all_rots[igyro+1]
+            vgyro = all_rots[igyro+1]
             tgyro0 = all_times[igyro]
             tgyro1 = all_times[igyro+1]
-            vgyro = 0.5 * (vgyro0 + vgyro1)
             deltatgyro = (tgyro1 - tgyro0) * NSEC_TO_SEC
             if side == 0:
                 f = (tcam0 - tgyro0) / (tgyro1 - tgyro0)
@@ -388,4 +384,3 @@ def procrustes_rotation(X, Y):
 
 if __name__ == '__main__':
     main()
-
