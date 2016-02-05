@@ -17,6 +17,8 @@
 <!-- BEGIN_INCLUDE(meta_data) -->
 <device-admin xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-policies>
+        <limit-password />
+        <watch-login />
         <encrypted-storage />
         <wipe-data />
         <reset-password />
