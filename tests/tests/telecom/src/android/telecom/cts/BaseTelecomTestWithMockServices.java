@@ -138,7 +138,9 @@ public class BaseTelecomTestWithMockServices extends InstrumentationTestCase {
     }
 
     protected void tearDownConnectionService(PhoneAccountHandle accountHandle) throws Exception {
-        assertNumConnections(this.connectionService, 0);
+        if (this.connectionService != null) {
+            assertNumConnections(this.connectionService, 0);
+        }
         mTelecomManager.unregisterPhoneAccount(accountHandle);
         CtsConnectionService.tearDown();
         assertCtsConnectionServiceUnbound();
@@ -814,12 +816,12 @@ public class BaseTelecomTestWithMockServices extends InstrumentationTestCase {
                 new Condition() {
                     @Override
                     public Object expected() {
-                        return true;
+                        return false;
                     }
 
                     @Override
                     public Object actual() {
-                        return CtsConnectionService.isServiceUnbound();
+                        return CtsConnectionService.isServiceBound();
                     }
                 },
                 WAIT_FOR_STATE_CHANGE_TIMEOUT_MS,
