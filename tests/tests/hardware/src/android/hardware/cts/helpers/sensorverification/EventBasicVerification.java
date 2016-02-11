@@ -100,6 +100,7 @@ public class EventBasicVerification extends AbstractSensorVerification {
     void verify(SensorStats stats) {
 
         stats.addValue(SensorStats.EVENT_COUNT_KEY, mNumEvent);
+        stats.addValue(SensorStats.EVENT_COUNT_EXPECTED_KEY, mExpectedMinNumEvent);
         stats.addValue(SensorStats.WRONG_SENSOR_KEY, mWrongSensorObserved);
 
         boolean enoughSample = mNumEvent >= mExpectedMinNumEvent;
