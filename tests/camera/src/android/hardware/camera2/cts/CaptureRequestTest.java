@@ -41,6 +41,8 @@ import android.util.Range;
 import android.util.Rational;
 import android.util.Size;
 
+import com.android.cts.util.TimeoutReq;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -303,6 +305,7 @@ public class CaptureRequestTest extends Camera2SurfaceViewTestCase {
      * API specifications.
      * </p>
      */
+    @TimeoutReq(minutes = 40)
     public void testAeModeAndLock() throws Exception {
         for (int i = 0; i < mCameraIds.length; i++) {
             try {
