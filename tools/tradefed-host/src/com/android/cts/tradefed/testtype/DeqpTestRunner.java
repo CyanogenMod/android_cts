@@ -311,6 +311,8 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
 
                 final Map<String, String> emptyMap = Collections.emptyMap();
                 mSink.testEnded(testId, emptyMap);
+            } else {
+                CLog.w("Finalization for non-pending case %s", testId);
             }
         }
 
@@ -372,6 +374,8 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
         public void abortTest(TestIdentifier testId, String errorMessage) {
             final PendingResult result = mPendingResults.get(testId);
 
+            CLog.i("Test %s aborted with message %s", testId, errorMessage);
+
             // Mark as executed
             result.allInstancesPassed = false;
             result.errorMessages.put(mRunConfig, errorMessage);
@@ -390,24 +394,43 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
         /**
          * Handles beginning of dEQP session.
          */
-        private void handleBeginSession(Map<String, String> values) {
+        private boolean handleBeginSession(Map<String, String> values) {
             // ignore
+            return true;
+        }
+
+        /**
+         * Handle session info
+         */
+        private boolean handleSessionInfo(Map<String, String> values) {
+            // ignore
+            return true;
         }
 
         /**
          * Handles end of dEQP session.
          */
-        private void handleEndSession(Map<String, String> values) {
+        private boolean handleEndSession(Map<String, String> values) {
             // ignore
+            return true;
         }
 
         /**
          * Handles beginning of dEQP testcase.
          */
-        private void handleBeginTestCase(Map<String, String> values) {
-            mCurrentTestId = pathToIdentifier(values.get("dEQP-BeginTestCase-TestCasePath"));
+        private boolean handleBeginTestCase(Map<String, String> values) {
+            String casePath = values.get("dEQP-BeginTestCase-TestCasePath");
+
             mCurrentTestLog = "";
             mGotTestResult = false;
+
+            if (casePath == null) {
+                CLog.w("Got null case path for test case begin event. Current test ID: %s", mCurrentTestId);
+                mCurrentTestId = null;
+                return false;
+            }
+
+            mCurrentTestId = pathToIdentifier(casePath);
 
             // mark instance as started
             if (mPendingResults.get(mCurrentTestId) != null) {
@@ -415,12 +438,13 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
             } else {
                 CLog.w("Got unexpected start of %s", mCurrentTestId);
             }
+            return true;
         }
 
         /**
          * Handles end of dEQP testcase.
          */
-        private void handleEndTestCase(Map<String, String> values) {
+        private boolean handleEndTestCase(Map<String, String> values) {
             final PendingResult result = mPendingResults.get(mCurrentTestId);
 
             if (result != null) {
@@ -442,19 +466,24 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
                 CLog.w("Got unexpected end of %s", mCurrentTestId);
             }
             mCurrentTestId = null;
+            return true;
         }
 
         /**
          * Handles dEQP testcase result.
          */
-        private void handleTestCaseResult(Map<String, String> values) {
+        private boolean handleTestCaseResult(Map<String, String> values) {
             String code = values.get("dEQP-TestCaseResult-Code");
+            if (code == null) {
+                return false;
+            }
+
             String details = values.get("dEQP-TestCaseResult-Details");
 
             if (mPendingResults.get(mCurrentTestId) == null) {
                 CLog.w("Got unexpected result for %s", mCurrentTestId);
                 mGotTestResult = true;
-                return;
+                return true;
             }
 
             if (code.compareTo("Pass") == 0) {
@@ -480,12 +509,13 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
                 mGotTestResult = true;
                 CLog.e("Got invalid result code '%s' for test %s", code, mCurrentTestId);
             }
+            return true;
         }
 
         /**
          * Handles terminated dEQP testcase.
          */
-        private void handleTestCaseTerminate(Map<String, String> values) {
+        private boolean handleTestCaseTerminate(Map<String, String> values) {
             final PendingResult result = mPendingResults.get(mCurrentTestId);
 
             if (result != null) {
@@ -504,40 +534,52 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
 
             mCurrentTestId = null;
             mGotTestResult = true;
+            return true;
         }
 
         /**
          * Handles dEQP testlog data.
          */
-        private void handleTestLogData(Map<String, String> values) {
-            mCurrentTestLog = mCurrentTestLog + values.get("dEQP-TestLogData-Log");
+        private boolean handleTestLogData(Map<String, String> values) {
+            String newLog = values.get("dEQP-TestLogData-Log");
+            if (newLog == null) {
+                return false;
+            }
+            mCurrentTestLog = mCurrentTestLog + newLog;
+            return true;
         }
 
         /**
          * Handles new instrumentation status message.
+         * @return true if handled correctly, false if missing values.
          */
-        public void handleStatus(Map<String, String> values) {
+        public boolean handleStatus(Map<String, String> values) {
             String eventType = values.get("dEQP-EventType");
 
             if (eventType == null) {
-                return;
+                // Not an event, but some other line
+                return true;
             }
 
             if (eventType.compareTo("BeginSession") == 0) {
-                handleBeginSession(values);
+                return handleBeginSession(values);
+            } else if (eventType.compareTo("SessionInfo") == 0) {
+                return handleSessionInfo(values);
             } else if (eventType.compareTo("EndSession") == 0) {
-                handleEndSession(values);
+                return handleEndSession(values);
             } else if (eventType.compareTo("BeginTestCase") == 0) {
-                handleBeginTestCase(values);
+                return handleBeginTestCase(values);
             } else if (eventType.compareTo("EndTestCase") == 0) {
-                handleEndTestCase(values);
+                return handleEndTestCase(values);
             } else if (eventType.compareTo("TestCaseResult") == 0) {
-                handleTestCaseResult(values);
+                return handleTestCaseResult(values);
             } else if (eventType.compareTo("TerminateTestCase") == 0) {
-                handleTestCaseTerminate(values);
+                return handleTestCaseTerminate(values);
             } else if (eventType.compareTo("TestLogData") == 0) {
-                handleTestLogData(values);
+                return handleTestLogData(values);
             }
+            CLog.e("Unknown event type (%s)", eventType);
+            return false;
         }
 
         /**
@@ -548,6 +590,7 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
             if (mCurrentTestId != null) {
                 // Current instance was removed from remainingConfigs when case
                 // started. Mark current instance as pending.
+                CLog.i("Batch ended with test '%s' current", mCurrentTestId);
                 if (mPendingResults.get(mCurrentTestId) != null) {
                     mPendingResults.get(mCurrentTestId).remainingConfigs.add(mRunConfig);
                 } else {
@@ -569,6 +612,7 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
         private String mCurrentValue;
         private int mResultCode;
         private boolean mGotExitValue = false;
+        private boolean mParseSuccessful = true;
 
 
         public InstrumentationParser(TestInstanceResultListener listener) {
@@ -591,7 +635,7 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
                         mCurrentValue = null;
                     }
 
-                    mListener.handleStatus(mValues);
+                    mParseSuccessful &= mListener.handleStatus(mValues);
                     mValues = null;
                 } else if (line.startsWith("INSTRUMENTATION_STATUS: dEQP-")) {
                     if (mCurrentName != null) {
@@ -604,16 +648,25 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
                     String prefix = "INSTRUMENTATION_STATUS: ";
                     int nameBegin = prefix.length();
                     int nameEnd = line.indexOf('=');
-                    int valueBegin = nameEnd + 1;
-
-                    mCurrentName = line.substring(nameBegin, nameEnd);
-                    mCurrentValue = line.substring(valueBegin);
+                    if (nameEnd < 0) {
+                        CLog.e("Line does not contain value. Logcat interrupted? (%s)", line);
+                        mCurrentValue = null;
+                        mCurrentName = null;
+                        mParseSuccessful = false;
+                        return;
+                    } else {
+                        int valueBegin = nameEnd + 1;
+                        mCurrentName = line.substring(nameBegin, nameEnd);
+                        mCurrentValue = line.substring(valueBegin);
+                    }
                 } else if (line.startsWith("INSTRUMENTATION_CODE: ")) {
                     try {
                         mResultCode = Integer.parseInt(line.substring(22));
                         mGotExitValue = true;
                     } catch (NumberFormatException ex) {
-                        CLog.w("Instrumentation code format unexpected");
+                        CLog.e("Instrumentation code format unexpected");
+                        mParseSuccessful = false;
+                        return;
                     }
                 } else if (mCurrentValue != null) {
                     mCurrentValue = mCurrentValue + line;
@@ -634,7 +687,7 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
             }
 
             if (mValues != null) {
-                mListener.handleStatus(mValues);
+                mParseSuccessful &= mListener.handleStatus(mValues);
                 mValues = null;
             }
         }
@@ -651,7 +704,7 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
          * Returns whether target instrumentation exited normally.
          */
         public boolean wasSuccessful() {
-            return mGotExitValue;
+            return mGotExitValue && mParseSuccessful;
         }
 
         /**
@@ -1451,11 +1504,12 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest, IRemoteTest 
         Throwable interruptingError = null;
 
         try {
+            CLog.d("Running command '%s'", command);
             executeShellCommandAndReadOutput(command, parser);
-        } catch (Throwable ex) {
-            interruptingError = ex;
-        } finally {
             parser.flush();
+        } catch (Throwable ex) {
+            CLog.w("Instrumented call threw '%s'", ex.getMessage());
+            interruptingError = ex;
         }
 
         final boolean progressedSinceLastCall = mInstanceListerner.getCurrentTestId() != null ||
