@@ -67,6 +67,13 @@ public class PostProcTestBase extends AndroidTestCase {
         return AudioEffect.isEffectTypeAvailable(AudioEffect.EFFECT_TYPE_ENV_REVERB);
     }
 
+    protected boolean isLoudnessEnhancerAvailable() {
+        if (!hasAudioOutput()) {
+            return false;
+        }
+        return AudioEffect.isEffectTypeAvailable(AudioEffect.EFFECT_TYPE_LOUDNESS_ENHANCER);
+    }
+
     protected int getSessionId() {
         AudioManager am = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
         assertNotNull("could not get AudioManager", am);
