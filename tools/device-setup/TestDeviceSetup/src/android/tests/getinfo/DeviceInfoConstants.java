@@ -78,4 +78,5 @@ public interface DeviceInfoConstants {
     public static final String TOTAL_MEMORY = "total_memory";
     public static final String REFERENCE_BUILD_FINGERPRINT =
             "reference_build_fingerprint";
+    public static final String AVAILABLE_PROCESSORS = "available_processors";
 }
