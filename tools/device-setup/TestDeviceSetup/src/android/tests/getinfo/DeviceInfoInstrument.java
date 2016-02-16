@@ -170,6 +170,9 @@ public class DeviceInfoInstrument extends Instrumentation implements DeviceInfoC
         addResult(LARGE_MEMORY_CLASS, getLargeMemoryClass());
         addResult(TOTAL_MEMORY, getTotalMemory());
 
+        // CPU Info
+        addResult(AVAILABLE_PROCESSORS, Runtime.getRuntime().availableProcessors());
+
         finish(Activity.RESULT_OK, mResults);
     }
 
