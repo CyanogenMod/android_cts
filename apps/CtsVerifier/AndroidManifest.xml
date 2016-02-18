@@ -118,6 +118,8 @@
                 <category android:name="android.cts.intent.category.MANUAL_TEST" />
             </intent-filter>
             <meta-data android:name="test_category" android:value="@string/test_category_device_admin" />
+            <meta-data android:name="test_required_features"
+                    android:value="android.software.device_admin" />
         </activity>
 
         <activity android:name=".admin.RedactedNotificationKeyguardDisabledFeaturesActivity"
@@ -128,6 +130,8 @@
                 <category android:name="android.cts.intent.category.MANUAL_TEST" />
             </intent-filter>
             <meta-data android:name="test_category" android:value="@string/test_category_device_admin" />
+            <meta-data android:name="test_required_features"
+                    android:value="android.software.device_admin" />
         </activity>
 
         <activity android:name=".admin.ScreenLockTestActivity"
