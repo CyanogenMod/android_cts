@@ -609,7 +609,8 @@ public class CameraGLTest extends ActivityInstrumentationTestCase2<GLSurfaceView
                             kTestSlopMargin;
 
                     int outOfBoundsCount = 0;
-                    for (int i = 1; i < kLoopCount; i++) {
+                    // Ignore last frame because preview is turned off which impacts fps
+                    for (int i = 1; i < kLoopCount - 1; i++) {
                         float frameDurationMs =
                                 (timestamps[i] - timestamps[i-1]) / 1000000.f;
                         if (LOGVV) {
