@@ -80,7 +80,7 @@ public class VideoDecoderPerfTest extends MediaPlayerTestBase {
         super.tearDown();
     }
 
-    private static String[] getDecoderName(String mime, boolean isGoog) {
+    private static String[] getDecoderName(String mime, boolean isGoog, int width, int height) {
         MediaCodecList mcl = new MediaCodecList(MediaCodecList.REGULAR_CODECS);
         ArrayList<String> result = new ArrayList<String>();
         for (MediaCodecInfo info : mcl.getCodecInfos()) {
@@ -88,10 +88,14 @@ public class VideoDecoderPerfTest extends MediaPlayerTestBase {
                     info.getName().toLowerCase().startsWith("omx.google.") != isGoog) {
                 continue;
             }
-            CodecCapabilities caps = null;
             try {
-                caps = info.getCapabilitiesForType(mime);
-            } catch (IllegalArgumentException e) {  // mime is not supported
+                CodecCapabilities caps = info.getCapabilitiesForType(mime);
+                if (!caps.getVideoCapabilities().isSizeSupported(width, height)) {
+                    Log.i(TAG, info.getName() + " does not support size " + width + "x" + height);
+                    continue;
+                }
+            } catch (IllegalArgumentException | NullPointerException e) {
+                // mime is not supported or is not a video codec
                 continue;
             }
             result.add(info.getName());
@@ -101,29 +105,37 @@ public class VideoDecoderPerfTest extends MediaPlayerTestBase {
 
     private void decode(String mime, int video, int width, int height,
             boolean isGoog) throws Exception {
-        String[] names = getDecoderName(mime, isGoog);
-        for (String name: names) {
-            if (!MediaUtils.supports(name, mime, width, height)) {
-                Log.i(TAG, "Codec " + name + " with " + width + "," + height + " not supported");
-                continue;
-            }
+        decode(mime, video, width, height, isGoog, 600000 /* timeoutMs */);
+    }
 
+    private void decode(String mime, int video, int width, int height,
+            boolean isGoog, long testTimeoutMs) throws Exception {
+        String[] names = getDecoderName(mime, isGoog, width, height);
+        if (names.length == 0) {
+            MediaUtils.skipTest("no codecs support this type or size");
+            return;
+        }
+        // Ensure we can finish this test within the test timeout. Allow 25% slack (4/5).
+        // We test each decoder twice per repeat.
+        long maxTimeMs = Math.min(
+                testTimeoutMs / names.length * 2 / 5 / NUMBER_OF_REPEAT, MAX_TIME_MS);
+        for (String name : names) {
             boolean pass = false;
             mMeasuredFps = new double[NUMBER_OF_REPEAT];
             mResultRawData = new String[NUMBER_OF_REPEAT];
-            Log.d(TAG, "testing " + name);
+            Log.d(TAG, "testing " + name + " for " + maxTimeMs + " msecs");
             for (int i = 0; i < NUMBER_OF_REPEAT; ++i) {
                 // Decode to Surface.
                 Log.d(TAG, "round #" + i + " decode to surface");
                 Surface s = getActivity().getSurfaceHolder().getSurface();
                 // only verify the result for decode to surface case.
-                if (doDecode(name, video, width, height, s, i)) {
+                if (doDecode(name, video, width, height, s, i, maxTimeMs)) {
                     pass = true;
                 }
 
                 // Decode to buffer.
                 Log.d(TAG, "round #" + i + " decode to buffer");
-                doDecode(name, video, width, height, null, i);
+                doDecode(name, video, width, height, null, i, maxTimeMs);
             }
 
             if (!pass) {
@@ -141,7 +153,8 @@ public class VideoDecoderPerfTest extends MediaPlayerTestBase {
         mSamplesInMemory.clear();
     }
 
-    private boolean doDecode(String name, int video, int w, int h, Surface surface, int round)
+    private boolean doDecode(
+            String name, int video, int w, int h, Surface surface, int round, long maxTimeMs)
             throws Exception {
         AssetFileDescriptor testFd = mResources.openRawResourceFd(video);
         MediaExtractor extractor = new MediaExtractor();
@@ -220,7 +233,7 @@ public class VideoDecoderPerfTest extends MediaPlayerTestBase {
 
                     sawInputEOS = (++inputNum == TOTAL_FRAMES);
                     if (!sawInputEOS &&
-                            ((System.currentTimeMillis() - start) > MAX_TIME_MS)) {
+                            ((System.currentTimeMillis() - start) > maxTimeMs)) {
                         sawInputEOS = true;
                     }
                     if (sawInputEOS) {
