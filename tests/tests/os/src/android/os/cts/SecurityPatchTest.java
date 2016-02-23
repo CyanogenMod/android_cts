@@ -34,25 +34,34 @@ public class SecurityPatchTest extends InstrumentationTestCase {
     private static final int SECURITY_PATCH_YEAR = 2016;
     private static final int SECURITY_PATCH_MONTH = 02;
 
+    private boolean mSkipTests = false;
+
+    @Override
+    protected void setUp() {
+        mSkipTests = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M);
+    }
+
     /** Security patch string must exist in M or higher **/
     public void testSecurityPatchFound() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-          Log.w(TAG, "Skipping M+ Test.");
-          return;
+        if (mSkipTests) {
+            Log.w(TAG, "Skipping M+ Test.");
+            return;
         }
+
         String buildSecurityPatch = SystemProperties.get("ro.build.version.security_patch", "");
         String error = String.format(SECURITY_PATCH_ERROR, buildSecurityPatch);
         assertTrue(error, !buildSecurityPatch.isEmpty());
     }
 
-    /** Security patch should be of the form YYYY-MM-DD if it exists */
+    /** Security patch should be of the form YYYY-MM-DD in M or higher */
     public void testSecurityPatchFormat() {
+        if (mSkipTests) {
+            Log.w(TAG, "Skipping M+ Test.");
+            return;
+        }
+
         String buildSecurityPatch = SystemProperties.get("ro.build.version.security_patch", "");
         String error = String.format(SECURITY_PATCH_ERROR, buildSecurityPatch);
-        if (buildSecurityPatch.isEmpty()) {
-          Log.w(TAG, "Skipping test. ro.build.version.security_patch is not set.");
-          return;
-        }
 
         assertEquals(error, 10, buildSecurityPatch.length());
         assertTrue(error, Character.isDigit(buildSecurityPatch.charAt(0)));
@@ -67,27 +76,31 @@ public class SecurityPatchTest extends InstrumentationTestCase {
         assertTrue(error, Character.isDigit(buildSecurityPatch.charAt(9)));
     }
 
-    /** Security patch should be for the month this test was updated **/
+    /** Security patch should no older than the month this test was updated in M or higher **/
     public void testSecurityPatchDate() {
-        String buildSecurityPatch = SystemProperties.get("ro.build.version.security_patch", "");
-        String error = String.format(SECURITY_PATCH_DATE_ERROR, SECURITY_PATCH_YEAR, SECURITY_PATCH_MONTH, buildSecurityPatch);
-
-        if (buildSecurityPatch.isEmpty()) {
-          Log.w(TAG, "Skipping test. ro.build.version.security_patch is not set.");
-          return;
+        if (mSkipTests) {
+            Log.w(TAG, "Skipping M+ Test.");
+            return;
         }
+
+        String buildSecurityPatch = SystemProperties.get("ro.build.version.security_patch", "");
+        String error = String.format(SECURITY_PATCH_DATE_ERROR,
+                                     SECURITY_PATCH_YEAR,
+                                     SECURITY_PATCH_MONTH,
+                                     buildSecurityPatch);
 
         int declaredYear = 0;
         int declaredMonth = 0;
 
         try {
-          declaredYear = Integer.parseInt(buildSecurityPatch.substring(0,4));
-          declaredMonth = Integer.parseInt(buildSecurityPatch.substring(5,7));
+            declaredYear = Integer.parseInt(buildSecurityPatch.substring(0,4));
+            declaredMonth = Integer.parseInt(buildSecurityPatch.substring(5,7));
         } catch (Exception e) {
-          assertTrue(error, false);
+            assertTrue(error, false);
         }
 
-        assertTrue(error, declaredYear  >= SECURITY_PATCH_YEAR);
-        assertTrue(error, (declaredYear > SECURITY_PATCH_YEAR) || (declaredMonth >= SECURITY_PATCH_MONTH));
+        assertTrue(error, declaredYear >= SECURITY_PATCH_YEAR);
+        assertTrue(error, (declaredYear > SECURITY_PATCH_YEAR) ||
+                          (declaredMonth >= SECURITY_PATCH_MONTH));
     }
 }
