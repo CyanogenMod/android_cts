@@ -61,6 +61,7 @@ cts_security_keysets_list := \
 cts_support_packages := \
     CtsAccelerationTestStubs \
     CtsAppTestStubs \
+    CtsCppToolsApp \
     CtsDeviceAdmin \
     CtsDeviceOpenGl \
     CtsDeviceOwnerApp \
@@ -173,6 +174,7 @@ CTS_COVERAGE_TEST_CASE_LIST := \
 cts_host_libraries := \
     CtsAdbTests \
     CtsAppSecurityTests \
+    CtsCppToolsTestCases \
     CtsDevicePolicyManagerTestCases \
     CtsDumpsysHostTestCases \
     CtsHostJank \
