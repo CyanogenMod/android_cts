@@ -92,9 +92,6 @@ jboolean android_security_cts_AudioFlinger_test_setMasterMute(JNIEnv* env __unus
     status_t status = AudioSystem::setDeviceConnectionState(AUDIO_DEVICE_OUT_REMOTE_SUBMIX,
                                           AUDIO_POLICY_DEVICE_STATE_AVAILABLE,
                                           "0", "");
-    if (status != NO_ERROR) {
-        return false;
-    }
 
     bool mute;
     status = AudioSystem::getMasterMute(&mute);
@@ -136,9 +133,6 @@ jboolean android_security_cts_AudioFlinger_test_setMasterVolume(JNIEnv* env __un
     status_t status = AudioSystem::setDeviceConnectionState(AUDIO_DEVICE_OUT_REMOTE_SUBMIX,
                                           AUDIO_POLICY_DEVICE_STATE_AVAILABLE,
                                           "0", "");
-    if (status != NO_ERROR) {
-        return false;
-    }
 
     float vol;
     status = AudioSystem::getMasterVolume(&vol);
