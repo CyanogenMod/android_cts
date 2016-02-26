@@ -362,5 +362,12 @@
     "android.media.cts.EncodeVirtualDisplayTest#testEncodeVirtualDisplay"
   ],
   bug: 18705837
+},
+{
+  description: "Security CVE 2015_3826 test not working.",
+  names: [
+    "android.security.cts.StagefrightTest#testStagefright_cve_2015_3826"
+  ],
+  bug: 27368229
 }
 ]
