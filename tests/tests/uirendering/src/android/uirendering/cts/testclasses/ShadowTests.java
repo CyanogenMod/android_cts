@@ -32,7 +32,7 @@ public class ShadowTests extends ActivityTestBase {
         if (getActivity().getOnTv()) {
             shadowColorValue = 0xB7;
         }
-        // Use a higher threshold (30) than default value (20);
+        // Use a higher threshold (35) than default value (20);
         SamplePointVerifier verifier = new SamplePointVerifier(
                 new Point[] {
                         // view area
