@@ -102,10 +102,13 @@ public class MultiViewTest extends Camera2MultiViewTestCase {
                 prior = e;
             } finally {
                 try {
+                    // Close camera device first. This will give some more time for
+                    // ImageVerifierListener to finish the validation before yuvReader is closed
+                    // (all image will be closed after that)
+                    closeCamera(cameraId);
                     if (yuvReader != null) {
                         yuvReader.close();
                     }
-                    closeCamera(cameraId);
                 } catch (Exception e) {
                     if (prior != null) {
                         Log.e(TAG, "Prior exception received: " + prior);
