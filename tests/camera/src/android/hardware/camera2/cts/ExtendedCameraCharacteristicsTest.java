@@ -525,11 +525,22 @@ public class ExtendedCameraCharacteristicsTest extends AndroidTestCase {
                 (maxJpegSize.getWidth() <= maxYuvSize.getWidth() &&
                         maxJpegSize.getHeight() <= maxYuvSize.getHeight()) : false;
 
+            float croppedWidth = (float)sensorSize.getWidth();
+            float croppedHeight = (float)sensorSize.getHeight();
+            float sensorAspectRatio = (float)sensorSize.getWidth() / (float)sensorSize.getHeight();
+            float maxYuvAspectRatio = (float)maxYuvSize.getWidth() / (float)maxYuvSize.getHeight();
+            if (sensorAspectRatio < maxYuvAspectRatio) {
+                croppedHeight = (float)sensorSize.getWidth() / maxYuvAspectRatio;
+            } else if (sensorAspectRatio > maxYuvAspectRatio) {
+                croppedWidth = (float)sensorSize.getHeight() * maxYuvAspectRatio;
+            }
+            Size croppedSensorSize = new Size((int)croppedWidth, (int)croppedHeight);
+
             boolean maxYuvMatchSensor =
-                    (maxYuvSize.getWidth() <= sensorSize.getWidth() * (1.0 + SIZE_ERROR_MARGIN) &&
-                     maxYuvSize.getWidth() >= sensorSize.getWidth() * (1.0 - SIZE_ERROR_MARGIN) &&
-                     maxYuvSize.getHeight() <= sensorSize.getHeight() * (1.0 + SIZE_ERROR_MARGIN) &&
-                     maxYuvSize.getHeight() >= sensorSize.getHeight() * (1.0 - SIZE_ERROR_MARGIN));
+                    (maxYuvSize.getWidth() <= croppedSensorSize.getWidth() * (1.0 + SIZE_ERROR_MARGIN) &&
+                     maxYuvSize.getWidth() >= croppedSensorSize.getWidth() * (1.0 - SIZE_ERROR_MARGIN) &&
+                     maxYuvSize.getHeight() <= croppedSensorSize.getHeight() * (1.0 + SIZE_ERROR_MARGIN) &&
+                     maxYuvSize.getHeight() >= croppedSensorSize.getHeight() * (1.0 - SIZE_ERROR_MARGIN));
 
             // No need to do null check since framework will generate the key if HAL don't supply
             boolean haveAeLock = CameraTestUtils.getValueNotNull(
@@ -613,8 +624,9 @@ public class ExtendedCameraCharacteristicsTest extends AndroidTestCase {
                         haveFastSyncLatency);
                 assertTrue(
                         String.format("BURST-capable camera device %s max YUV size %s should be" +
-                                "close to active array size %s",
-                                mIds[counter], maxYuvSize.toString(), sensorSize.toString()),
+                                "close to active array size %s or cropped active array size %s",
+                                mIds[counter], maxYuvSize.toString(), sensorSize.toString(),
+                                croppedSensorSize.toString()),
                         maxYuvMatchSensor);
                 assertTrue(
                         String.format("BURST-capable camera device %s does not support AE lock",
