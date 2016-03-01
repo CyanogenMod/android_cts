@@ -929,6 +929,16 @@ public class BaseTelecomTestWithMockServices extends InstrumentationTestCase {
             waitForCount(count, timeoutMillis, null);
         }
 
+        public void waitForCount(long timeoutMillis) {
+             synchronized (mLock) {
+             try {
+                  mLock.wait(timeoutMillis);
+             }catch (InterruptedException ex) {
+                  ex.printStackTrace();
+             }
+           }
+        }
+
         public void waitForCount(int count, long timeoutMillis, String message) {
             synchronized (mLock) {
                 final long startTimeMillis = SystemClock.uptimeMillis();
