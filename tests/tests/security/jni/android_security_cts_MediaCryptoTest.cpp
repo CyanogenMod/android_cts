@@ -70,7 +70,12 @@ static jboolean testCrypto(sp<ICrypto> icrypto,
     return (result != OK && result != DEAD_OBJECT);
 }
 
-// Test for icrypto interface vulnerabilities
+//
+// This native code is currently disabled, as it depends on a non-NDK
+// shared library, which may not be available on all systems.
+// 
+#if 0
+//Test for icrypto interface vulnerabilities
 extern "C" jboolean Java_android_security_cts_MediaCryptoTest_validateCryptoNative(JNIEnv *env,
         jclass /*clazz*/, jobject crypto)
 {
@@ -98,6 +103,6 @@ extern "C" jboolean Java_android_security_cts_MediaCryptoTest_validateCryptoNati
     }
     return result;
 }
-
+#endif
 
 
