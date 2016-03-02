@@ -52,8 +52,7 @@ LOCAL_SHARED_LIBRARIES := \
 	libdl \
 	libcutils \
 	libcrypto \
-	libstagefright_foundation \
-	libmedia_jni
+	libstagefright_foundation 
 
 LOCAL_C_INCLUDES += ndk/sources/cpufeatures
 LOCAL_STATIC_LIBRARIES := cpufeatures
