@@ -89,7 +89,7 @@ public class HostPreconditionPreparer implements ITargetPreparer {
     protected static final String PACKAGE_VERIFIER_INCLUDE_ADB = "verifier_verify_adb_installs";
     protected static final String LOCATION_PROVIDERS_ALLOWED = "location_providers_allowed";
     /* Constant from android.os.BatteryManager */
-    private static final int BATTERY_PLUGGED_USB = 2;
+    private static final int BATTERY_PLUGGED_ANY = 7;
 
     /* Name and expected value of the device's locale property */
     private static final String LOCALE_PROPERTY_STRING = "ro.product.locale";
@@ -400,7 +400,7 @@ public class HostPreconditionPreparer implements ITargetPreparer {
      */
     protected void enableStayAwakeSetting(ITestDevice device) throws DeviceNotAvailableException {
         String shellCmd = String.format("settings put global %s %d",
-                STAY_ON_WHILE_PLUGGED_IN, BATTERY_PLUGGED_USB);
+                STAY_ON_WHILE_PLUGGED_IN, BATTERY_PLUGGED_ANY);
         device.executeShellCommand(shellCmd);
     }
 
