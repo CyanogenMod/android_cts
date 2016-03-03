@@ -718,7 +718,8 @@
             A DeviceAdmin receiver for sensor tests, it allows sensor tests to turn off the screen.
         -->
         <receiver android:name=".sensors.helpers.SensorDeviceAdminReceiver"
-                android:label="@string/snsr_device_admin_receiver">
+                android:label="@string/snsr_device_admin_receiver"
+                android:permission="android.permission.BIND_DEVICE_ADMIN">
             <meta-data android:name="android.app.device_admin"
                        android:resource="@xml/sensor_device_admin" />
             <intent-filter>

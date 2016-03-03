@@ -61,6 +61,9 @@ public class TestSensorEventListener implements SensorEventListener2 {
 
     private final Handler mHandler;
     private final TestSensorEnvironment mEnvironment;
+
+    // Wakelock for keeping the system running after terminate criterion is met.
+    // Useful for CtsVerifier test cases in which cpu can sleep if usb is not connected.
     private final PowerManager.WakeLock mTestSensorEventListenerWakeLock;
 
     /**
@@ -262,6 +265,9 @@ public class TestSensorEventListener implements SensorEventListener2 {
     /**
      * Wait for {@link #onFlushCompleted(Sensor)} to be called.
      *
+     * A wake lock may be acquired at the return if operation is successful. Do
+     * {@link releaseWakeLock()} if the wakelock is not necessary.
+     *
      * @throws AssertionError if there was a timeout after {@link #FLUSH_TIMEOUT_US} &micro;s
      */
     public void waitForFlushComplete(CountDownLatch latch,
@@ -285,6 +291,9 @@ public class TestSensorEventListener implements SensorEventListener2 {
 
     /**
      * Collect a specific number of {@link TestSensorEvent}s.
+     *
+     * A wake lock may be acquired at the return if operation is successful. Do
+     * {@link releaseWakeLock()} if the wakelock is not necessary.
      *
      * @throws AssertionError if there was a timeout after {@link #FLUSH_TIMEOUT_US} &micro;s
      */
