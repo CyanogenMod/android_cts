@@ -38,6 +38,7 @@ import android.os.UserManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.content.FileProvider;
+import android.support.v4.util.Pair;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -149,6 +150,7 @@ public class ByodHelperActivity extends Activity implements DialogCallback, Hand
 
     private Uri mImageUri;
     private Uri mVideoUri;
+    private File mImageFile;
 
     private ArrayList<File> mTempFiles = new ArrayList<File>();
 
@@ -230,7 +232,9 @@ public class ByodHelperActivity extends Activity implements DialogCallback, Hand
             // We need the camera permission to send the image capture intent.
             grantCameraPermissionToSelf();
             Intent captureImageIntent = getCaptureImageIntent();
-            mImageUri = getTempUri("image.jpg");
+            Pair<File, Uri> pair = getTempUri("image.jpg");
+            mImageFile = pair.first;
+            mImageUri = pair.second;
             captureImageIntent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
             if (captureImageIntent.resolveActivity(getPackageManager()) != null) {
                 startActivityForResult(captureImageIntent, REQUEST_IMAGE_CAPTURE);
@@ -244,7 +248,7 @@ public class ByodHelperActivity extends Activity implements DialogCallback, Hand
             // We need the camera permission to send the video capture intent.
             grantCameraPermissionToSelf();
             Intent captureVideoIntent = getCaptureVideoIntent();
-            mVideoUri = getTempUri("video.mp4");
+            mVideoUri = getTempUri("video.mp4").second;
             captureVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, mVideoUri);
             if (captureVideoIntent.resolveActivity(getPackageManager()) != null) {
                 startActivityForResult(captureVideoIntent, REQUEST_VIDEO_CAPTURE);
@@ -352,7 +356,7 @@ public class ByodHelperActivity extends Activity implements DialogCallback, Hand
             }
             case REQUEST_IMAGE_CAPTURE: {
                 if (resultCode == RESULT_OK) {
-                    ByodPresentMediaDialog.newImageInstance(mImageUri)
+                    ByodPresentMediaDialog.newImageInstance(mImageFile)
                             .show(getFragmentManager(), "ViewImageDialogFragment");
                 } else {
                     // Failed capturing image.
@@ -420,13 +424,13 @@ public class ByodHelperActivity extends Activity implements DialogCallback, Hand
         return new Intent(ACTION_LOCKNOW);
     }
 
-    private Uri getTempUri(String fileName) {
+    private Pair<File, Uri> getTempUri(String fileName) {
         final File file = new File(getFilesDir() + File.separator + "images"
                 + File.separator + fileName);
         file.getParentFile().mkdirs(); //if the folder doesn't exists it is created
         mTempFiles.add(file);
-        return FileProvider.getUriForFile(this,
-                    "com.android.cts.verifier.managedprovisioning.fileprovider", file);
+        return new Pair<>(file, FileProvider.getUriForFile(this,
+                    "com.android.cts.verifier.managedprovisioning.fileprovider", file));
     }
 
     private void cleanUpTempUris() {
