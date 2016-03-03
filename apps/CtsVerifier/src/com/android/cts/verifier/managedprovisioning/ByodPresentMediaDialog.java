@@ -20,6 +20,8 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
@@ -37,6 +39,8 @@ import android.graphics.Point;
 import android.content.ContentResolver;
 import com.android.cts.verifier.R;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -47,17 +51,17 @@ public class ByodPresentMediaDialog extends DialogFragment {
     static final String TAG = "ByodPresentMediaDialog";
 
     private static final String KEY_VIDEO_URI = "video";
-    private static final String KEY_IMAGE_URI = "image";
+    private static final String KEY_IMAGE_FILE = "image_file";
     private static final String KEY_AUDIO_URI = "audio";
 
     private Bitmap scaled = null;
     /**
      * Get a dialogFragment showing an image.
      */
-    public static ByodPresentMediaDialog newImageInstance(Uri uri) {
+    public static ByodPresentMediaDialog newImageInstance(File file) {
         ByodPresentMediaDialog dialog = new ByodPresentMediaDialog();
         Bundle args = new Bundle();
-        args.putParcelable(KEY_IMAGE_URI, uri);
+        args.putSerializable(KEY_IMAGE_FILE, file);
         dialog.setArguments(args);
         return dialog;
     }
@@ -126,15 +130,20 @@ public class ByodPresentMediaDialog extends DialogFragment {
                     videoView.start();
                 }
             });
-        } else if (arguments.containsKey(KEY_IMAGE_URI)) {
+        } else if (arguments.containsKey(KEY_IMAGE_FILE)) {
             // Show image UI.
+
             dialog.setTitle(getString(R.string.provisioning_byod_verify_image_title));
-            Uri uri = (Uri)getArguments().getParcelable(KEY_IMAGE_URI);
+            File imageFile = (File) getArguments().getSerializable(KEY_IMAGE_FILE);
+
             ImageView imageView = (ImageView) dialog.findViewById(R.id.imageView);
             imageView.setVisibility(View.VISIBLE);
 
-            try{
-                InputStream input = getActivity().getContentResolver().openInputStream(uri);
+            try {
+                InputStream input = null;
+                int orientationInDegree = getOrientationInDegreeFromImage(imageFile);
+                Log.d(TAG, "orientationInDegree: " + orientationInDegree);
+                input = new FileInputStream(imageFile);
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inJustDecodeBounds = true;
                 BitmapFactory.decodeStream(input, null, options);
@@ -148,13 +157,19 @@ public class ByodPresentMediaDialog extends DialogFragment {
 
                 options.inJustDecodeBounds = false;
                 input.close();
-                input = getActivity().getContentResolver().openInputStream(uri);
+                input = new FileInputStream(imageFile);
                 scaled = BitmapFactory.decodeStream(input, null, options);
+                if (orientationInDegree != 0) {
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(orientationInDegree);
+                    scaled = Bitmap.createBitmap(scaled, 0, 0, scaled.getWidth(),
+                            scaled.getHeight(), matrix, true);
+                }
                 input.close();
                 imageView.setImageBitmap(scaled);
-            }catch(IOException e){
+            } catch (IOException e) {
                 Log.e(TAG, "Cannot get image.", e);
-                Toast.makeText(getActivity(),R.string.provisioning_byod_capture_image_error,
+                Toast.makeText(getActivity(), R.string.provisioning_byod_capture_image_error,
                         Toast.LENGTH_SHORT).show();
                 getActivity().finish();
             }
@@ -194,6 +209,26 @@ public class ByodPresentMediaDialog extends DialogFragment {
         }
 
         return dialog;
+    }
+
+    private static int getOrientationInDegreeFromImage(File imageFile) throws IOException {
+        ExifInterface exifInterface = new ExifInterface(imageFile.getAbsolutePath());
+        int exifOrientation =
+                exifInterface.getAttributeInt(
+                        ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        return exifOrientationToDegree(exifOrientation);
+    }
+
+    private static int exifOrientationToDegree(int exifOrientation) {
+        switch (exifOrientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                return 90;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                return 180;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                return 270;
+        }
+        return 0;
     }
 
     @Override
