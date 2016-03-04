@@ -252,7 +252,7 @@ public class MyDocumentsProvider extends DocumentsProvider {
                     }
                     return null;
                 }
-            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
             return pipe[1];
         } else {
             new AsyncTask<Void, Void, Void>() {
@@ -275,7 +275,7 @@ public class MyDocumentsProvider extends DocumentsProvider {
                     }
                     return null;
                 }
-            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
             return pipe[0];
         }
     }
