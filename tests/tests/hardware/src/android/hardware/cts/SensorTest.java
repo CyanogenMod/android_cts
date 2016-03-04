@@ -314,10 +314,14 @@ public class SensorTest extends SensorTestCase {
     // TODO: remove when parameterized tests are supported (see SensorBatchingTests.java)
     @TimeoutReq(minutes=20)
     public void testBatchAndFlush() throws Exception {
+        // TODO - replace this constant once method to do so is made available
+        final int SENSOR_TYPE_DEVICE_PRIVATE_BASE = 0x10000;
         SensorCtsHelper.sleep(3, TimeUnit.SECONDS);
         ArrayList<Throwable> errorsFound = new ArrayList<>();
         for (Sensor sensor : mSensorList) {
-            verifyRegisterListenerCallFlush(sensor, null /* handler */, errorsFound);
+            if (sensor.getType() < SENSOR_TYPE_DEVICE_PRIVATE_BASE) {
+                verifyRegisterListenerCallFlush(sensor, null /* handler */, errorsFound);
+            }
         }
         assertOnErrors(errorsFound);
     }
