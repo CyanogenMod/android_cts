@@ -169,6 +169,11 @@ public class GeolocationTest extends ActivityInstrumentationTestCase2<WebViewCts
                     break;
                 }
             }
+            if(mProviders.size() == 0)
+            {
+                addTestLocationProvider();
+                mAddedTestLocationProvider = true;
+            }
             mProviders.add(LocationManager.FUSED_PROVIDER);
             addTestProviders();
         }
@@ -185,6 +190,10 @@ public class GeolocationTest extends ActivityInstrumentationTestCase2<WebViewCts
                     mLocationManager.clearTestProviderEnabled(provider);
                     mLocationManager.removeTestProvider(provider);
                 } catch (IllegalArgumentException e) {} // Not much to do about this
+            }
+            if(mAddedTestLocationProvider)
+            {
+                removeTestLocationProvider();
             }
         }
         LocationUtils.registerMockLocationProvider(getInstrumentation(), false);
@@ -211,6 +220,29 @@ public class GeolocationTest extends ActivityInstrumentationTestCase2<WebViewCts
                     provider.getAccuracy()); // accuracy
             mLocationManager.setTestProviderEnabled(provider.getName(), true);
         }
+    }
+
+    private static final String TEST_PROVIDER_NAME = "location_provider_test";
+    private boolean mAddedTestLocationProvider = false;
+
+    private void addTestLocationProvider() {
+        mLocationManager.addTestProvider(
+                TEST_PROVIDER_NAME,
+                true,  // requiresNetwork,
+                false, // requiresSatellite,
+                false, // requiresCell,
+                false, // hasMonetaryCost,
+                true,  // supportsAltitude,
+                false, // supportsSpeed,
+                true,  // supportsBearing,
+                Criteria.POWER_MEDIUM,   // powerRequirement,
+                Criteria.ACCURACY_FINE); // accuracy
+        mLocationManager.setTestProviderEnabled(TEST_PROVIDER_NAME, true);
+    }
+
+    private void removeTestLocationProvider() {
+        mLocationManager.clearTestProviderEnabled(TEST_PROVIDER_NAME);
+        mLocationManager.removeTestProvider(TEST_PROVIDER_NAME);
     }
 
     private void startUpdateLocationThread() {
