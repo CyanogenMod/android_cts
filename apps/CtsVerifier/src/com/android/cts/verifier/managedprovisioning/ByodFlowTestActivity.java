@@ -77,7 +77,8 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
     private DialogTestListItem mIntentFiltersTest;
     private DialogTestListItem mPermissionLockdownTest;
     private DialogTestListItem mCrossProfileImageCaptureSupportTest;
-    private DialogTestListItem mCrossProfileVideoCaptureSupportTest;
+    private DialogTestListItem mCrossProfileVideoCaptureWithExtraOutputSupportTest;
+    private DialogTestListItem mCrossProfileVideoCaptureWithoutExtraOutputSupportTest;
     private DialogTestListItem mCrossProfileAudioCaptureSupportTest;
     private TestListItem mKeyguardDisabledFeaturesTest;
     private DialogTestListItem mDisableNfcBeamTest;
@@ -390,12 +391,18 @@ public class ByodFlowTestActivity extends DialogTestListActivity {
          */
         if (canResolveIntent(ByodHelperActivity.getCaptureVideoIntent())) {
             // Capture video intent can be resolved in primary profile, so test.
-            mCrossProfileVideoCaptureSupportTest = new DialogTestListItem(this,
-                    R.string.provisioning_byod_capture_video_support,
-                    "BYOD_CrossProfileVideoCaptureSupportTest",
+            mCrossProfileVideoCaptureWithExtraOutputSupportTest = new DialogTestListItem(this,
+                    R.string.provisioning_byod_capture_video_support_with_extra_output,
+                    "BYOD_CrossProfileVideoCaptureWithExtraOutputSupportTest",
                     R.string.provisioning_byod_capture_video_support_info,
-                    new Intent(ByodHelperActivity.ACTION_CAPTURE_AND_CHECK_VIDEO));
-            adapter.add(mCrossProfileVideoCaptureSupportTest);
+                    new Intent(ByodHelperActivity.ACTION_CAPTURE_AND_CHECK_VIDEO_WITH_EXTRA_OUTPUT));
+            adapter.add(mCrossProfileVideoCaptureWithExtraOutputSupportTest);
+            mCrossProfileVideoCaptureWithoutExtraOutputSupportTest = new DialogTestListItem(this,
+                    R.string.provisioning_byod_capture_video_support_without_extra_output,
+                    "BYOD_CrossProfileVideoCaptureWithoutExtraOutputSupportTest",
+                    R.string.provisioning_byod_capture_video_support_info,
+                    new Intent(ByodHelperActivity.ACTION_CAPTURE_AND_CHECK_VIDEO_WITHOUT_EXTRA_OUTPUT));
+            adapter.add(mCrossProfileVideoCaptureWithoutExtraOutputSupportTest);
         } else {
             // Capture video intent cannot be resolved in primary profile, so skip test.
             Toast.makeText(ByodFlowTestActivity.this,
