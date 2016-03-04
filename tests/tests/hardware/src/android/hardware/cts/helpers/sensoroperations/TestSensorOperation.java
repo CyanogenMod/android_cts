@@ -206,6 +206,7 @@ public class TestSensorOperation extends SensorOperation {
                     SensorStats.getSanitizedSensorName(mEnvironment.getSensor()),
                     mEnvironment.getFrequencyString(),
                     mEnvironment.getMaxReportLatencyUs());
+            getStats().addValue(SensorStats.EVENT_LOG_FILENAME, sanitizedFileName);
         } catch (SensorTestPlatformException e) {
             Log.w(TAG, "Unable to generate file name to save collected events", e);
             return;
