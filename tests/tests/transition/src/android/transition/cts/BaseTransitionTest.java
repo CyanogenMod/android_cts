@@ -59,7 +59,7 @@ public class BaseTransitionTest extends ActivityInstrumentationTestCase2<Transit
     }
 
     protected static void waitForStart(SimpleTransitionListener listener) throws InterruptedException {
-        long endTime = SystemClock.uptimeMillis() + 50;
+        long endTime = SystemClock.uptimeMillis() + 4000;
         synchronized (listener) {
             while (!listener.started) {
                 long now = SystemClock.uptimeMillis();
