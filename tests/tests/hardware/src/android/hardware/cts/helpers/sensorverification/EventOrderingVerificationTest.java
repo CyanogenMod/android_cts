@@ -41,13 +41,23 @@ public class EventOrderingVerificationTest extends TestCase {
     }
 
     /**
-     * Test that the verification passes when the timestamps are the same.
+     * Test that the verification fails when the timestamps are the same.
      */
     public void testSameTimestamp() {
         SensorStats stats = new SensorStats();
         EventOrderingVerification verification = getVerification(0, 0, 0, 0, 0);
-        verification.verify(stats);
-        verifyStats(stats, true, 0);
+        try {
+            verification.verify(stats);
+            fail("Expected an AssertionError");
+        } catch (AssertionError e) {
+            // Expected;
+        }
+        verifyStats(stats, false, 4);
+        List<Integer> indices = getIndices(stats);
+        assertTrue(indices.contains(1));
+        assertTrue(indices.contains(2));
+        assertTrue(indices.contains(3));
+        assertTrue(indices.contains(4));
     }
 
     /**
