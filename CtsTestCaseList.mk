@@ -48,6 +48,7 @@ cts_support_packages := \
     TestDeviceSetup \
     CtsUiAutomatorApp \
     CtsUsbSerialTestApp \
+    CtsTrustedVoiceApp \
     $(cts_security_apps_list)
 
 cts_external_packages := \
@@ -137,6 +138,7 @@ cts_host_libraries := \
     CtsMonkeyTestCases \
     CtsSampleHostTestCases \
     CtsThemeHostTestCases \
+    CtsTrustedVoiceHostTestCases \
     CtsUsbTests
 
 # Native test executables that need to have associated test XMLs.
