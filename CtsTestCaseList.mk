@@ -84,6 +84,7 @@ cts_support_packages := \
     TestDeviceSetup \
     CtsUiAutomatorApp \
     CtsUsbSerialTestApp \
+    CtsTrustedVoiceApp \
     $(cts_security_apps_list) \
     $(cts_security_keysets_list)
 
@@ -188,6 +189,7 @@ cts_host_libraries := \
     CtsMonkeyTestCases \
     CtsThemeHostTestCases \
     CtsSecurityHostTestCases \
+    CtsTrustedVoiceHostTestCases \
     CtsUsbTests
 
 # List of native tests. For 32 bit targets, assumes that there will be
