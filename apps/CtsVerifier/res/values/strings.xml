@@ -864,18 +864,24 @@
     <string name="usb_accessory_test">USB Accessory Test</string>
     <string name="sensor_power_test">Sensor Power Test</string>
     <string name="usb_accessory_test_info">
-        1. Connect your Android device to a computer and run the \'cts-usb-accessory\' program
-        included with the CTS Verifier bundle.
-        \n\n2. If you have not started the CTS Verifier, press \'OK\' when asked to open the CTS
+        1. Connect your Android device to a computer and ensure that the connection is set
+        to charging only from the Android device.
+        \n\n2.Run the \'cts-usb-accessory\' program included with the CTS Verifier bundle.
+        \n\n3. If you have not started the CTS Verifier, press \'OK\' when asked to open the CTS
         Verifier when the accessory is connected. \n\nIf you are already in this test,
         then you can press \'Cancel\' but press \'OK\' in the next dialog asking whether to allow
         CTS Verifier to access the accessory.
-        \n\n3. You should see the accessory and the CTS Verifier display a series of messages
+        \n\n4. You should see the accessory and the CTS Verifier display a series of messages
         which indicates that the accessory support is working properly.
     </string>
     <string name="usb_not_available_title">USB accessory feature is not available?</string>
     <string name="usb_not_available_message">If your device is supposed to support USB accessories, your API implementation is not behaving correctly!</string>
     <string name="usb_received_messages">Received Messages</string>
+    <string name="usb_reconnect_title">Disconnect and Reconnect</string>
+    <string name="usb_disconnect_message">Please disconnect the Android device and the computer.</string>
+    <string name="usb_connect_message">Please connect the Android device and the computer.</string>
+    <string name="usb_reconnect_abort">Abort Test</string>
+    <string name="usb_wait_for_done">Could not find USB accessory. Try waiting longer.</string>
     <string name="usb_sent_messages">Sent Messages</string>
     <string name="usb_no_messages">No messages</string>
     <string name="usb_message_thread_started">Starting message processing...</string>
@@ -883,6 +889,7 @@
     <string name="usb_message_thread_ended">Stopping message processing...</string>
     <string name="usb_test_passed">Received all expected messages. Pass button enabled!</string>
     <string name="usb_file_descriptor_error">Could not open file descriptor for USB accessory... try reconnecting and restarting the accessory?</string>
+    <string name="usb_test_abort">Test lost focus, aborting test.</string>
 
     <!-- Strings for the Camera ITS test activity -->
     <string name="camera_its_test">Camera ITS Test</string>
