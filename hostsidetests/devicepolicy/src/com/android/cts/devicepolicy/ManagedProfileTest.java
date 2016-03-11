@@ -389,6 +389,12 @@ public class ManagedProfileTest extends BaseDevicePolicyTest {
         }
 
         try {
+            // Add test account
+            assertTrue(runDeviceTestsAsUser(MANAGED_PROFILE_PKG, ".ContactsTest",
+                    "testAddTestAccount", 0));
+            assertTrue(runDeviceTestsAsUser(MANAGED_PROFILE_PKG, ".ContactsTest",
+                    "testAddTestAccount", mUserId));
+
             // Insert Primary profile Contacts
             assertTrue(runDeviceTestsAsUser(MANAGED_PROFILE_PKG, ".ContactsTest",
                     "testPrimaryProfilePhoneAndEmailLookup_insertedAndfound", 0));
