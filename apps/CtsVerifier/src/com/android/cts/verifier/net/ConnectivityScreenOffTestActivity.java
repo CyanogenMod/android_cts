@@ -159,7 +159,7 @@ public class ConnectivityScreenOffTestActivity extends PassFailButtons.Activity 
                 null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
         // Whether or not this device (currently) has a battery.
-        mHasBattery = batteryInfo.getBooleanExtra(BatteryManager.EXTRA_PRESENT, true);
+        mHasBattery = batteryInfo.getBooleanExtra(BatteryManager.EXTRA_PRESENT, false);
 
         // Check if the device is already on battery power.
         if (mHasBattery) {
