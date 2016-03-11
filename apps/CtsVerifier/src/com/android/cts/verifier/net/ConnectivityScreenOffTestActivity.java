@@ -23,6 +23,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.ConnectivityManager.NetworkCallback;
@@ -89,7 +90,7 @@ public class ConnectivityScreenOffTestActivity extends PassFailButtons.Activity 
 
     private final ScreenAndPlugStateReceiver mReceiver;
     private final IntentFilter mIntentFilter;
-    private boolean mHasBattery;
+    private boolean mWaitForPowerDisconnected;
 
     private PowerManager mPowerManager;
     private PowerManager.WakeLock mWakeLock;
@@ -159,10 +160,11 @@ public class ConnectivityScreenOffTestActivity extends PassFailButtons.Activity 
                 null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
         // Whether or not this device (currently) has a battery.
-        mHasBattery = batteryInfo.getBooleanExtra(BatteryManager.EXTRA_PRESENT, false);
+        mWaitForPowerDisconnected =
+                batteryInfo.getBooleanExtra(BatteryManager.EXTRA_PRESENT, false) && !isLeanback();
 
         // Check if the device is already on battery power.
-        if (mHasBattery) {
+        if (mWaitForPowerDisconnected) {
             BatteryManager battMgr = (BatteryManager) getSystemService(Context.BATTERY_SERVICE);
             if (!battMgr.isCharging()) {
                 mState.setPowerDisconnected();
@@ -286,7 +288,8 @@ public class ConnectivityScreenOffTestActivity extends PassFailButtons.Activity 
 
     /**
      * TODO(ek): Evaluate reworking the code roughly as follows:
-     *     - Move all the shared state here, including mHasBattery (and mTestingThread).
+     *     - Move all the shared state here, including mWaitForPowerDisconnected
+     *       (and mTestingThread).
      *     - Move from synchronizing on mLock to synchronizing on this since the
      *       AppState object is final, and delete mLock.
      *     - Synchronize the methods below, and add some required new methods.
@@ -311,7 +314,9 @@ public class ConnectivityScreenOffTestActivity extends PassFailButtons.Activity 
 
         void setPowerConnected() { mPowerDisconnectTime = 0; }
         void setPowerDisconnected() { mPowerDisconnectTime = SystemClock.elapsedRealtime(); }
-        boolean validPowerStateForTesting() { return !mHasBattery || (mPowerDisconnectTime > 0); }
+        boolean validPowerStateForTesting() {
+            return !mWaitForPowerDisconnected || (mPowerDisconnectTime > 0);
+        }
     }
 
     class ScreenAndPlugStateReceiver extends BroadcastReceiver {
@@ -453,7 +458,7 @@ public class ConnectivityScreenOffTestActivity extends PassFailButtons.Activity 
                     continue;
                 }
 
-                if (mHasBattery) {
+                if (mWaitForPowerDisconnected) {
                     final long delta = SystemClock.elapsedRealtime() - localState.mPowerDisconnectTime;
                     if (delta < MIN_POWER_DISCONNECT_MS) {
                         nextSleepDurationMs = (int) (MIN_POWER_DISCONNECT_MS - delta);
@@ -628,5 +633,10 @@ public class ConnectivityScreenOffTestActivity extends PassFailButtons.Activity 
         }
 
         return new HttpResult(rcode, msg);
+    }
+
+    private boolean isLeanback() {
+        final PackageManager pm = this.getPackageManager();
+        return (pm != null && pm.hasSystemFeature(PackageManager.FEATURE_LEANBACK));
     }
 }
