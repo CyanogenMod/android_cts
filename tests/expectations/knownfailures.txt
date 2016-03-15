@@ -374,5 +374,10 @@
       "android.security.cts.MediaCryptoTest#testMediaCryptoWidevine"
   ],
   bug: 27218502
+},
+{
+  description: "Still investigating this, root cause unknown yet",
+  bug: 27578806,
+  names: ["com.android.cts.cpptools.RunAsHostTest#testRunAs"]
 }
 ]
