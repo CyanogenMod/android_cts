@@ -25,7 +25,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.telephony.SmsManager;
+import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import android.telephony.TelephonyManager;
 import android.test.AndroidTestCase;
@@ -57,6 +57,7 @@ public class SmsManagerTest extends AndroidTestCase {
     private static final String SMS_SEND_ACTION = "CTS_SMS_SEND_ACTION";
     private static final String SMS_DELIVERY_ACTION = "CTS_SMS_DELIVERY_ACTION";
     private static final String DATA_SMS_RECEIVED_ACTION = "android.intent.action.DATA_SMS_RECEIVED";
+    public static final String SMS_DELIVER_DEFAULT_APP_ACTION = "CTS_SMS_DELIVERY_ACTION_DEFAULT_APP";
 
     // List of network operators that don't support SMS delivery report
     private static final List<String> NO_DELIVERY_REPORTS =
@@ -190,6 +191,8 @@ public class SmsManagerTest extends AndroidTestCase {
     private SmsBroadcastReceiver mSendReceiver;
     private SmsBroadcastReceiver mDeliveryReceiver;
     private SmsBroadcastReceiver mDataSmsReceiver;
+    private SmsBroadcastReceiver mSmsDeliverReceiver;
+    private SmsBroadcastReceiver mSmsReceivedReceiver;
     private PendingIntent mSentIntent;
     private PendingIntent mDeliveredIntent;
     private Intent mSendIntent;
@@ -254,7 +257,7 @@ public class SmsManagerTest extends AndroidTestCase {
         return longText.equals(actualMessage);
     }
 
-    public void testSendMessages() throws InterruptedException {
+    public void testSendAndReceiveMessages() throws InterruptedException {
         if (!mPackageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)) {
             return;
         }
@@ -267,16 +270,23 @@ public class SmsManagerTest extends AndroidTestCase {
         IntentFilter sendIntentFilter = new IntentFilter(SMS_SEND_ACTION);
         IntentFilter deliveryIntentFilter = new IntentFilter(SMS_DELIVERY_ACTION);
         IntentFilter dataSmsReceivedIntentFilter = new IntentFilter(DATA_SMS_RECEIVED_ACTION);
+        IntentFilter smsDeliverIntentFilter = new IntentFilter(SMS_DELIVER_DEFAULT_APP_ACTION);
+        IntentFilter smsReceivedIntentFilter =
+                new IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION);
         dataSmsReceivedIntentFilter.addDataScheme("sms");
         dataSmsReceivedIntentFilter.addDataAuthority("localhost", "19989");
 
         mSendReceiver = new SmsBroadcastReceiver(SMS_SEND_ACTION);
         mDeliveryReceiver = new SmsBroadcastReceiver(SMS_DELIVERY_ACTION);
         mDataSmsReceiver = new SmsBroadcastReceiver(DATA_SMS_RECEIVED_ACTION);
+        mSmsDeliverReceiver = new SmsBroadcastReceiver(SMS_DELIVER_DEFAULT_APP_ACTION);
+        mSmsReceivedReceiver = new SmsBroadcastReceiver(Telephony.Sms.Intents.SMS_RECEIVED_ACTION);
 
         getContext().registerReceiver(mSendReceiver, sendIntentFilter);
         getContext().registerReceiver(mDeliveryReceiver, deliveryIntentFilter);
         getContext().registerReceiver(mDataSmsReceiver, dataSmsReceivedIntentFilter);
+        getContext().registerReceiver(mSmsDeliverReceiver, smsDeliverIntentFilter);
+        getContext().registerReceiver(mSmsReceivedReceiver, smsReceivedIntentFilter);
 
         // send single text sms
         init();
@@ -285,6 +295,12 @@ public class SmsManagerTest extends AndroidTestCase {
         if (mDeliveryReportSupported) {
             assertTrue(mDeliveryReceiver.waitForCalls(1, TIME_OUT));
         }
+        // non-default app should receive only SMS_RECEIVED_ACTION
+        assertTrue(mSmsReceivedReceiver.waitForCalls(1, TIME_OUT));
+        assertTrue(mSmsDeliverReceiver.waitForCalls(0, 0));
+
+        // due to permission restrictions, currently there is no way to make this test app the
+        // default SMS app
 
         if (mTelephonyManager.getPhoneType() == TelephonyManager.PHONE_TYPE_CDMA) {
             // TODO: temp workaround, OCTET encoding for EMS not properly supported
@@ -326,6 +342,9 @@ public class SmsManagerTest extends AndroidTestCase {
             if (mDeliveryReportSupported) {
               assertTrue(mDeliveryReceiver.waitForCalls(numParts, TIME_OUT));
             }
+            // non-default app should receive only SMS_RECEIVED_ACTION
+            assertTrue(mSmsReceivedReceiver.waitForCalls(1, TIME_OUT));
+            assertTrue(mSmsDeliverReceiver.waitForCalls(0, 0));
         } else {
             // This GSM network doesn't support Multipart SMS message.
             // Skip the test.
@@ -336,6 +355,8 @@ public class SmsManagerTest extends AndroidTestCase {
         mSendReceiver.reset();
         mDeliveryReceiver.reset();
         mDataSmsReceiver.reset();
+        mSmsDeliverReceiver.reset();
+        mSmsReceivedReceiver.reset();
         mReceivedDataSms = false;
         mSentIntent = PendingIntent.getBroadcast(getContext(), 0, mSendIntent,
                 PendingIntent.FLAG_ONE_SHOT);
