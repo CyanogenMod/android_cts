@@ -441,8 +441,7 @@
         </activity>
 
         <activity android:name=".net.ConnectivityScreenOffTestActivity"
-                android:label="@string/network_screen_off_test"
-                android:screenOrientation="portrait">
+                android:label="@string/network_screen_off_test">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.cts.intent.category.MANUAL_TEST" />
