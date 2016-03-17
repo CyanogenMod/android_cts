@@ -108,9 +108,19 @@ public class StaticMetadataTest extends Camera2AndroidTestCase {
                 // Max jpeg resolution must be very close to  sensor resolution
                 Size[] jpegSizes = mStaticInfo.getJpegOutputSizesChecked();
                 Size maxJpegSize = CameraTestUtils.getMaxSize(jpegSizes);
+                float croppedWidth = (float)sensorSize.getWidth();
+                float croppedHeight = (float)sensorSize.getHeight();
+                float sensorAspectRatio = (float)sensorSize.getWidth() / (float)sensorSize.getHeight();
+                float maxJpegAspectRatio = (float)maxJpegSize.getWidth() / (float)maxJpegSize.getHeight();
+                if (sensorAspectRatio < maxJpegAspectRatio) {
+                    croppedHeight = (float)sensorSize.getWidth() / maxJpegAspectRatio;
+                } else if (sensorAspectRatio > maxJpegAspectRatio) {
+                    croppedWidth = (float)sensorSize.getHeight() * maxJpegAspectRatio;
+                }
+                Size croppedSensorSize = new Size((int)croppedWidth, (int)croppedHeight);
                 mCollector.expectSizesAreSimilar(
-                    "Active array size and max JPEG size should be similar",
-                    sensorSize, maxJpegSize, SIZE_ERROR_MARGIN);
+                    "Active array size or cropped active array size and max JPEG size should be similar",
+                    croppedSensorSize, maxJpegSize, SIZE_ERROR_MARGIN);
             }
 
             // TODO: test all the keys mandatory for all capability devices.
