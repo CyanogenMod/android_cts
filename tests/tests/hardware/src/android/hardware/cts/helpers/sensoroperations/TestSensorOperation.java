@@ -246,6 +246,9 @@ public class TestSensorOperation extends SensorOperation {
     /**
      * Creates an operation that will wait for a given amount of events to arrive.
      *
+     * After the execution of this type of test operation, the wakelock passed in will be acquired.
+     * Make sure it is released at clean up.
+     *
      * @param environment The test environment.
      * @param eventCount The number of events to wait for.
      */
@@ -268,14 +271,17 @@ public class TestSensorOperation extends SensorOperation {
                                 environment.toString(),
                                 listener.getCollectedEvents().size() - initialNumEvents1 > 0);
                     }
+                    // acknowledge waitForFlushComplete
+                    listener.releaseWakeLock();
 
                     Log.i(TAG, "Collected sensor events size1=" +
                             listener.getCollectedEvents().size());
                     int initialNumEvents2 = listener.getCollectedEvents().size();
+
+                    // allow device to go to sleep
                     if (wakeLock.isHeld()) {
                         wakeLock.release();
                     }
-                    listener.releaseWakeLock();
 
                     SuspendStateMonitor suspendMonitor = new SuspendStateMonitor();
                     long approxStartTimeMs = SystemClock.elapsedRealtime();
@@ -283,6 +289,7 @@ public class TestSensorOperation extends SensorOperation {
                     suspendMonitor.waitForWakeUp(15);
                     suspendMonitor.cancel();
 
+                    // keep device awake for processing
                     if (!wakeLock.isHeld()) {
                         wakeLock.acquire();
                     }
@@ -315,10 +322,10 @@ public class TestSensorOperation extends SensorOperation {
                     Log.i(TAG, "Collected sensor events size3=" +
                             listener.getCollectedEvents().size());
                 } finally {
+                    // make sure the device can run until the test activity take over.
                     if(!wakeLock.isHeld()) {
                         wakeLock.acquire();
                     }
-                    listener.releaseWakeLock();
                     sensorManager.unregisterListener();
                 }
             }

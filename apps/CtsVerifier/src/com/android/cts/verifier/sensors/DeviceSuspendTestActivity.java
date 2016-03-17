@@ -89,6 +89,9 @@ public class DeviceSuspendTestActivity
               // Ignore.
             }
             LocalBroadcastManager.getInstance(this).unregisterReceiver(myBroadCastReceiver);
+            if (mDeviceSuspendLock != null && mDeviceSuspendLock.isHeld()) {
+                mDeviceSuspendLock.release();
+            }
         }
 
         @Override
@@ -97,9 +100,6 @@ public class DeviceSuspendTestActivity
             if (mScreenManipulator != null) {
                 mScreenManipulator.releaseScreenOn();
                 mScreenManipulator.close();
-            }
-            if (mDeviceSuspendLock.isHeld()) {
-                mDeviceSuspendLock.release();
             }
         }
 
