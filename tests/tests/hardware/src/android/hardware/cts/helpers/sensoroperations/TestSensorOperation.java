@@ -150,8 +150,8 @@ public class TestSensorOperation extends SensorOperation {
             failed |= evaluateResults(collectedEvents, verification, sb);
         }
 
+        trySaveCollectedEvents(parent, listener);
         if (failed) {
-            trySaveCollectedEvents(parent, listener);
             String msg = SensorCtsHelper
                     .formatAssertionMessage("VerifySensorOperation", mEnvironment, sb.toString());
             getStats().addValue(SensorStats.ERROR, msg);
