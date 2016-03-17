@@ -90,6 +90,7 @@ public class SensorIntegrationTests extends SensorTestCase {
                     context,
                     sensorType,
                     shouldEmulateSensorUnderLoad(),
+                    true, /* isIntegrationTest */
                     sensor.getMinDelay(),
                     MAX_REPORTING_LATENCY_US);
             TestSensorOperation batchingOperation =
@@ -143,6 +144,7 @@ public class SensorIntegrationTests extends SensorTestCase {
                             context,
                             sensorType,
                             shouldEmulateSensorUnderLoad(),
+                            true, /* isIntegrationTest */
                             generateSamplingRateInUs(sensorType),
                             generateReportLatencyInUs());
                     TestSensorOperation sensorOperation =
