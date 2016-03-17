@@ -19,9 +19,11 @@ package android.calllog.cts;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.provider.CallLog;
 import android.provider.CallLog.Calls;
+import android.provider.Settings;
 import android.test.InstrumentationTestCase;
 import android.util.Log;
 
@@ -53,6 +55,7 @@ public class CallLogBackupTest extends InstrumentationTestCase {
     private static final String LOCAL_BACKUP_COMPONENT =
             "android/com.android.internal.backup.LocalTransport";
     private static final String CALLLOG_BACKUP_PACKAGE = "com.android.providers.calllogbackup";
+    private static final String ALT_CALLLOG_BACKUP_PACKAGE = "com.android.calllogbackup";
 
     private static final String TEST_NUMBER = "555-1234";
     private static final int CALL_START_TIME = 0;
@@ -88,9 +91,18 @@ public class CallLogBackupTest extends InstrumentationTestCase {
         int presentation;
     }
 
+    private String mCallLogBackupPackageName;
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        PackageManager pm = getContext().getPackageManager();
+        try {
+            pm.getPackageInfo(CALLLOG_BACKUP_PACKAGE, 0);
+            mCallLogBackupPackageName = CALLLOG_BACKUP_PACKAGE;
+        } catch (PackageManager.NameNotFoundException e) {
+            mCallLogBackupPackageName = ALT_CALLLOG_BACKUP_PACKAGE;
+        }
     }
 
     /**
@@ -103,16 +115,23 @@ public class CallLogBackupTest extends InstrumentationTestCase {
      *   6) Verify that we the call from step (2)
      */
     public void testSingleCallBackup() throws Exception {
+        if (!getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY)) {
+            Log.i(TAG, "Skipping calllog tests: no telephony feature");
+            return;
+        }
         // This CTS test depends on the local transport and so if it is not present,
         // skip the test with success.
         if (!hasBackupTransport(LOCAL_BACKUP_COMPONENT)) {
-            Log.i(TAG, "skipping calllog tests");
+            Log.i(TAG, "skipping calllog tests: no local transport");
             return;
         }
 
         // Turn on backup and set to the local backup agent.
         boolean previouslyEnabled = enableBackup(true /* enable */);
         String oldTransport = setBackupTransport(LOCAL_BACKUP_COMPONENT);
+        int previousFullDataBackupAware = Settings.Secure.getInt(getContext().getContentResolver(),
+                "user_full_data_backup_aware", 0);
+        enableFullDataBackupAware(1);
 
         // Clear the call log
         Log.i(TAG, "Clearing the call log");
@@ -125,7 +144,7 @@ public class CallLogBackupTest extends InstrumentationTestCase {
 
         // Run backup for the call log (saves the single call).
         Log.i(TAG, "Running backup");
-        runBackupFor(CALLLOG_BACKUP_PACKAGE);
+        runBackupFor(mCallLogBackupPackageName);
         Thread.sleep(TIMEOUT_BACKUP); // time for backup
 
         // Clear the call log and verify that it is empty
@@ -135,7 +154,7 @@ public class CallLogBackupTest extends InstrumentationTestCase {
 
         // Restore from the previous backup and verify we have the new call again.
         Log.i(TAG, "Restoring the single call");
-        runRestoreFor(CALLLOG_BACKUP_PACKAGE);
+        runRestoreFor(mCallLogBackupPackageName);
         Thread.sleep(TIMEOUT_BACKUP); // time for restore
 
         verifyCall();
@@ -144,6 +163,7 @@ public class CallLogBackupTest extends InstrumentationTestCase {
         Log.i(TAG, "Reseting backup");
         setBackupTransport(oldTransport);
         enableBackup(previouslyEnabled);
+        enableFullDataBackupAware(previousFullDataBackupAware);
     }
 
     private Call verifyCall() {
@@ -181,6 +201,10 @@ public class CallLogBackupTest extends InstrumentationTestCase {
 
     private void runRestoreFor(String packageName) throws Exception {
         exec("bmgr restore " + packageName);
+    }
+
+    private void enableFullDataBackupAware(int status) throws Exception {
+        exec("settings put secure user_full_data_backup_aware " + status);
     }
 
     private String setBackupTransport(String transport) throws Exception {

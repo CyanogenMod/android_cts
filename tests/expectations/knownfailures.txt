@@ -24,13 +24,6 @@
   bug: 17595050
 },
 {
-  description: "test fails on devices with no telephony",
-  names: [
-    "android.calllog.cts.CallLogBackupTest#testSingleCallBackup"
-  ],
-  bug: 23776099
-},
-{
   description: "test fails on some devices",
   names: [
     "android.dumpsys.cts.DumpsysHostTest#testBatterystatsOutput",
