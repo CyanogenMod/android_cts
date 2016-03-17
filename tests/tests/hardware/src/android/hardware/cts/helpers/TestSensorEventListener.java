@@ -194,7 +194,8 @@ public class TestSensorEventListener implements SensorEventListener2 {
      * It will overwrite the file if it already exists, the file is created in a relative directory
      * named 'events' under the sensor test directory (part of external storage).
      */
-    public void logCollectedEventsToFile(String fileName, long deviceWakeUpTimeMs)
+    public void logCollectedEventsToFile(String fileName, long deviceWakeUpTimeMs,
+            long testStartTimeMs, long testStopTimeMs)
         throws IOException {
         StringBuilder builder = new StringBuilder();
         builder.append("Sensor='").append(mEnvironment.getSensor()).append("', ");
@@ -203,7 +204,11 @@ public class TestSensorEventListener implements SensorEventListener2 {
         builder.append("RequestedSamplingPeriod=")
                 .append(mEnvironment.getRequestedSamplingPeriodUs()).append("us, ");
         builder.append("MaxReportLatency=")
-                .append(mEnvironment.getMaxReportLatencyUs()).append("us");
+                .append(mEnvironment.getMaxReportLatencyUs()).append("us, ");
+        builder.append("StartedTimestamp=")
+                .append(testStartTimeMs).append("ms, ");
+        builder.append("StoppedTimestamp=")
+                .append(testStopTimeMs).append("ms");
         synchronized (mCollectedEvents) {
             int i = 0, j = 0;
             while (i < mCollectedEvents.size() && j < mTimeStampFlushCompleteEvents.size()) {

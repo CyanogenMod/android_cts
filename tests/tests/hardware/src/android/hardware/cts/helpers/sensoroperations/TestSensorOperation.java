@@ -66,6 +66,8 @@ public class TestSensorOperation extends SensorOperation {
     private final Executor mExecutor;
     private final Handler mHandler;
     private long mDeviceWakeUpTimeMs = -1;
+    private long mStartTimeMs = -1;
+    private long mStopTimeMs = -1;
 
     /**
      * An interface that defines an abstraction for operations to be performed by the
@@ -124,20 +126,21 @@ public class TestSensorOperation extends SensorOperation {
         getStats().addValue("sensor_name", mEnvironment.getSensor().getName());
         TestSensorEventListener listener = new TestSensorEventListener(mEnvironment, mHandler);
 
+        mStartTimeMs = SystemClock.elapsedRealtime();
         if (mEnvironment.isDeviceSuspendTest()) {
             SuspendStateMonitor suspendStateMonitor = new SuspendStateMonitor();
-            long startTimeMs = SystemClock.elapsedRealtime();
             // Device should go into suspend here.
             mExecutor.execute(mSensorManager, listener);
-            long endTimeMs = SystemClock.elapsedRealtime();
+            mStopTimeMs = SystemClock.elapsedRealtime();
             // Check if the device has gone into suspend during test execution.
             mDeviceWakeUpTimeMs = suspendStateMonitor.getLastWakeUpTime();
             suspendStateMonitor.cancel();
             Assert.assertTrue("Device did not go into suspend during test execution",
-                                       startTimeMs < mDeviceWakeUpTimeMs &&
-                                       mDeviceWakeUpTimeMs < endTimeMs);
+                                       mStartTimeMs < mDeviceWakeUpTimeMs &&
+                                       mDeviceWakeUpTimeMs < mStopTimeMs);
         } else {
             mExecutor.execute(mSensorManager, listener);
+            mStopTimeMs = SystemClock.elapsedRealtime();
         }
 
         boolean failed = false;
@@ -213,7 +216,8 @@ public class TestSensorOperation extends SensorOperation {
         }
 
         try {
-            listener.logCollectedEventsToFile(sanitizedFileName, mDeviceWakeUpTimeMs);
+            listener.logCollectedEventsToFile(sanitizedFileName, mDeviceWakeUpTimeMs,
+                    mStartTimeMs, mStopTimeMs);
         } catch (IOException e) {
             Log.w(TAG, "Unable to save collected events to file: " + sanitizedFileName, e);
         }
