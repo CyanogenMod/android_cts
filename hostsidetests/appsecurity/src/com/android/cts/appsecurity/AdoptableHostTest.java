@@ -26,6 +26,7 @@ import static com.android.cts.appsecurity.SplitTests.PKG;
 import com.android.cts.appsecurity.SplitTests.BaseInstallMultiple;
 import com.android.cts.tradefed.build.CtsBuildHelper;
 import com.android.tradefed.build.IBuildInfo;
+import com.android.tradefed.device.CollectingOutputReceiver;
 import com.android.tradefed.device.DeviceNotAvailableException;
 import com.android.tradefed.testtype.DeviceTestCase;
 import com.android.tradefed.testtype.IAbi;
@@ -33,6 +34,7 @@ import com.android.tradefed.testtype.IAbiReceiver;
 import com.android.tradefed.testtype.IBuildReceiver;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Set of tests that verify behavior of adopted storage media, if supported.
@@ -147,7 +149,10 @@ public class AdoptableHostTest extends DeviceTestCase implements IAbiReceiver, I
         final LocalVolumeInfo vol = getAdoptionVolume();
 
         // Move storage there and verify that data went along for ride
-        assertSuccess(getDevice().executeShellCommand("pm move-primary-storage " + vol.uuid));
+        final CollectingOutputReceiver out = new CollectingOutputReceiver();
+        getDevice().executeShellCommand("pm move-primary-storage " + vol.uuid, out, 2,
+                TimeUnit.HOURS, 1);
+        assertSuccess(out.getOutput());
         runDeviceTests(PKG, CLASS, "testPrimaryAdopted");
         runDeviceTests(PKG, CLASS, "testPrimaryDataRead");
 
