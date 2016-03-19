@@ -104,6 +104,15 @@ public class DecoderTest extends MediaPlayerTestBase {
         masterFd.close();
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        // ensure MediaCodecPlayer resources are released even if an exception is thrown.
+        if (mMediaCodecPlayer != null) {
+            mMediaCodecPlayer.reset();
+            mMediaCodecPlayer = null;
+        }
+    }
+
     // TODO: add similar tests for other audio and video formats
     public void testBug11696552() throws Exception {
         MediaCodec mMediaCodec = MediaCodec.createDecoderByType(MediaFormat.MIMETYPE_AUDIO_AAC);
@@ -1967,21 +1976,22 @@ public class DecoderTest extends MediaPlayerTestBase {
         // starts video playback
         mMediaCodecPlayer.startThread();
 
-        long timeOut = System.currentTimeMillis() + 4*PLAY_TIME_MS;
-        while (timeOut > System.currentTimeMillis() && !mMediaCodecPlayer.isEnded()) {
+        final long durationMs = mMediaCodecPlayer.getDuration();
+        final long timeOutMs = System.currentTimeMillis() + durationMs + 5 * 1000; // add 5 sec
+        while (!mMediaCodecPlayer.isEnded()) {
+            // Log.d(TAG, "currentPosition: " + mMediaCodecPlayer.getCurrentPosition()
+            //         + "  duration: " + mMediaCodecPlayer.getDuration());
+            assertTrue("Tunneled video playback timeout exceeded",
+                    timeOutMs > System.currentTimeMillis());
             Thread.sleep(SLEEP_TIME_MS);
-            if (mMediaCodecPlayer.getCurrentPosition() >= mMediaCodecPlayer.getDuration() ) {
+            if (mMediaCodecPlayer.getCurrentPosition() >= mMediaCodecPlayer.getDuration()) {
                 Log.d(TAG, "testTunneledVideoPlayback -- current pos = " +
                         mMediaCodecPlayer.getCurrentPosition() +
                         ">= duration = " + mMediaCodecPlayer.getDuration());
                 break;
             }
         }
-        assertTrue("Tunneled video playback timeout exceeded!",
-                timeOut > System.currentTimeMillis());
-
-        Log.d(TAG, "playVideo player.reset()");
-        mMediaCodecPlayer.reset();
+        // mMediaCodecPlayer.reset() handled in TearDown();
     }
 
     /**
@@ -2008,8 +2018,7 @@ public class DecoderTest extends MediaPlayerTestBase {
         Thread.sleep(SLEEP_TIME_MS);
         mMediaCodecPlayer.pause();
         mMediaCodecPlayer.flush();
-        Thread.sleep(SLEEP_TIME_MS);
-        mMediaCodecPlayer.reset();
+        // mMediaCodecPlayer.reset() handled in TearDown();
     }
 }
 
