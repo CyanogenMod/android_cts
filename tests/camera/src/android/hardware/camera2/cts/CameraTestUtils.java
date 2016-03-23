@@ -257,7 +257,11 @@ public class CameraTestUtils extends Assert {
                 image = reader.acquireNextImage();
             } finally {
                 if (image != null) {
-                    validateImage(image, mSize.getWidth(), mSize.getHeight(), mFormat, null);
+                    // Should only do some quick sanity check in callback, as the ImageReader
+                    // could be closed asynchronously, which will close all images acquired from
+                    // this ImageReader.
+                    checkImage(image, mSize.getWidth(), mSize.getHeight(), mFormat);
+                    checkAndroidImageFormat(image);
                     image.close();
                 }
             }
