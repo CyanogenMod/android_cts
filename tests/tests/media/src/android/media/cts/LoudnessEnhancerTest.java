@@ -136,7 +136,7 @@ public class LoudnessEnhancerTest extends PostProcTestBase {
         AudioManager am = null;
         int originalVolume = 0;
         try {
-            mp = MediaPlayer.create(getContext(), R.raw.sine1khzs40dblong);
+            mp = MediaPlayer.create(getContext(), R.raw.sine1khzm40db);
             final int GAIN_MB =  600;
             final int MAX_GAIN_ERROR_MB = 100;
             assertNotNull("null MediaPlayer", mp);
