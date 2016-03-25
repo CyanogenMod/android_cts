@@ -94,6 +94,34 @@ public class StagefrightTest extends InstrumentationTestCase {
         doStagefrightTest(R.raw.cve_2015_6598);
     }
 
+    public void testStagefright_cve_2015_3867() throws Exception {
+        doStagefrightTest(R.raw.cve_2015_3867);
+    }
+
+    public void testStagefright_cve_2015_3869() throws Exception {
+        doStagefrightTest(R.raw.cve_2015_3869);
+    }
+
+    public void testStagefright_cve_2015_3873_b_23248776() throws Exception {
+        doStagefrightTest(R.raw.cve_2015_3873_b_23248776);
+    }
+
+    public void testStagefright_cve_2015_3873_b_20718524() throws Exception {
+        doStagefrightTest(R.raw.cve_2015_3873_b_20718524);
+    }
+
+    public void testStagefright_cve_2015_3862_b_22954006() throws Exception {
+        doStagefrightTest(R.raw.cve_2015_3862_b_22954006);
+    }
+
+    public void testStagefright_cve_2015_3867_b_23213430() throws Exception {
+        doStagefrightTest(R.raw.cve_2015_3867_b_23213430);
+    }
+
+    public void testStagefright_cve_2015_3873_b_21814993() throws Exception {
+        doStagefrightTest(R.raw.cve_2015_3873_b_21814993);
+    }
+
     private void doStagefrightTest(final int rid) throws Exception {
         class MediaPlayerCrashListener
                 implements MediaPlayer.OnErrorListener,
