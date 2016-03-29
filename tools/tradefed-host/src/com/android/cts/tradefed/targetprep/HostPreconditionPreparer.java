@@ -73,6 +73,10 @@ public class HostPreconditionPreparer implements ITargetPreparer {
             description = "Whether to skip verifying/downloading media files")
     protected boolean mSkipMediaDownload = false;
 
+    @Option(name = "skip-wifi-check",
+            description = "Whether to skip verification of network connection")
+    protected boolean mSkipWifiCheck = false;
+
     @Option(name = "local-media-path",
             description = "Absolute path of the media files directory on the host, containing" +
             "'bbb_short' and 'bbb_full' directories")
@@ -475,17 +479,20 @@ public class HostPreconditionPreparer implements ITargetPreparer {
      */
     protected void runWifiPrecondition(ITestDevice device)
             throws TargetSetupError, DeviceNotAvailableException {
-
+        if (mSkipWifiCheck) {
+            return; // skip this precondition
+        }
         if (mWifiSsid == null) {
             // no connection to create, check for existing connectivity
             if (!device.checkConnectivity()) {
-                throw new TargetSetupError("Device has no network connection, no ssid provided");
+                printWarning("Device has no network connection, option --wifi-ssid was not " +
+                        "provided. Some CTS tests require an active network connection to pass");
             }
         } else {
             // network provided in options, attempt to create new connection if needed
             if (!device.connectToWifiNetworkIfNeeded(mWifiSsid, mWifiPsk)) {
-                throw new TargetSetupError("Unable to establish network connection," +
-                        "some CTS packages require an active network connection");
+                printWarning("Unable to establish network connection, some CTS tests require " +
+                        "an active network connection to pass");
             }
         }
     }
