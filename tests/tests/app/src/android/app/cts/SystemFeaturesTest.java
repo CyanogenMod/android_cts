@@ -420,22 +420,22 @@ public class SystemFeaturesTest extends InstrumentationTestCase {
      * Check that the {@link TelephonyManager#getPhoneType()} matches the reported features.
      */
     public void testTelephonyFeatures() {
+        if (!mPackageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)) {
+            return;
+        }
+
         int phoneType = mTelephonyManager.getPhoneType();
         switch (phoneType) {
             case TelephonyManager.PHONE_TYPE_GSM:
-                assertAvailable(PackageManager.FEATURE_TELEPHONY);
                 assertAvailable(PackageManager.FEATURE_TELEPHONY_GSM);
                 break;
 
             case TelephonyManager.PHONE_TYPE_CDMA:
-                assertAvailable(PackageManager.FEATURE_TELEPHONY);
                 assertAvailable(PackageManager.FEATURE_TELEPHONY_CDMA);
                 break;
 
             case TelephonyManager.PHONE_TYPE_NONE:
-                assertNotAvailable(PackageManager.FEATURE_TELEPHONY);
-                assertNotAvailable(PackageManager.FEATURE_TELEPHONY_CDMA);
-                assertNotAvailable(PackageManager.FEATURE_TELEPHONY_GSM);
+                fail("FEATURE_TELEPHONY is present; phone type should not be PHONE_TYPE_NONE");
                 break;
 
             default:
