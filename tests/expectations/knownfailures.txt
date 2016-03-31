@@ -151,6 +151,14 @@
   bug: 17508787
 },
 {
+  description: "This test is not working on Android Player",
+  names: [
+    "com.android.cts.devicepolicy.MixedDeviceOwnerTest#testPackageInstallUserRestrictions",
+    "com.android.cts.devicepolicy.MixedProfileOwnerTest#testPackageInstallUserRestrictions"
+  ],
+  bug: 27949133
+},
+{
   description: "Test is not yet properly implemented",
   names: [
     "android.voicesettings.cts.ZenModeTest#testAll"
