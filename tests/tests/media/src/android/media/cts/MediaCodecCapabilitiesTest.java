@@ -538,11 +538,13 @@ public class MediaCodecCapabilitiesTest extends MediaPlayerTestBase {
             int minWidth = vcaps.getSupportedWidths().getLower();
             int minHeight = vcaps.getSupportedHeightsFor(minWidth).getLower();
             int minBitrate = vcaps.getBitrateRange().getLower();
+            int minFrameRate = vcaps.getSupportedFrameRatesFor(minWidth, minHeight)
+                    .getLower().intValue();
             format = MediaFormat.createVideoFormat(mime, minWidth, minHeight);
             format.setInteger(MediaFormat.KEY_COLOR_FORMAT, caps.colorFormats[0]);
             format.setInteger(MediaFormat.KEY_BIT_RATE, minBitrate);
-            format.setInteger(MediaFormat.KEY_FRAME_RATE, 10);
-            format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 10);
+            format.setInteger(MediaFormat.KEY_FRAME_RATE, minFrameRate);
+            format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, IFRAME_INTERVAL);
         } else {
             AudioCapabilities acaps = caps.getAudioCapabilities();
             int minSampleRate = acaps.getSupportedSampleRateRanges()[0].getLower();
