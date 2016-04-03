@@ -387,5 +387,12 @@
   description: "Still investigating this, root cause unknown yet",
   bug: 27578806,
   names: ["com.android.cts.cpptools.RunAsHostTest#testRunAs"]
+},
+{
+  description: "Default permissions still needs validation.",
+  names: [
+  "android.permission2.cts.PermissionPolicyTest#testPlatformPermissionPolicyUnaltered"
+  ],
+  bug: 27599613
 }
 ]
