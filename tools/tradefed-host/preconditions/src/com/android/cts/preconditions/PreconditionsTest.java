@@ -17,19 +17,30 @@ package com.android.cts.preconditions;
 
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.test.AndroidTestCase;
+import android.util.Log;
 
 /**
  * An AndroidTestCase class to verify that device-side preconditions are met for CTS
  */
 public class PreconditionsTest extends AndroidTestCase {
 
+    private static final String TAG = "PreconditionsTest";
+
     /**
      * Test if device has no screen lock
      * @throws Exception
      */
     public void testScreenUnlocked() throws Exception {
+        PackageManager pm = getContext().getPackageManager();
+        if (pm.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+                || pm.hasSystemFeature(PackageManager.FEATURE_WATCH)
+                || pm.hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE)) {
+            Log.i(TAG, "Skipping screen lock precondition for this device type");
+            return; // do not test for unlocked screen on devices with no screen lock
+        }
         KeyguardManager km =
                 (KeyguardManager) getContext().getSystemService(Context.KEYGUARD_SERVICE);
         assertFalse("Device must have screen lock disabled", km.isDeviceSecure());
