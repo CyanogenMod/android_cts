@@ -16,7 +16,7 @@
 
 package android.telecom.cts;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Intent;
 import android.telecom.Conference;
@@ -52,11 +52,13 @@ public class CtsConnectionService extends ConnectionService {
     private static ConnectionService sConnectionService;
     // This is the connection service registered with Telecom
     private static ConnectionService sTelecomConnectionService;
-    private static boolean mIsServiceUnbound;
+    private static boolean mIsServiceBound = false;
 
     public CtsConnectionService() throws Exception {
         super();
         sTelecomConnectionService = this;
+        // Cant override the onBind method for ConnectionService, so reset it here.
+        mIsServiceBound = true;
     }
 
     // ConnectionService used by default as a fallback if no connection service is specified
@@ -77,13 +79,12 @@ public class CtsConnectionService extends ConnectionService {
                 throw new Exception("Mock ConnectionService exists.  Failed to call tearDown().");
             }
             sConnectionService = connectionService;
-            // Cant override the onBind method for ConnectionService, so reset it here.
-            mIsServiceUnbound = false;
         }
     }
 
     public static void tearDown() {
         synchronized(sLock) {
+            sTelecomConnectionService = null;
             sConnectionService = null;
         }
     }
@@ -188,13 +189,17 @@ public class CtsConnectionService extends ConnectionService {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        Log.i(LOG_TAG, "Service unbounded");
-        assertFalse(mIsServiceUnbound);
-        mIsServiceUnbound = true;
+        Log.i(LOG_TAG, "Service has been unbound");
+        assertTrue(mIsServiceBound);
+        mIsServiceBound = false;
         return super.onUnbind(intent);
     }
 
-    public static boolean isServiceUnbound() {
-        return mIsServiceUnbound;
+    public static boolean isServiceBound() {
+        return mIsServiceBound;
+    }
+
+    public static boolean isServiceRegisteredToTelecom() {
+        return sTelecomConnectionService != null;
     }
 }
