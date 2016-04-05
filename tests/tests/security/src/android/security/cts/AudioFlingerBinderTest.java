@@ -49,14 +49,6 @@ public class AudioFlingerBinderTest extends TestCase {
     }
 
     /**
-     * Checks that IAudioFlinger::listAudioPatches() does not cause a memory overflow when passed a
-     * large number of ports.
-     */
-    public void test_listAudioPatches() throws Exception {
-        assertTrue(native_test_listAudioPatches());
-    }
-
-    /**
      * Checks that IAudioFlinger::createEffect() does not leak information on the server side.
      */
     public void test_createEffect() throws Exception {
@@ -66,6 +58,5 @@ public class AudioFlingerBinderTest extends TestCase {
     private static native boolean native_test_setMasterMute();
     private static native boolean native_test_setMasterVolume();
     private static native boolean native_test_listAudioPorts();
-    private static native boolean native_test_listAudioPatches();
     private static native boolean native_test_createEffect();
 }
