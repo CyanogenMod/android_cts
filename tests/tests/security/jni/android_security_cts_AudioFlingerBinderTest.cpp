@@ -197,45 +197,6 @@ jboolean android_security_cts_AudioFlinger_test_listAudioPorts(JNIEnv* env __unu
     return true;
 }
 
-jboolean android_security_cts_AudioFlinger_test_listAudioPatches(JNIEnv* env __unused,
-                                                           jobject thiz __unused)
-{
-    sp<IAudioFlinger> af;
-    sp<MyDeathClient> dr;
-
-    if (!connectAudioFlinger(af, dr)) {
-        return false;
-    }
-
-    unsigned int num_patches = TEST_ARRAY_SIZE;
-    struct audio_patch *patches =
-            (struct audio_patch *)calloc(TEST_ARRAY_SIZE, sizeof(struct audio_patch));
-
-    memset(patches, TEST_PATTERN, TEST_ARRAY_SIZE * sizeof(struct audio_patch));
-
-    status_t status = af->listAudioPatches(&num_patches, patches);
-
-    sleep(1);
-
-    // Check that the memory content above the max allowed array size was not changed
-    char *ptr = (char *)(patches + MAX_ARRAY_SIZE);
-    for (size_t i = 0; i < TEST_ARRAY_SIZE - MAX_ARRAY_SIZE; i++) {
-        if (ptr[i * sizeof(struct audio_patch)] != TEST_PATTERN) {
-            free(patches);
-            return false;
-        }
-    }
-
-    free(patches);
-
-    // Check that mediaserver did not crash
-    if (dr->afIsDead()) {
-        return false;
-    }
-
-    return true;
-}
-
 jboolean android_security_cts_AudioFlinger_test_createEffect(JNIEnv* env __unused,
                                                              jobject thiz __unused)
 {
@@ -290,8 +251,6 @@ static JNINativeMethod gMethods[] = {
             (void *) android_security_cts_AudioFlinger_test_setMasterVolume },
     {  "native_test_listAudioPorts", "()Z",
             (void *) android_security_cts_AudioFlinger_test_listAudioPorts },
-    {  "native_test_listAudioPatches", "()Z",
-            (void *) android_security_cts_AudioFlinger_test_listAudioPatches },
     {  "native_test_createEffect", "()Z",
             (void *) android_security_cts_AudioFlinger_test_createEffect },
 };
