@@ -203,8 +203,8 @@ jboolean android_security_cts_AudioFlinger_test_listAudioPorts(JNIEnv* env __unu
     return true;
 }
 
-jboolean android_security_cts_AudioFlinger_test_listAudioPatches(JNIEnv* env __unused,
-                                                           jobject thiz __unused)
+jboolean android_security_cts_AudioFlinger_test_createEffect(JNIEnv* env __unused,
+                                                             jobject thiz __unused)
 {
     sp<IAudioFlinger> af;
     sp<MyDeathClient> dr;
@@ -213,26 +213,34 @@ jboolean android_security_cts_AudioFlinger_test_listAudioPatches(JNIEnv* env __u
         return false;
     }
 
-    unsigned int num_patches = TEST_ARRAY_SIZE;
-    struct audio_patch *patches =
-            (struct audio_patch *)calloc(TEST_ARRAY_SIZE, sizeof(struct audio_patch));
+    for (int j = 0; j < 10; ++j) {
+        Parcel data, reply;
+        data.writeInterfaceToken(af->getInterfaceDescriptor());
+        data.writeInt32((int32_t)j);
+        status_t status = af->asBinder()->transact(40, data, &reply); // 40 is CREATE_EFFECT
+        if (status != NO_ERROR) {
+            return false;
+        }
 
-    memset(patches, TEST_PATTERN, TEST_ARRAY_SIZE * sizeof(struct audio_patch));
+        status = (status_t)reply.readInt32();
+        if (status == NO_ERROR) {
+            continue;
+        }
 
-    status_t status = af->listAudioPatches(&num_patches, patches);
-
-    sleep(1);
-
-    // Check that the memory content above the max allowed array size was not changed
-    char *ptr = (char *)(patches + MAX_ARRAY_SIZE);
-    for (size_t i = 0; i < TEST_ARRAY_SIZE - MAX_ARRAY_SIZE; i++) {
-        if (ptr[i * sizeof(struct audio_patch)] != TEST_PATTERN) {
-            free(patches);
+        int id = reply.readInt32();
+        int enabled = reply.readInt32();
+        sp<IEffect> effect = interface_cast<IEffect>(reply.readStrongBinder());
+        effect_descriptor_t desc;
+        effect_descriptor_t descTarget;
+        memset(&desc, 0, sizeof(effect_descriptor_t));
+        memset(&descTarget, 0, sizeof(effect_descriptor_t));
+        reply.read(&desc, sizeof(effect_descriptor_t));
+        if (id != 0 || enabled != 0 || memcmp(&desc, &descTarget, sizeof(effect_descriptor_t))) {
             return false;
         }
     }
 
-    free(patches);
+    sleep(1);
 
     // Check that mediaserver did not crash
     if (dr->afIsDead()) {
@@ -249,8 +257,8 @@ static JNINativeMethod gMethods[] = {
             (void *) android_security_cts_AudioFlinger_test_setMasterVolume },
     {  "native_test_listAudioPorts", "()Z",
             (void *) android_security_cts_AudioFlinger_test_listAudioPorts },
-    {  "native_test_listAudioPatches", "()Z",
-            (void *) android_security_cts_AudioFlinger_test_listAudioPatches },
+    {  "native_test_createEffect", "()Z",
+            (void *) android_security_cts_AudioFlinger_test_createEffect },
 };
 
 int register_android_security_cts_AudioFlingerBinderTest(JNIEnv* env)
