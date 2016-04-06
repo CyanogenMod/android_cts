@@ -29,6 +29,7 @@ import android.telecom.RemoteConnection;
 import android.util.Log;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * This is the official ConnectionService for Telecom's CTS App. Since telecom requires that a
@@ -154,6 +155,9 @@ public class CtsConnectionService extends ConnectionService {
 
     public static Collection<Connection> getAllConnectionsFromTelecom() {
         synchronized(sLock) {
+            if (sTelecomConnectionService == null) {
+                return Collections.EMPTY_LIST;
+            }
             return sTelecomConnectionService.getAllConnections();
         }
     }
