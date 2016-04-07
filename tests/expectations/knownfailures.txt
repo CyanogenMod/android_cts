@@ -380,17 +380,5 @@
   description: "Still investigating this, root cause unknown yet",
   bug: 27578806,
   names: ["com.android.cts.cpptools.RunAsHostTest#testRunAs"]
-},
-{
-  description: "Some SensorBatchingTest cases fails due to test imperection",
-  names: [
-      "android.hardware.cts.SensorBatchingTests#testGyroscope_fastest_batching",
-      "android.hardware.cts.SensorBatchingTests#testGravity_50hz_batching",
-      "android.hardware.cts.SensorBatchingTests#testGravity_fastest_batching",
-      "android.hardware.cts.SensorBatchingTests#testLinearAcceleration_50hz_batching",
-      "android.hardware.cts.SensorBatchingTests#testLinearAcceleration_fastest_batching",
-      "android.hardware.cts.SensorBatchingTests#testRotationVector_50hz_batching"
-      ],
-  bug: 27534791
 }
 ]
