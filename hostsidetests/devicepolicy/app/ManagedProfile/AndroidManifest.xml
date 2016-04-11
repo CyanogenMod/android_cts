@@ -19,6 +19,7 @@
 
     <uses-sdk android:minSdkVersion="20"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -79,6 +80,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".TestActivity" />
+        <service android:name=".AccountService" android:exported="true">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data android:name="android.accounts.AccountAuthenticator"
+                       android:resource="@xml/authenticator" />
+        </service>
     </application>
 
     <instrumentation android:name="android.support.test.runner.AndroidJUnitRunner"

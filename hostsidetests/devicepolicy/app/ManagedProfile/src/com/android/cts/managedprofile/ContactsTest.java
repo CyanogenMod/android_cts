@@ -16,6 +16,8 @@
 
 package com.android.cts.managedprofile;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.annotation.TargetApi;
 import android.app.admin.DevicePolicyManager;
 import android.content.ContentProviderOperation;
@@ -45,8 +47,8 @@ import java.util.ArrayList;
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class ContactsTest extends AndroidTestCase {
 
-    private static final String TEST_ACCOUNT_NAME = "CTS";
-    private static final String TEST_ACCOUNT_TYPE = "com.android.cts.test";
+    private static final String TEST_ACCOUNT_NAME = AccountAuthenticator.ACCOUNT_NAME;
+    private static final String TEST_ACCOUNT_TYPE = AccountAuthenticator.ACCOUNT_TYPE;
     // details of a sample primary contact
     private static final String PRIMARY_CONTACT_DISPLAY_NAME = "Primary";
     private static final String PRIMARY_CONTACT_PHONE = "00000001";
@@ -107,6 +109,11 @@ public class ContactsTest extends AndroidTestCase {
         mResolver = getContext().getContentResolver();
         mDevicePolicyManager = (DevicePolicyManager) mContext
                 .getSystemService(Context.DEVICE_POLICY_SERVICE);
+    }
+
+    public void testAddTestAccount() {
+        Account account = new Account(TEST_ACCOUNT_NAME, TEST_ACCOUNT_TYPE);
+        AccountManager.get(getContext()).addAccountExplicitly(account, null, null);
     }
 
     public void testPrimaryProfilePhoneAndEmailLookup_insertedAndfound() throws RemoteException,
@@ -564,6 +571,8 @@ public class ContactsTest extends AndroidTestCase {
             // Catch all exceptions to let tearDown() run smoothly
             e.printStackTrace();
         }
+        Account account = new Account(TEST_ACCOUNT_NAME, TEST_ACCOUNT_TYPE);
+        AccountManager.get(getContext()).removeAccountExplicitly(account);
     }
 
     private static byte[] getByteFromStream(InputStream is) throws IOException {
