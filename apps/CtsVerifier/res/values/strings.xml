@@ -1274,7 +1274,7 @@ You should be prompted to select credentials; choose the ones you just installed
         2. Verify that the captured picture is shown.\n
         3. Click on the close button.
     </string>
-    <string name="provisioning_byod_capture_video_support">Camera support cross profile video capture</string>
+    <string name="provisioning_byod_capture_video_support_with_extra_output">Camera support cross profile video capture (with extra output path)</string>
     <string name="provisioning_byod_capture_video_support_info">
         This test verifies that videos can be captured from the managed profile using the primary profile camera.\n
         1. Capture a video using the camera.\n
@@ -1282,6 +1282,7 @@ You should be prompted to select credentials; choose the ones you just installed
         3. Verify that the captured video is played.\n
         4. Click on the close button.
     </string>
+    <string name="provisioning_byod_capture_video_support_without_extra_output">Camera support cross profile video capture (without extra output path)</string>
     <string name="provisioning_byod_capture_audio_support">Sound recorder support cross profile audio capture</string>
     <string name="provisioning_byod_capture_audio_support_info">
         This test verifies that audio can be captured from the managed profile using the primary profile sound recorder.\n

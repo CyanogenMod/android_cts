@@ -60,7 +60,8 @@ public class DeviceAdminTestReceiver extends DeviceAdminReceiver {
             filter.addAction(ByodHelperActivity.ACTION_INSTALL_APK);
             filter.addAction(ByodHelperActivity.ACTION_CHECK_INTENT_FILTERS);
             filter.addAction(ByodHelperActivity.ACTION_CAPTURE_AND_CHECK_IMAGE);
-            filter.addAction(ByodHelperActivity.ACTION_CAPTURE_AND_CHECK_VIDEO);
+            filter.addAction(ByodHelperActivity.ACTION_CAPTURE_AND_CHECK_VIDEO_WITH_EXTRA_OUTPUT);
+            filter.addAction(ByodHelperActivity.ACTION_CAPTURE_AND_CHECK_VIDEO_WITHOUT_EXTRA_OUTPUT);
             filter.addAction(ByodHelperActivity.ACTION_CAPTURE_AND_CHECK_AUDIO);
             filter.addAction(ByodHelperActivity.ACTION_KEYGUARD_DISABLED_FEATURES);
             filter.addAction(ByodHelperActivity.ACTION_LOCKNOW);

@@ -70,11 +70,13 @@ public class ByodHelperActivity extends Activity implements DialogCallback, Hand
     public static final String ACTION_REMOVE_PROFILE_OWNER = "com.android.cts.verifier.managedprovisioning.BYOD_REMOVE";
     // Managed -> managed intent: provisioning completed successfully
     public static final String ACTION_PROFILE_PROVISIONED = "com.android.cts.verifier.managedprovisioning.BYOD_PROVISIONED";
-    // Primage -> managed intent: request to capture and check an image
+    // Primary -> managed intent: request to capture and check an image
     public static final String ACTION_CAPTURE_AND_CHECK_IMAGE = "com.android.cts.verifier.managedprovisioning.BYOD_CAPTURE_AND_CHECK_IMAGE";
-    // Primage -> managed intent: request to capture and check a video
-    public static final String ACTION_CAPTURE_AND_CHECK_VIDEO = "com.android.cts.verifier.managedprovisioning.BYOD_CAPTURE_AND_CHECK_VIDEO";
-    // Primage -> managed intent: request to capture and check an audio recording
+    // Primary -> managed intent: request to capture and check a video with custom output path
+    public static final String ACTION_CAPTURE_AND_CHECK_VIDEO_WITH_EXTRA_OUTPUT = "com.android.cts.verifier.managedprovisioning.BYOD_CAPTURE_AND_CHECK_VIDEO_WITH_EXTRA_OUTPUT";
+    // Primary -> managed intent: request to capture and check a video without custom output path
+    public static final String ACTION_CAPTURE_AND_CHECK_VIDEO_WITHOUT_EXTRA_OUTPUT = "com.android.cts.verifier.managedprovisioning.BYOD_CAPTURE_AND_CHECK_VIDEO_WITHOUT_EXTRA_OUTPUT";
+    // Primary -> managed intent: request to capture and check an audio recording
     public static final String ACTION_CAPTURE_AND_CHECK_AUDIO = "com.android.cts.verifier.managedprovisioning.BYOD_CAPTURE_AND_CHECK_AUDIO";
     public static final String ACTION_KEYGUARD_DISABLED_FEATURES =
             "com.android.cts.verifier.managedprovisioning.BYOD_KEYGUARD_DISABLED_FEATURES";
@@ -127,9 +129,10 @@ public class ByodHelperActivity extends Activity implements DialogCallback, Hand
 
     private static final int REQUEST_INSTALL_PACKAGE = 1;
     private static final int REQUEST_IMAGE_CAPTURE = 2;
-    private static final int REQUEST_VIDEO_CAPTURE = 3;
-    private static final int REQUEST_AUDIO_CAPTURE = 4;
-    private static final int REQUEST_LOCATION_UPDATE = 5;
+    private static final int REQUEST_VIDEO_CAPTURE_WITH_EXTRA_OUTPUT = 3;
+    private static final int REQUEST_VIDEO_CAPTURE_WITHOUT_EXTRA_OUTPUT = 4;
+    private static final int REQUEST_AUDIO_CAPTURE = 5;
+    private static final int REQUEST_LOCATION_UPDATE = 6;
 
     private static final String ORIGINAL_SETTINGS_NAME = "original settings";
 
@@ -244,14 +247,21 @@ public class ByodHelperActivity extends Activity implements DialogCallback, Hand
                 finish();
             }
             return;
-        } else if (action.equals(ACTION_CAPTURE_AND_CHECK_VIDEO)) {
+        } else if (action.equals(ACTION_CAPTURE_AND_CHECK_VIDEO_WITH_EXTRA_OUTPUT) ||
+                action.equals(ACTION_CAPTURE_AND_CHECK_VIDEO_WITHOUT_EXTRA_OUTPUT)) {
             // We need the camera permission to send the video capture intent.
             grantCameraPermissionToSelf();
             Intent captureVideoIntent = getCaptureVideoIntent();
-            mVideoUri = getTempUri("video.mp4").second;
-            captureVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, mVideoUri);
+            int videoCaptureRequestId;
+            if (action.equals(ACTION_CAPTURE_AND_CHECK_VIDEO_WITH_EXTRA_OUTPUT)) {
+                mVideoUri = getTempUri("video.mp4").second;
+                captureVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, mVideoUri);
+                videoCaptureRequestId = REQUEST_VIDEO_CAPTURE_WITH_EXTRA_OUTPUT;
+            } else {
+                videoCaptureRequestId = REQUEST_VIDEO_CAPTURE_WITHOUT_EXTRA_OUTPUT;
+            }
             if (captureVideoIntent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(captureVideoIntent, REQUEST_VIDEO_CAPTURE);
+                startActivityForResult(captureVideoIntent, videoCaptureRequestId);
             } else {
                 Log.e(TAG, "Capture video intent could not be resolved in managed profile.");
                 showToast(R.string.provisioning_byod_capture_media_error);
@@ -364,9 +374,19 @@ public class ByodHelperActivity extends Activity implements DialogCallback, Hand
                 }
                 break;
             }
-            case REQUEST_VIDEO_CAPTURE: {
+            case REQUEST_VIDEO_CAPTURE_WITH_EXTRA_OUTPUT: {
                 if (resultCode == RESULT_OK) {
                     ByodPresentMediaDialog.newVideoInstance(mVideoUri)
+                            .show(getFragmentManager(), "PlayVideoDialogFragment");
+                } else {
+                    // Failed capturing video.
+                    finish();
+                }
+                break;
+            }
+            case REQUEST_VIDEO_CAPTURE_WITHOUT_EXTRA_OUTPUT: {
+                if (resultCode == RESULT_OK) {
+                    ByodPresentMediaDialog.newVideoInstance(data.getData())
                             .show(getFragmentManager(), "PlayVideoDialogFragment");
                 } else {
                     // Failed capturing video.
