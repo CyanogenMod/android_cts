@@ -18,6 +18,7 @@ package com.android.cts.tradefed.targetprep;
 
 import com.android.cts.tradefed.build.CtsBuildHelper;
 import com.android.cts.tradefed.testtype.Abi;
+import com.android.ddmlib.Log;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.android.tradefed.build.IBuildInfo;
 import com.android.tradefed.build.IFolderBuildInfo;
@@ -25,7 +26,7 @@ import com.android.tradefed.config.Option;
 import com.android.tradefed.config.OptionClass;
 import com.android.tradefed.device.DeviceNotAvailableException;
 import com.android.tradefed.device.ITestDevice;
-import com.android.tradefed.log.LogUtil.CLog;
+import com.android.tradefed.log.LogUtil;
 import com.android.tradefed.result.InputStreamSource;
 import com.android.tradefed.result.ITestInvocationListener;
 import com.android.tradefed.result.LogDataType;
@@ -65,8 +66,15 @@ public class DevicePreconditionPreparer implements ITargetPreparer {
     private static final String PACKAGE_NAME = "com.android.cts.preconditions";
     private static final String RUNNER_NAME = "android.support.test.runner.AndroidJUnitRunner";
 
+    private static final String LOG_TAG = DevicePreconditionPreparer.class.getSimpleName();
+
     /* Map used to track test failures */
     private ConcurrentHashMap<TestIdentifier, String> testFailures = new ConcurrentHashMap<>();
+
+    /* Helper that logs a message with LogLevel.WARN */
+    private static void printWarning(String msg) {
+        LogUtil.printLog(Log.LogLevel.WARN, LOG_TAG, msg);
+    }
 
     /**
      * {@inheritDoc}
@@ -80,7 +88,8 @@ public class DevicePreconditionPreparer implements ITargetPreparer {
 
         try {
             if (!instrument(device, buildInfo)) {
-                throw new TargetSetupError("Not all device-side preconditions met");
+                printWarning("Not all device-side preconditions met, " +
+                        "CTS tests may fail as a result.");
             }
         } catch (FileNotFoundException e) {
             throw new TargetSetupError(
@@ -106,7 +115,8 @@ public class DevicePreconditionPreparer implements ITargetPreparer {
             success = false; // at least one precondition has failed
             for (TestIdentifier test : testFailures.keySet()) {
                 String trace = testFailures.get(test);
-                CLog.e("Precondition test %s failed.\n%s", test.getTestName(), trace);
+                printWarning(String.format(
+                        "Precondition test %s failed.\n%s", test.getTestName(), trace));
             }
         }
         return success;
@@ -133,7 +143,8 @@ public class DevicePreconditionPreparer implements ITargetPreparer {
          */
         @Override
         public void testRunFailed(String errorMessage) {
-            CLog.e("Device-side preconditions test run failed: %s", errorMessage);
+            printWarning(String.format(
+                    "Device-side preconditions test run failed: %s", errorMessage));
         }
 
         /**
