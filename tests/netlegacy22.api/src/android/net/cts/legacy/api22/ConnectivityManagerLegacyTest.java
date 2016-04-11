@@ -148,35 +148,40 @@ public class ConnectivityManagerLegacyTest extends AndroidTestCase {
         }
 
         // Make sure WiFi is connected to an access point.
-        connectToWifi();
+        boolean isWifiEnabled = isWifiConnected();
+        try {
+            if (!isWifiEnabled) {
+                connectToWifi();
+            }
 
-        expectNetworkBroadcast(TYPE_MOBILE_HIPRI, NetworkInfo.State.CONNECTED,
-                new Runnable() {
-                    public void run() {
-                        int ret = mCm.startUsingNetworkFeature(TYPE_MOBILE, FEATURE_ENABLE_HIPRI);
-                        assertTrue("Couldn't start using the HIPRI feature.", ret != -1);
-                    }
-                });
+            expectNetworkBroadcast(TYPE_MOBILE_HIPRI, NetworkInfo.State.CONNECTED, new Runnable() {
+                public void run() {
+                    int ret = mCm.startUsingNetworkFeature(TYPE_MOBILE, FEATURE_ENABLE_HIPRI);
+                    assertTrue("Couldn't start using the HIPRI feature.", ret != -1);
+                }
+            });
 
-        assertTrue("Couldn't requestRouteToHost using HIPRI.",
-                mCm.requestRouteToHost(TYPE_MOBILE_HIPRI, ipv4AddrToInt(HOST_ADDRESS1)));
+            assertTrue("Couldn't requestRouteToHost using HIPRI.",
+                    mCm.requestRouteToHost(TYPE_MOBILE_HIPRI, ipv4AddrToInt(HOST_ADDRESS1)));
 
-        checkSourceAddress(HOST_ADDRESS1, TYPE_MOBILE);
-        checkSourceAddress(HOST_ADDRESS2, TYPE_WIFI);
+            checkSourceAddress(HOST_ADDRESS1, TYPE_MOBILE);
+            checkSourceAddress(HOST_ADDRESS2, TYPE_WIFI);
 
-        // TODO check dns selection
+            // TODO check dns selection
 
-        expectNetworkBroadcast(TYPE_MOBILE_HIPRI, NetworkInfo.State.DISCONNECTED,
-                new Runnable() {
-                    public void run() {
-                        int ret = mCm.stopUsingNetworkFeature(TYPE_MOBILE, FEATURE_ENABLE_HIPRI);
-                        assertTrue("Couldn't stop using the HIPRI feature.", ret != -1);
-                    }
-                });
+            expectNetworkBroadcast(TYPE_MOBILE_HIPRI, NetworkInfo.State.DISCONNECTED, new Runnable() {
+                public void run() {
+                    int ret = mCm.stopUsingNetworkFeature(TYPE_MOBILE, FEATURE_ENABLE_HIPRI);
+                    assertTrue("Couldn't stop using the HIPRI feature.", ret != -1);
+                }
+            });
 
-
-        // TODO check dns selection
-        disconnectFromWifi();
+            // TODO check dns selection
+        } finally {
+            if (!isWifiEnabled && isWifiConnected()) {
+                disconnectFromWifi();
+            }
+        }
     }
 
     public void testStartUsingNetworkFeature() {
