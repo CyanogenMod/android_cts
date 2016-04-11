@@ -34,6 +34,7 @@ import android.hardware.cts.helpers.TestSensorManager;
 import android.hardware.cts.helpers.sensoroperations.TestSensorOperation;
 import android.hardware.cts.helpers.SensorNotSupportedException;
 import android.hardware.cts.helpers.sensorverification.BatchArrivalVerification;
+import android.hardware.cts.helpers.sensorverification.TimestampClockSourceVerification;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
@@ -185,6 +186,80 @@ public class DeviceSuspendTestActivity
             return runAPWakeUpByAlarmNonWakeSensor(accel, 0);
         }
 
+        /**
+         * Verify that each continuous sensor is using the correct
+         * clock source (CLOCK_BOOTTIME) for timestamps.
+         */
+        public String testTimestampClockSource() throws Throwable {
+            String string = null;
+            boolean error_occurred = false;
+            List<Sensor> sensorList = mSensorManager.getSensorList(Sensor.TYPE_ALL);
+            if (sensorList == null) {
+                throw new SensorTestStateNotSupportedException(
+                    "Sensors are not available in the system.");
+            }
+
+            // Make sure clocks are different (i.e. kernel has suspended at least once)
+            // so that we can determine if sensors are using correct clocksource timestamp
+            final int MAX_SLEEP_ATTEMPTS = 10;
+            final int SLEEP_DURATION_MS = 2000;
+            int sleep_attempts = 0;
+            boolean device_needs_sleep = true;
+            boolean wakelock_was_held = false;
+
+            final long ALARM_WAKE_UP_DELAY_MS = TimeUnit.SECONDS.toMillis(20);
+            mAlarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                                    SystemClock.elapsedRealtime() + ALARM_WAKE_UP_DELAY_MS,
+                                    mPendingIntent);
+
+            if (mDeviceSuspendLock != null && mDeviceSuspendLock.isHeld()) {
+                wakelock_was_held = true;
+                mDeviceSuspendLock.release();
+            }
+
+            do {
+                try {
+                    verifyClockDelta();
+                    device_needs_sleep = false;
+                } catch(Throwable e) {
+                    // Delta between clocks too small, must sleep longer
+                    if (sleep_attempts++ > MAX_SLEEP_ATTEMPTS) {
+                        mAlarmManager.cancel(mPendingIntent);
+                        if (wakelock_was_held) {
+                            mDeviceSuspendLock.acquire();
+                        }
+                        throw e;
+                    }
+                    Thread.sleep(SLEEP_DURATION_MS);
+                }
+            } while (device_needs_sleep);
+
+            if (wakelock_was_held) {
+                mDeviceSuspendLock.acquire();
+            }
+            mAlarmManager.cancel(mPendingIntent);
+
+            for (Sensor sensor : sensorList) {
+                if (sensor.getReportingMode() == Sensor.REPORTING_MODE_CONTINUOUS) {
+                    try {
+                        string = runVerifySensorTimestampClockbase(sensor, false);
+                        if (string != null) {
+                            return string;
+                        }
+                    } catch(Throwable e) {
+                        Log.e(TAG, e.getMessage());
+                        error_occurred = true;
+                    }
+                } else {
+                    Log.i(TAG, "testTimestampClockSource skipping non-continuous sensor: '" + sensor.getName());
+                }
+            }
+            if (error_occurred) {
+                throw new Error("Sensors must use CLOCK_BOOTTIME as clock source for timestamping events");
+            }
+            return null;
+        }
+
         public String runAPWakeUpWhenReportLatencyExpires(Sensor sensor) throws Throwable {
 
             verifyBatchingSupport(sensor);
@@ -274,6 +349,63 @@ public class DeviceSuspendTestActivity
             }
             return null;
         }
+
+        /**
+         * Verify the CLOCK_MONOTONIC and CLOCK_BOOTTIME clock sources are different
+         * by at least 2 seconds.  Since delta between these two clock sources represents
+         * time kernel has spent in suspend, device needs to have gone into suspend for
+         * for at least 2 seconds since device was initially booted.
+         */
+        private void verifyClockDelta() throws Throwable {
+            final int MIN_DELTA_BETWEEN_CLOCKS_MS = 2000;
+            long uptimeMs = SystemClock.uptimeMillis();
+            long realtimeMs = SystemClock.elapsedRealtime();
+            long deltaMs = (realtimeMs - uptimeMs);
+            if (deltaMs < MIN_DELTA_BETWEEN_CLOCKS_MS) {
+                throw new Error("Delta between clock sources too small ("
+                                  + deltaMs + "mS), device must sleep more than "
+                                  + MIN_DELTA_BETWEEN_CLOCKS_MS/1000 + " seconds");
+            }
+            Log.i(TAG, "Delta between CLOCK_MONOTONIC and CLOCK_BOOTTIME is " + deltaMs + " mS");
+        }
+
+
+        /**
+         * Verify sensor is using the correct clock source (CLOCK_BOOTTIME) for timestamps.
+         * To tell the clock sources apart, the kernel must have suspended at least once.
+         *
+         * @param sensor - sensor to verify
+         * @param verify_clock_delta
+         *          true to verify that clock sources differ before running test
+         *          false to skip verification of sufficient delta between clock sources
+         */
+        public String runVerifySensorTimestampClockbase(Sensor sensor, boolean verify_clock_delta)
+            throws Throwable {
+            Log.i(TAG, "Running .. " + getCurrentTestNode().getName() + " " + sensor.getName());
+            if (verify_clock_delta) {
+                verifyClockDelta();
+            }
+            /* Enable a sensor, grab a sample, and then verify timestamp is > realtimeNs
+             * to assure the correct clock source is being used for the sensor timestamp.
+             */
+            final int MIN_TIMESTAMP_BASE_SAMPLES = 1;
+            int samplingPeriodUs = sensor.getMinDelay();
+            TestSensorEnvironment environment = new TestSensorEnvironment(
+                    this,
+                    sensor,
+                    false,
+                    (int) samplingPeriodUs,
+                    0,
+                    false /*isDeviceSuspendTest*/);
+            TestSensorOperation op = TestSensorOperation.createOperation(environment, MIN_TIMESTAMP_BASE_SAMPLES);
+            op.addVerification(TimestampClockSourceVerification.getDefault(environment));
+            try {
+                op.execute(getCurrentTestNode());
+            } finally {
+            }
+            return null;
+        }
+
 
         public String runAPWakeUpByAlarmNonWakeSensor(Sensor sensor, int maxReportLatencyUs)
             throws  Throwable {
