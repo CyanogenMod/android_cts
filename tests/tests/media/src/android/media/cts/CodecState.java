@@ -219,13 +219,9 @@ public class CodecState {
                         " sampleTime:" + sampleTime + " sampleFlags:" + sampleFlags);
                 mSawInputEOS = true;
                 // FIX-ME: in tunneled mode we currently use input EOS as output EOS indicator
-                // we should stream duration
-                if (mTunneled) {
-                    if (!mIsAudio) {
-                        mSawOutputEOS = true;
-                    } else if (mAudioTrack != null) {
-                        mAudioTrack.stop();
-                    }
+                // we should use stream duration
+                if (mTunneled && !mIsAudio) {
+                    mSawOutputEOS = true;
                 }
                 return false;
             }
@@ -259,14 +255,15 @@ public class CodecState {
             Log.d(TAG, "saw input EOS on track " + mTrackIndex);
 
             mSawInputEOS = true;
+            // FIX-ME: in tunneled mode we currently use input EOS as output EOS indicator
+            // we should use stream duration
+            if (mTunneled && !mIsAudio) {
+                mSawOutputEOS = true;
+            }
 
             mCodec.queueInputBuffer(
                     index, 0 /* offset */, 0 /* sampleSize */,
                     0 /* sampleTime */, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
-
-            if (mTunneled && mAudioTrack != null) {
-                mAudioTrack.stop();
-            }
 
             mAvailableInputBufferIndices.removeFirst();
         }
@@ -325,7 +322,10 @@ public class CodecState {
 
             mSawOutputEOS = true;
 
-            if (mAudioTrack != null && !mTunneled) {
+            // We need to stop the audio track so that all audio frames are played
+            // and the video codec can consume all of its data.
+            // After audio track stop, getAudioTimeUs will return 0.
+            if (mAudioTrack != null) {
                 mAudioTrack.stop();
             }
             return false;
