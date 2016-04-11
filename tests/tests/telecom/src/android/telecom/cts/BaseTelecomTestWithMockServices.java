@@ -297,6 +297,7 @@ public class BaseTelecomTestWithMockServices extends InstrumentationTestCase {
         if (mInCallCallbacks.getService() != null) {
             currentCallCount = mInCallCallbacks.getService().getCallCount();
         }
+        int currentConnectionCount = getNumberOfConnections();
         placeNewCallWithPhoneAccount(extras, videoState);
 
         try {
@@ -311,6 +312,20 @@ public class BaseTelecomTestWithMockServices extends InstrumentationTestCase {
         assertEquals("InCallService should contain 1 more call after adding a call.",
                 currentCallCount + 1,
                 mInCallCallbacks.getService().getCallCount());
+
+        // The connectionService.lock is released in
+        // MockConnectionService#onCreateOutgoingConnection, however the connection will not
+        // actually be added to the list of connections in the ConnectionService until shortly
+        // afterwards.  So there is still a potential for the lock to be released before it would
+        // be seen by calls to ConnectionService#getAllConnections().
+        // We will wait here until the list of connections includes one more connection to ensure
+        // that placing the call has fully completed.
+        final int expectedConnectionCount = currentConnectionCount + 1;
+        assertCSConnections(expectedConnectionCount);
+    }
+
+    int getNumberOfConnections() {
+        return CtsConnectionService.getAllConnectionsFromTelecom().size();
     }
 
     MockConnection verifyConnectionForOutgoingCall() {
@@ -520,6 +535,24 @@ public class BaseTelecomTestWithMockServices extends InstrumentationTestCase {
     );
     }
 
+    void assertCSConnections(final int numConnections) {
+        waitUntilConditionIsTrueOrTimeout(new Condition() {
+                                              @Override
+                                              public Object expected() {
+                                                  return numConnections;
+                                              }
+
+                                              @Override
+                                              public Object actual() {
+                                                  return CtsConnectionService
+                                                          .getAllConnectionsFromTelecom()
+                                                          .size();
+                                              }
+                                          },
+                WAIT_FOR_STATE_CHANGE_TIMEOUT_MS,
+                "ConnectionService should contain " + numConnections + " connections."
+        );
+    }
 
     void assertNumConnections(final MockConnectionService connService, final int numConnections) {
         waitUntilConditionIsTrueOrTimeout(new Condition() {
