@@ -16,6 +16,13 @@
   bug: 17536113
 },
 {
+  description: "the ConnectivityConstraintTest are not yet stable",
+  names: [
+    "android.jobscheduler.cts.ConnectivityConstraintTest"
+  ],
+  bug: 18117279
+},
+{
   description: "tests a fragile by nature as they rely on hardcoded behavior",
   names: [
     "android.accessibilityservice.cts.AccessibilityTextTraversalTest#testActionNextAndPreviousAtGranularityPageOverText",
@@ -215,23 +222,6 @@
   bug: 17989532
 },
 {
-  description: "The new AE/AF trigger tests are not yet passing on all devices",
-  names: [
-    "android.hardware.camera2.cts.RobustnessTest#testBasicTriggerSequence",
-    "android.hardware.camera2.cts.RobustnessTest#testSimultaneousTriggers",
-    "android.hardware.camera2.cts.RobustnessTest#testAfThenAeTrigger",
-    "android.hardware.camera2.cts.RobustnessTest#testAeThenAfTrigger"
-  ],
-  bug: 22180706
-},
-{
-  description: "The new create session test is not yet passing on all devices",
-  names: [
-    "android.hardware.camera2.cts.CameraDeviceTest#testCreateSessions"
-  ],
-  bug: 22092756
-},
-{
   description: "The new long processing test is not yet passing on all devices",
   names: [
     "android.hardware.camera2.cts.ImageReaderTest#testLongProcessingRepeatingRaw",
@@ -344,53 +334,6 @@
   names: [
     "android.net.cts.ConnectivityManagerTest#testRestrictedNetworks"
   ],
-  bug: 25651805
-},
-{
-  description: "Read from invalid parcel not working",
-  names: [
-    "android.view.cts.MotionEventTest#testReadFromParcelWithInvalidSampleSize"
-  ],
-  bug: 25652250
-},
-{
-  description: "Wired headset tests are no longer a requirement per CDD",
-  names: [
-    "android.telecom.cts.WiredHeadsetTest"
-  ],
-  bug: 26149528
-},
-{
-  description: "android.security.cts is using a Non-NDK library, libmedia_jni.so",
-  names: [
-      "android.security.cts.MediaCryptoTest#testMediaCryptoClearKey",
-      "android.security.cts.MediaCryptoTest#testMediaCryptoWidevine"
-  ],
-  bug: 27218502
-},
-{
-  description: "Still investigating this, root cause unknown yet",
-  bug: 27578806,
-  names: ["com.android.cts.cpptools.RunAsHostTest#testRunAs"]
-},
-{
-  description: "Sensor tests not working"
-  bug: 28159339
-  names: [
-    “android.hardware.cts.helpers.sensorverification.TimestampClockSourceVerificationTest#testVerify_fail”,
-    “android.hardware.cts.helpers.sensorverification.TimestampClockSourceVerificationTest#testVerify_jitter_fail”,
-    “android.hardware.cts.helpers.sensorverification.TimestampClockSourceVerificationTest#testVerify_jitter_pass”,
-    “android.hardware.cts.helpers.sensorverification.TimestampClockSourceVerificationTest#testVerify_missing_events_fail”,
-    “android.hardware.cts.helpers.sensorverification.TimestampClockSourceVerificationTest#testVerify_missing_events_pass”,
-    “android.hardware.cts.helpers.sensorverification.TimestampClockSourceVerificationTest#testVerify_no_events_fail”,
-    “android.hardware.cts.helpers.sensorverification.TimestampClockSourceVerificationTest#testVerify_pass”
-  ]
-},
-{
-  description: "Permission Policy unaltered not working in M"
-  bug: 27599613
-  names: [
-    "android.permission2.cts.PermissionPolicyTest#testPlatformPermissionPolicyUnaltered"
-  ]
+  bug: 23192492
 }
 ]

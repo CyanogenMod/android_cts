@@ -567,7 +567,7 @@ public abstract class BasePrintTest extends UiAutomatorTestCase {
     }
 
     protected boolean supportsPrinting() {
-        return getInstrumentation().getContext().getPackageManager().hasSystemFeature(
-                PackageManager.FEATURE_PRINTING);
+        return getInstrumentation().getContext().getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_PRINTING);
     }
 }

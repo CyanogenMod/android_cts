@@ -32,27 +32,14 @@ LOCAL_SRC_FILES := \
 		android_security_cts_MMapExecutableTest.cpp \
 		android_security_cts_AudioPolicyBinderTest.cpp \
 		android_security_cts_EncryptionTest.cpp \
-		android_security_cts_MediaCryptoTest.cpp \
 		android_security_cts_MediaPlayerInfoLeakTest.cpp \
+		android_security_cts_AudioEffectBinderTest.cpp \
 		android_security_cts_AudioFlingerBinderTest.cpp \
-		android_security_cts_AudioEffectBinderTest.cpp
+		android_security_cts_StagefrightFoundationTest.cpp
 
-LOCAL_C_INCLUDES := \
-	$(JNI_H_INCLUDE) \
-	system/core/include \
-	frameworks/base/media/jni
+LOCAL_C_INCLUDES := $(JNI_H_INCLUDE)
 
-LOCAL_SHARED_LIBRARIES := \
-	libnativehelper \
-	liblog \
-	libbinder \
-	libutils \
-	libmedia \
-	libselinux \
-	libdl \
-	libcutils \
-	libcrypto \
-	libstagefright_foundation 
+LOCAL_SHARED_LIBRARIES := libnativehelper liblog libbinder libutils libmedia libselinux libdl libcutils libcrypto libstagefright_foundation
 
 LOCAL_C_INCLUDES += ndk/sources/cpufeatures
 LOCAL_STATIC_LIBRARIES := cpufeatures
