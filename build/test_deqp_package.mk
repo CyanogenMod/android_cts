@@ -27,7 +27,7 @@ $(cts_library_xmls) : $(CTS_TESTCASES_OUT)/%.xml: external/deqp/android/cts/mast
 	$(hide) echo Generating test description $@
 	$(hide) mkdir -p $(CTS_TESTCASES_OUT)
 # Query build ABIs by routing a dummy test list through xml generator and parse result
-	$(hide) $(eval supported_abi_attr := $(shell $(CTS_XML_GENERATOR) -t dummyTest \
+	$(hide) $(eval supported_abi_attr := $$($(CTS_XML_GENERATOR) -t dummyTest \
 										-n dummyName \
 										-p invalid.dummy \
 										-e $(CTS_EXPECTATIONS) \
